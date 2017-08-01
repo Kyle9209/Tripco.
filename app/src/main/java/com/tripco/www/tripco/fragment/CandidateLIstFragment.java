@@ -72,7 +72,7 @@ public class CandidateLIstFragment extends Fragment {
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_classification, container, false);
+            View rootView = inflater.inflate(R.layout.viewpager_classification, container, false);
             SupportMapFragment mapFragment = (SupportMapFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.map);
             try {
                 mapFragment.getMapAsync(con);
