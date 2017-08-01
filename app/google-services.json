@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "629196942268",
+    "firebase_url": "https://tripco-abd0f.firebaseio.com",
+    "project_id": "tripco-abd0f",
+    "storage_bucket": "tripco-abd0f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:629196942268:android:f1182a7cfc5ba738",
+        "android_client_info": {
+          "package_name": "com.tripco.www.tripco"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "629196942268-kb2ggobof7205bcibuvpl2abi2sjjuha.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAOQEtGQQVHuJUXkNnhdUzZRYh7INfc23I"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
