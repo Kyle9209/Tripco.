@@ -3,9 +3,6 @@ package com.tripco.www.tripco.fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +14,6 @@ import android.webkit.WebViewClient;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.tripco.www.tripco.R;
@@ -31,7 +27,6 @@ public class WebViewFragment extends Fragment {
     @BindView(R.id.inputAddress) EditText inputAddress;
     @BindView(R.id.webView) WebView webView;
     @BindView(R.id.webViewPb) ProgressBar progressBar;
-    @BindView(R.id.container) ViewPager mViewPager;
     @BindView(R.id.frontLayout) LinearLayout frontLayout;
     private Unbinder unbinder;
     private InputMethodManager inputMethodManager;
@@ -60,9 +55,6 @@ public class WebViewFragment extends Fragment {
         });
         // 키보드 객체 획득
         inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-
-        SectionsPagerAdapter spAdapter = new SectionsPagerAdapter(getChildFragmentManager());
-        mViewPager.setAdapter(spAdapter);
 
         return view;
     }
@@ -106,56 +98,5 @@ public class WebViewFragment extends Fragment {
     private String httpaddressCheck(String inputUrl) {
         if(inputUrl.indexOf("http://") != -1) return inputUrl;
         else return "http://" + inputUrl;
-    }
-
-    public static class PlaceholderFragment extends Fragment{
-        private static final String ARG_SECTION_NUMBER = "section_number";
-        PlaceholderFragment con;
-
-        public PlaceholderFragment() {
-            con = this;
-        }
-
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.viewpager_detail, container, false);
-
-            TextView tv = rootView.findViewById(R.id.testTxt);
-            if(getArguments().getInt(ARG_SECTION_NUMBER) == 1){
-                tv.setText("유형선택");
-            } else if(getArguments().getInt(ARG_SECTION_NUMBER) == 2){
-                tv.setText("지역검색");
-            } else if(getArguments().getInt(ARG_SECTION_NUMBER) == 3) {
-                tv.setText("날짜선택");
-            } else if(getArguments().getInt(ARG_SECTION_NUMBER) == 4) {
-                tv.setText("제목&메모");
-            }
-
-            return rootView;
-        }
-    }
-
-    private class SectionsPagerAdapter extends FragmentPagerAdapter {
-        SectionsPagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            return PlaceholderFragment.newInstance(position + 1);
-        }
-
-        @Override
-        public int getCount() {
-            return 4;
-        }
     }
 }
