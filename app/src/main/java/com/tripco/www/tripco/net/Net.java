@@ -13,6 +13,8 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class Net {
+    final private String MAIN_SERVER_DOMAIN = null;
+
     private static Net ourInstance = new Net();
 
     public static Net getInstance() {
@@ -54,7 +56,7 @@ public class Net {
 
     // retrofit 통신 객체
     private Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl("http://13.124.11.192:3000")
+            .baseUrl(MAIN_SERVER_DOMAIN)
             .addConverterFactory(GsonConverterFactory.create())
             .build();
 
@@ -62,12 +64,12 @@ public class Net {
         return retrofit;
     }
 
-   /* StoresFactoryIm apiIm;
+    TripcoFactoryIm apiIm;
 
-    public StoresFactoryIm getApiIm() {
-        if (apiIm == null) {
-            apiIm = retrofit.create(StoresFactoryIm.class);
+    public TripcoFactoryIm getApiIm() {
+        if(apiIm == null){
+            apiIm = retrofit.create(TripcoFactoryIm.class);
         }
         return apiIm;
-    }*/
+    }
 }

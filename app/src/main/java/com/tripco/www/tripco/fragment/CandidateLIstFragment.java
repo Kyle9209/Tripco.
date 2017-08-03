@@ -12,12 +12,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.tripco.www.tripco.R;
 import com.tripco.www.tripco.util.U;
 
@@ -75,7 +72,7 @@ public class CandidateLIstFragment extends Fragment {
             View rootView = inflater.inflate(R.layout.viewpager_classification, container, false);
             SupportMapFragment mapFragment = (SupportMapFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.map);
             try {
-                mapFragment.getMapAsync(con);
+                mapFragment.getMapAsync(this);
             } catch (Exception e) {
                 e.printStackTrace();
                 U.getInstance().log(" 지도 에러 >>>> " + e.toString());
@@ -87,9 +84,9 @@ public class CandidateLIstFragment extends Fragment {
         public void onMapReady(GoogleMap googleMap) {
             mMap = googleMap;
 
-            LatLng sydney = new LatLng(-34, 151);
+            /*LatLng sydney = new LatLng(-34, 151);
             mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));*/
         }
     }
 

@@ -89,10 +89,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     // 로그인, 회원가입, 만든여행 버튼
     public void onClickBtn(View view) {
         switch (view.getId()) {
-            case R.id.login:
+            case R.id.login_btn:
                 startActivity(new Intent(getBaseContext(), LoginActivity.class));
                 break;
-            case R.id.join:
+            case R.id.join_btn:
+                startActivity(new Intent(getBaseContext(), JoinMemberActivity.class));
                 break;
             case R.id.trip:
                 startActivity(new Intent(getBaseContext(), TripActivity.class));

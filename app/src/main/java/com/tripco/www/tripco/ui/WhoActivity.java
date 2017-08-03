@@ -15,8 +15,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class WhoActivity extends AppCompatActivity {
-    @BindView(R.id.relativeLayout)
-    RelativeLayout relativeLayout;
+    @BindView(R.id.relativeLayout) RelativeLayout relativeLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +26,7 @@ public class WhoActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
     }
 
-    @OnClick(R.id.find)
+    @OnClick(R.id.find_btn)
     public void onViewClicked(View view) {
         relativeLayout.setVisibility(View.VISIBLE);
         hideKeyboard(view);

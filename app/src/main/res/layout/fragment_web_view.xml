@@ -4,12 +4,8 @@
     android:layout_height="match_parent"
     tools:context="com.tripco.www.tripco.fragment.WebViewFragment">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <!-- backLayout -->
-        <LinearLayout
+    <!-- backLayout (WebView) -->
+    <LinearLayout
             android:id="@+id/backLayout"
             android:focusable="true"
             android:focusableInTouchMode="true"
@@ -23,9 +19,11 @@
                 android:layout_weight="0">
 
                 <EditText
+                    android:text="www.naver.com"
+                    android:selectAllOnFocus="true"
                     android:maxLines="1"
                     android:inputType="textUri"
-                    android:id="@+id/inputAddress"
+                    android:id="@+id/url_et"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
@@ -33,7 +31,7 @@
 
                 <Button
                     android:layout_gravity="center"
-                    android:id="@+id/searchBtn"
+                    android:id="@+id/search_url_btn"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_weight="0"
@@ -41,7 +39,7 @@
 
                 <Button
                     android:layout_gravity="center"
-                    android:id="@+id/saveBtn"
+                    android:id="@+id/save_btn"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_weight="0"
@@ -49,7 +47,7 @@
 
                 <Button
                     android:layout_gravity="center"
-                    android:id="@+id/DetailSaveBtn"
+                    android:id="@+id/detail_save_btn"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_weight="0"
@@ -57,9 +55,9 @@
 
             </LinearLayout>
 
-            <ProgressBar
-                android:id="@+id/webViewPb"
+            <android.support.v4.widget.ContentLoadingProgressBar
                 style="?android:attr/progressBarStyleHorizontal"
+                android:id="@+id/webview_pb"
                 android:layout_width="match_parent"
                 android:layout_height="3dp"
                 android:layout_weight="0"
@@ -67,15 +65,15 @@
 
             <WebView
                 android:layout_weight="1"
-                android:id="@+id/webView"
+                android:id="@+id/webview"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 
         </LinearLayout>
 
-        <!-- frontLayout -->
-        <LinearLayout
-            android:visibility="visible"
+    <!-- frontLayout (DetailPage) -->
+    <LinearLayout
+            android:visibility="gone"
             android:id="@+id/frontLayout"
             android:orientation="vertical"
             android:background="#99000000"
@@ -91,16 +89,16 @@
                 <TextView
                     android:layout_marginLeft="15dp"
                     android:layout_centerVertical="true"
-                    android:id="@+id/title"
+                    android:id="@+id/title_tv"
                     android:textSize="25sp"
                     android:textColor="#fff"
-                    android:text="title"
+                    android:text="유형선택"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
                 <Button
                     android:textColor="#fff"
-                    android:id="@+id/completeBtn"
+                    android:id="@+id/complete_btn"
                     style="@style/Widget.AppCompat.Button.Borderless"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -119,7 +117,7 @@
 
                 <!-- line1 -->
                 <LinearLayout
-                    android:visibility="visible"
+                    android:visibility="gone"
                     android:padding="10dp"
                     android:background="#fff"
                     android:orientation="horizontal"
@@ -177,7 +175,7 @@
                             android:layout_height="match_parent" />
 
                         <ImageButton
-                            android:id="@+id/search_btn"
+                            android:id="@+id/search_map_btn"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:src="@android:drawable/ic_menu_search" />
@@ -189,7 +187,7 @@
 
                 <!-- line3 -->
                 <LinearLayout
-                    android:visibility="visible"
+                    android:visibility="gone"
                     android:padding="10dp"
                     android:background="#fff"
                     android:orientation="vertical"
@@ -197,9 +195,39 @@
                     android:layout_width="match_parent"
                     android:layout_height="100dp">
 
-                    <com.rey.material.widget.Spinner
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
+                    <RelativeLayout
+                        android:layout_height="match_parent"
+                        android:layout_width="match_parent">
+
+                        <com.rey.material.widget.Spinner
+                            android:layout_centerVertical="true"
+                            android:layout_centerHorizontal="true"
+                            style="@style/Material.Widget.Spinner"
+                            android:id="@+id/days_spin"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                    </RelativeLayout>
+
+
+                </LinearLayout>
+
+                <!-- line4 -->
+                <LinearLayout
+                    android:visibility="gone"
+                    android:padding="10dp"
+                    android:background="#fff"
+                    android:orientation="vertical"
+                    android:id="@+id/line4"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp">
+
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp" />
+
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp" />
 
                 </LinearLayout>
 
@@ -207,43 +235,49 @@
 
             <!-- footer -->
             <RelativeLayout
+                android:background="#fff"
                 android:layout_width="match_parent"
                 android:layout_height="50dp">
 
                 <Button
-                    android:visibility="invisible"
-                    android:textColor="#fff"
-                    android:id="@+id/before_Btn"
+                    android:id="@+id/before_btn"
                     style="@style/Widget.AppCompat.Button.Borderless"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="이전"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"/>
+                    android:layout_centerVertical="true"
+                    android:text="이전"
+                    android:visibility="invisible" />
 
                 <Button
-                    android:textColor="#fff"
-                    android:id="@+id/next_Btn"
+                    android:id="@+id/next_btn"
                     style="@style/Widget.AppCompat.Button.Borderless"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="다음"
-                    android:layout_alignParentRight="true"
                     android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"/>
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:text="다음" />
 
             </RelativeLayout>
 
             <!-- googleMap -->
-            <fragment
-                android:id="@+id/map"
-                android:name="com.google.android.gms.maps.SupportMapFragment"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+            <RelativeLayout
+                android:padding="10dp"
+                android:id="@+id/map_rl"
+                android:visibility="gone"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent">
+
+                <fragment
+                    android:id="@+id/map"
+                    android:name="com.google.android.gms.maps.SupportMapFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+            </RelativeLayout>
 
         </LinearLayout>
-
-    </RelativeLayout>
 
 </FrameLayout>
