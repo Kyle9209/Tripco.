@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.view.KeyEvent;
@@ -20,10 +21,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.rey.material.app.SimpleDialog;
 import com.rey.material.widget.Spinner;
 import com.tripco.www.tripco.R;
@@ -36,7 +42,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 
-public class WebViewFragment extends Fragment {
+public class WebViewFragment extends Fragment implements OnMapReadyCallback {
     @BindView(R.id.url_et) EditText url_et;
     @BindView(R.id.webview) WebView webView;
     @BindView(R.id.webview_pb) ProgressBar progressBar;
@@ -49,10 +55,11 @@ public class WebViewFragment extends Fragment {
     @BindView(R.id.line3) LinearLayout line3;
     @BindView(R.id.line4) LinearLayout line4;
     @BindView(R.id.title_tv) TextView title_tv;
-    @BindView(R.id.map_rl) RelativeLayout map_rl;
+    @BindView(R.id.map) MapView mapView;
     private Unbinder unbinder;
     private InputMethodManager inputMethodManager;
     private int index = 1;
+    private GoogleMap mMap = null;
 
     public WebViewFragment() {} // 생성자
 
@@ -66,7 +73,9 @@ public class WebViewFragment extends Fragment {
 
         webViewInit();
         spinnerInit();
-        editTextInit();
+        editTextInit(); // 키패드 완료 버튼 처리
+
+        mapView.getMapAsync(this);
 
         return view;
     }
@@ -114,9 +123,13 @@ public class WebViewFragment extends Fragment {
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        unbinder.unbind();
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+
+        // Add a marker in Sydney and move the camera
+        LatLng sydney = new LatLng(-34, 151);
+        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
 
     @OnClick(R.id.search_url_btn) // 주소검색
@@ -158,7 +171,7 @@ public class WebViewFragment extends Fragment {
                                 line2.setVisibility(View.GONE);
                                 line3.setVisibility(View.GONE);
                                 line4.setVisibility(View.GONE);
-                                map_rl.setVisibility(View.GONE);
+                                mapView.setVisibility(View.GONE);
                                 frontLayout.setVisibility(View.GONE);
                                 Toast.makeText(getContext(), "후보지리스트에 추가되었습니다.", Toast.LENGTH_SHORT).show();
                                 dialog.dismiss();
@@ -175,13 +188,13 @@ public class WebViewFragment extends Fragment {
                         .show();
                 break;
             case R.id.search_map_btn: // 구글맵띄우기
-                map_rl.setVisibility(View.VISIBLE);
+                mapView.setVisibility(View.VISIBLE);
                 inputMethodManager.hideSoftInputFromWindow(url_et.getWindowToken(), 0);
                 break;
         }
     }
 
-    @OnClick({R.id.before_btn, R.id.next_btn})
+    @OnClick({R.id.before_btn, R.id.next_btn}) // 상세페이지 이전, 다음 버튼
     public void onClickPageMoveBtn(View view) {
         switch (view.getId()) {
             case R.id.before_btn:
@@ -235,5 +248,53 @@ public class WebViewFragment extends Fragment {
     private String httpaddressCheck(String inputUrl) {
         if (inputUrl.indexOf("http://") != -1) return inputUrl;
         else return "http://" + inputUrl;
+    }
+
+    // 구글맵 사용에 필요한 프레그먼트의 오버라이드 메소드들
+    @Override
+    public void onStart() {
+        super.onStart();
+        mapView.onStart();
+    }
+    @Override
+    public void onStop() {
+        super.onStop();
+        mapView.onStop();
+    }
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mapView.onSaveInstanceState(outState);
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        mapView.onResume();
+    }
+    @Override
+    public void onPause() {
+        super.onPause();
+        mapView.onPause();
+    }
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        mapView.onLowMemory();
+    }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        //mapView.onLowMemory();
+    }
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if(mapView != null) mapView.onCreate(savedInstanceState);
+    }
+    // 버터나이프 사용에 필요한 프레그먼트의 오버라이드 메소드
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
     }
 }

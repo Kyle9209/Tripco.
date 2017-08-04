@@ -49,15 +49,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         if (id == R.id.nav_camera) {
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
         } else if (id == R.id.nav_slideshow) {
 
         } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
 
         }
 
@@ -95,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.join_btn:
                 startActivity(new Intent(getBaseContext(), JoinMemberActivity.class));
                 break;
-            case R.id.trip:
+            case R.id.trip: // -> 리스트뷰로
                 startActivity(new Intent(getBaseContext(), TripActivity.class));
                 break;
         }
