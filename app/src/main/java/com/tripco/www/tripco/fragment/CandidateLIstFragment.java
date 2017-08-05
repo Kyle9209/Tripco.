@@ -14,9 +14,7 @@ import android.view.ViewGroup;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.tripco.www.tripco.R;
-import com.tripco.www.tripco.util.U;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -70,23 +68,12 @@ public class CandidateLIstFragment extends Fragment {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.viewpager_classification, container, false);
-            SupportMapFragment mapFragment = (SupportMapFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.map);
-            try {
-                mapFragment.getMapAsync(this);
-            } catch (Exception e) {
-                e.printStackTrace();
-                U.getInstance().log(" 지도 에러 >>>> " + e.toString());
-            }
             return rootView;
         }
 
         @Override
         public void onMapReady(GoogleMap googleMap) {
             mMap = googleMap;
-
-            /*LatLng sydney = new LatLng(-34, 151);
-            mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));*/
         }
     }
 

@@ -25,7 +25,7 @@
 
                 <Button
                     android:background="@color/colorPrimary"
-                    android:id="@+id/complete"
+                    android:id="@+id/complete_btn"
                     android:layout_alignParentRight="true"
                     android:text="@string/complete"
                     android:layout_width="wrap_content"
@@ -38,11 +38,14 @@
     </android.support.design.widget.AppBarLayout>
 
     <LinearLayout
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
         android:layout_marginTop="55dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <!-- 제목 -->
         <RelativeLayout
             android:layout_marginTop="20dp"
             android:layout_width="match_parent"
@@ -65,17 +68,11 @@
 
         </RelativeLayout>
 
+        <!-- 달력 -->
         <RelativeLayout
             android:layout_marginTop="20dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-
-            <Button
-                android:background="#00000000"
-                android:text="달력"
-                android:id="@+id/calendar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
 
             <ImageView
                 android:visibility="invisible"
@@ -86,19 +83,21 @@
                 android:layout_centerVertical="true"
                 android:layout_alignParentRight="true" />
 
+            <Button
+                android:textSize="20sp"
+                android:background="#00000000"
+                android:text="달력"
+                android:id="@+id/calendar_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
         </RelativeLayout>
 
+        <!-- 누구 -->
         <RelativeLayout
             android:layout_marginTop="20dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-
-            <Button
-                android:background="#00000000"
-                android:text="누구"
-                android:id="@+id/who"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
 
             <ImageView
                 android:visibility="invisible"
@@ -109,61 +108,82 @@
                 android:layout_centerVertical="true"
                 android:layout_alignParentRight="true" />
 
+            <Button
+                android:textSize="20sp"
+                android:background="#00000000"
+                android:text="누구 (선택)"
+                android:id="@+id/who_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
         </RelativeLayout>
 
+        <!-- 해시태그 -->
         <LinearLayout
-            android:layout_marginTop="20dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <ImageView
+            <LinearLayout
+                android:gravity="center"
+                android:orientation="vertical"
                 android:layout_weight="1"
-                android:layout_margin="10dp"
-                android:background="#dadada"
                 android:layout_width="0dp"
-                android:layout_height="100dp" />
+                android:layout_height="match_parent">
 
-            <ImageView
+                <CheckBox
+                    android:layout_margin="10dp"
+                    android:background="@drawable/hashtag"
+                    android:checked="false"
+                    android:id="@+id/hashtag_cb1"
+                    android:button="@null"
+                    android:textSize="25sp"
+                    android:text="#해쉬태그1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <CheckBox
+                    android:layout_margin="10dp"
+                    android:background="@drawable/hashtag"
+                    android:checked="false"
+                    android:id="@+id/hashtag_cb2"
+                    android:button="@null"
+                    android:textSize="25sp"
+                    android:text="#해쉬태그2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:gravity="center"
+                android:orientation="vertical"
                 android:layout_weight="1"
-                android:layout_margin="10dp"
-                android:background="#dadada"
                 android:layout_width="0dp"
-                android:layout_height="100dp" />
+                android:layout_height="match_parent">
 
-            <ImageView
-                android:layout_weight="1"
-                android:layout_margin="10dp"
-                android:background="#dadada"
-                android:layout_width="0dp"
-                android:layout_height="100dp" />
+                <CheckBox
+                    android:layout_margin="10dp"
+                    android:background="@drawable/hashtag"
+                    android:checked="false"
+                    android:id="@+id/hashtag_cb3"
+                    android:button="@null"
+                    android:textSize="25sp"
+                    android:text="#해쉬태그3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
 
-        </LinearLayout>
+                <CheckBox
+                    android:layout_margin="10dp"
+                    android:background="@drawable/hashtag"
+                    android:checked="false"
+                    android:id="@+id/hashtag_cb4"
+                    android:button="@null"
+                    android:textSize="25sp"
+                    android:text="#해쉬태그4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
 
-        <LinearLayout
-            android:layout_marginTop="10dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <ImageView
-                android:layout_weight="1"
-                android:layout_margin="10dp"
-                android:background="#dadada"
-                android:layout_width="0dp"
-                android:layout_height="100dp" />
-
-            <ImageView
-                android:layout_weight="1"
-                android:layout_margin="10dp"
-                android:background="#dadada"
-                android:layout_width="0dp"
-                android:layout_height="100dp" />
-
-            <ImageView
-                android:layout_weight="1"
-                android:layout_margin="10dp"
-                android:background="#dadada"
-                android:layout_width="0dp"
-                android:layout_height="100dp" />
+            </LinearLayout>
 
         </LinearLayout>
 

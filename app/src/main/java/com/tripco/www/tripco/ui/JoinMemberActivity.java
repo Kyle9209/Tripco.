@@ -1,7 +1,6 @@
 package com.tripco.www.tripco.ui;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
@@ -9,6 +8,7 @@ import android.widget.EditText;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.tripco.www.tripco.R;
+import com.tripco.www.tripco.RootActivity;
 import com.tripco.www.tripco.model.MemberModel;
 import com.tripco.www.tripco.net.Net;
 import com.tripco.www.tripco.net.Req_Join;
@@ -24,7 +24,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class JoinMemberActivity extends AppCompatActivity {
+public class JoinMemberActivity extends RootActivity {
     @BindView(R.id.join_email) AutoCompleteTextView joinEmail;
     @BindView(R.id.join_password) EditText joinPassword;
     @BindView(R.id.confirm_password) EditText confirmPassword;
@@ -107,6 +107,8 @@ public class JoinMemberActivity extends AppCompatActivity {
     }
 
     private void connectServer(String email, String password){
+        showPD();
+
         Req_Join req_join = new Req_Join();
         req_join.setMember(new MemberModel(
                 email,
@@ -124,15 +126,19 @@ public class JoinMemberActivity extends AppCompatActivity {
                 if(response.isSuccessful()) { // 성공
                     if(response.body() != null){ // 내용이 있을 때
                         U.getInstance().log("회원가입 성공");
+                        stopPD();
                     }  else { // 비어 있을 때
                         U.getInstance().log("통신 실패1 : 내용이 비어있음");
+                        stopPD();
                     }
                 } else { // 실패
                     try {
                         U.getInstance().log("통신 실패2 : " + response.errorBody().string());
+                        stopPD();
                     } catch (IOException e) {
                         e.printStackTrace();
                         U.getInstance().log("통신 실패3 : " + e.toString());
+                        stopPD();
                     }
                 }
             }
@@ -140,6 +146,7 @@ public class JoinMemberActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<Res_ResultCode> call, Throwable t) {
                 U.getInstance().log("통신 실패 onFailure : " + t.getLocalizedMessage());
+                stopPD();
             }
         });
     }

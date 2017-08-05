@@ -56,7 +56,7 @@ public class Net {
 
     // retrofit 통신 객체
     private Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl(MAIN_SERVER_DOMAIN)
+            .baseUrl("http://13.59.134.220:3000/")
             .addConverterFactory(GsonConverterFactory.create())
             .build();
 
