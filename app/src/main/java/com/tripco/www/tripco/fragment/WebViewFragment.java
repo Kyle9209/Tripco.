@@ -4,10 +4,10 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,15 +24,23 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
+import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.rey.material.app.SimpleDialog;
 import com.rey.material.widget.Spinner;
 import com.tripco.www.tripco.R;
+import com.tripco.www.tripco.util.U;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,19 +50,20 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 
-public class WebViewFragment extends Fragment implements OnMapReadyCallback {
-    @BindView(R.id.url_et) EditText url_et;
+public class WebViewFragment extends Fragment
+        implements OnMapReadyCallback, GoogleApiClient.OnConnectionFailedListener {
+    @BindView(R.id.url_et) EditText urlEt;
     @BindView(R.id.webview) WebView webView;
     @BindView(R.id.webview_pb) ProgressBar progressBar;
     @BindView(R.id.frontLayout) LinearLayout frontLayout;
     @BindView(R.id.days_spin) Spinner spinner;
-    @BindView(R.id.before_btn) Button before_btn;
-    @BindView(R.id.next_btn) Button next_btn;
+    @BindView(R.id.previous_btn) Button previousBtn;
+    @BindView(R.id.next_btn) Button nextBtn;
     @BindView(R.id.line1) LinearLayout line1;
     @BindView(R.id.line2) LinearLayout line2;
     @BindView(R.id.line3) LinearLayout line3;
     @BindView(R.id.line4) LinearLayout line4;
-    @BindView(R.id.title_tv) TextView title_tv;
+    @BindView(R.id.front_title_tv) TextView frontTitleTv;
     @BindView(R.id.map) MapView mapView;
     private Unbinder unbinder;
     private InputMethodManager inputMethodManager;
@@ -69,11 +78,12 @@ public class WebViewFragment extends Fragment implements OnMapReadyCallback {
         unbinder = ButterKnife.bind(this, view);
 
         // 키보드 객체 획득
-        inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
 
         webViewInit();
         spinnerInit();
         editTextInit(); // 키패드 완료 버튼 처리
+        googlePlacesInit();
 
         mapView.getMapAsync(this);
 
@@ -86,7 +96,7 @@ public class WebViewFragment extends Fragment implements OnMapReadyCallback {
             @Override // 페이지 로딩이 끝나면 주소창 새로고침
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                url_et.setText(url);
+                urlEt.setText(url);
                 progressBar.setProgress(0);
             }
         });
@@ -101,8 +111,8 @@ public class WebViewFragment extends Fragment implements OnMapReadyCallback {
     }
 
     private void spinnerInit(){
-        ArrayList<String> items = new ArrayList<String>(Arrays.asList("1일차", "2일차"));
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),
+        ArrayList<String> items = new ArrayList<>(Arrays.asList("1일차", "2일차"));
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(),
                 android.R.layout.simple_spinner_item, items);
         adapter.add("3일차");
         adapter.notifyDataSetChanged();
@@ -112,12 +122,35 @@ public class WebViewFragment extends Fragment implements OnMapReadyCallback {
     }
 
     private void editTextInit(){
-        url_et.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
-        url_et.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        urlEt.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
+        urlEt.setOnEditorActionListener((textView, i, keyEvent) -> {
+            onClickSearchUrlBtn();
+            return true;
+        });
+    }
+
+    private void googlePlacesInit(){
+        PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
+                getActivity().getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
-            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-                onClickSearchUrlBtn();
-                return true;
+            public void onPlaceSelected(Place place) {
+                LatLng latlng = place.getLatLng();
+                mMap.clear();
+                mMap.addMarker(new MarkerOptions().position(latlng).title(place.getName().toString()));
+                CameraPosition ani = new CameraPosition.Builder()
+                        .target(latlng)
+                        .zoom(16)
+                        .build();
+                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(ani));
+                mapView.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onError(Status status) {
+                U.getInstance().log("An error occurred: " + status);
+                Toast.makeText(getContext(), "검색에러", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -125,27 +158,22 @@ public class WebViewFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
 
-    @OnClick(R.id.search_url_btn) // 주소검색
+    @OnClick(R.id.search_url_btn) // URL주소검색
     public void onClickSearchUrlBtn(){
-        String inputAddrStr = url_et.getText().toString();
+        String inputAddrStr = urlEt.getText().toString();
         if (!TextUtils.isEmpty(inputAddrStr)) {
-            String httpAddress = httpaddressCheck(inputAddrStr);
+            String httpAddress = httpsAddressCheck(inputAddrStr);
             webView.loadUrl(httpAddress);
-            inputMethodManager.hideSoftInputFromWindow(url_et.getWindowToken(), 0); // 키보드 내리기
+            inputMethodManager.hideSoftInputFromWindow(urlEt.getWindowToken(), 0); // 키보드 내리기
         } else {
             Toast.makeText(getContext(), "주소를 입력해주세요.", Toast.LENGTH_SHORT).show();
         }
     }
 
-    @OnClick({ R.id.save_btn, R.id.detail_save_btn, R.id.complete_btn, R.id.search_map_btn})
-    public void onClickBtns(View view) {
+    @OnClick({ R.id.save_btn, R.id.detail_save_btn, R.id.complete_btn})
+    public void onClickBtn(View view) {
         switch (view.getId()) {
             case R.id.save_btn: // 즉시저장
                 Toast.makeText(getActivity(), "후보지리스트에 추가되었습니다.", Toast.LENGTH_SHORT).show();
@@ -153,10 +181,10 @@ public class WebViewFragment extends Fragment implements OnMapReadyCallback {
             case R.id.detail_save_btn: // 상세페이지 열기 / 초기화
                 frontLayout.setVisibility(View.VISIBLE);
                 index = 1;
-                title_tv.setText("유형선택");
+                frontTitleTv.setText("유형선택");
                 line1.setVisibility(View.VISIBLE);
-                next_btn.setVisibility(View.VISIBLE);
-                before_btn.setVisibility(View.INVISIBLE);
+                nextBtn.setVisibility(View.VISIBLE);
+                previousBtn.setVisibility(View.INVISIBLE);
                 frontLayout.setClickable(true); // 뒷부분 터치이벤트 막기
                 break;
             case R.id.complete_btn: // 상세페이지 저장 / 알림창 / 열려있는 뷰 닫기
@@ -164,90 +192,79 @@ public class WebViewFragment extends Fragment implements OnMapReadyCallback {
                 dialog.title("저장하시겠습니까?")
                         .positiveAction("예")
                         .positiveActionTextColor(Color.BLACK)
-                        .positiveActionClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                line1.setVisibility(View.GONE);
-                                line2.setVisibility(View.GONE);
-                                line3.setVisibility(View.GONE);
-                                line4.setVisibility(View.GONE);
-                                mapView.setVisibility(View.GONE);
-                                frontLayout.setVisibility(View.GONE);
-                                Toast.makeText(getContext(), "후보지리스트에 추가되었습니다.", Toast.LENGTH_SHORT).show();
-                                dialog.dismiss();
-                            }
+                        .positiveActionClickListener(view1 -> {
+                            line1.setVisibility(View.GONE);
+                            line2.setVisibility(View.GONE);
+                            line3.setVisibility(View.GONE);
+                            line4.setVisibility(View.GONE);
+                            mapView.setVisibility(View.GONE);
+                            frontLayout.setVisibility(View.GONE);
+                            Toast.makeText(getContext(), "후보지리스트에 추가되었습니다.", Toast.LENGTH_SHORT).show();
+                            dialog.dismiss();
                         })
                         .negativeAction("아니오")
                         .negativeActionTextColor(Color.BLACK)
-                        .negativeActionClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                dialog.dismiss();
-                            }
-                        })
+                        .negativeActionClickListener(view12 -> dialog.dismiss())
                         .show();
-                break;
-            case R.id.search_map_btn: // 구글맵띄우기
-                mapView.setVisibility(View.VISIBLE);
-                inputMethodManager.hideSoftInputFromWindow(url_et.getWindowToken(), 0);
                 break;
         }
     }
 
-    @OnClick({R.id.before_btn, R.id.next_btn}) // 상세페이지 이전, 다음 버튼
+    @OnClick({R.id.previous_btn, R.id.next_btn}) // 상세페이지 이전, 다음 버튼
     public void onClickPageMoveBtn(View view) {
         switch (view.getId()) {
-            case R.id.before_btn:
-                next_btn.setVisibility(View.VISIBLE);
+            case R.id.previous_btn:
+                nextBtn.setVisibility(View.VISIBLE);
                 index--;
                 switch (index){
                     case 1:
                         line1.setVisibility(View.VISIBLE);
-                        title_tv.setText("유형선택");
+                        frontTitleTv.setText("유형선택");
                         line2.setVisibility(View.GONE);
-                        before_btn.setVisibility(View.INVISIBLE);
+                        previousBtn.setVisibility(View.INVISIBLE);
                         break;
                     case 2:
                         line2.setVisibility(View.VISIBLE);
-                        title_tv.setText("위치검색");
+                        frontTitleTv.setText("위치검색");
                         line3.setVisibility(View.GONE);
                         break;
                     case 3:
                         line3.setVisibility(View.VISIBLE);
-                        title_tv.setText("날짜선택");
+                        frontTitleTv.setText("날짜선택");
                         line4.setVisibility(View.GONE);
                         break;
                 }
                 break;
             case R.id.next_btn:
-                before_btn.setVisibility(View.VISIBLE);
+                previousBtn.setVisibility(View.VISIBLE);
                 index++;
                 switch (index){
                     case 2:
                         line1.setVisibility(View.GONE);
-                        title_tv.setText("위치검색");
+                        frontTitleTv.setText("위치검색");
                         line2.setVisibility(View.VISIBLE);
                         break;
                     case 3:
                         line2.setVisibility(View.GONE);
-                        title_tv.setText("날짜선택");
+                        frontTitleTv.setText("날짜선택");
                         line3.setVisibility(View.VISIBLE);
                         break;
                     case 4:
                         line3.setVisibility(View.GONE);
-                        title_tv.setText("제목&메모");
+                        frontTitleTv.setText("제목&메모");
                         line4.setVisibility(View.VISIBLE);
-                        next_btn.setVisibility(View.INVISIBLE);
+                        nextBtn.setVisibility(View.INVISIBLE);
                         break;
                 }
                 break;
         }
     }
 
-    // "http://" 동적 추가
-    private String httpaddressCheck(String inputUrl) {
-        if (inputUrl.indexOf("http://") != -1) return inputUrl;
-        else return "http://" + inputUrl;
+    // "https://" 동적 추가
+    private String httpsAddressCheck(String inputUrl) {
+        if (inputUrl.indexOf("https://") != -1) return inputUrl;
+        else if (inputUrl.indexOf("http://") != -1) return inputUrl;
+        else return "https://" + inputUrl;
     }
 
     // 구글맵 사용에 필요한 프레그먼트의 오버라이드 메소드들
@@ -296,5 +313,10 @@ public class WebViewFragment extends Fragment implements OnMapReadyCallback {
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+    }
+    // 구글플레이스 연결 실패 처리
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
     }
 }

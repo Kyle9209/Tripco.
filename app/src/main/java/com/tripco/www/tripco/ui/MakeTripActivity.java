@@ -5,14 +5,16 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,6 +22,7 @@ import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
 import com.rey.material.app.BottomSheetDialog;
+import com.rey.material.widget.EditText;
 import com.tripco.www.tripco.R;
 
 import java.util.Date;
@@ -32,6 +35,7 @@ public class MakeTripActivity extends AppCompatActivity {
     @BindView(R.id.title_et) EditText titleEt;
     @BindView(R.id.title_check) ImageView titleCheck;
     @BindView(R.id.calendar_btn) Button calendarBtn;
+    @BindView(R.id.calendar_btn_line) LinearLayout calendarBtnLine;
     @BindView(R.id.calendar_check) ImageView calendarCheck;
     @BindView(R.id.who_check) ImageView whoCheck;
     @BindView(R.id.hashtag_cb1) CheckBox hashTagCb1;
@@ -41,12 +45,32 @@ public class MakeTripActivity extends AppCompatActivity {
     private String hashTags = "";
     private BottomSheetDialog bottomSheetDialog;
     private boolean selectFlag;
+    private InputMethodManager imm; // 키보드 객체
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_make_trip);
         ButterKnife.bind(this);
+
+        imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+
+        titleEt.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if(editable.toString().length() >= 1 && editable.toString().length() <= 10){
+                    titleCheck.setVisibility(View.VISIBLE);
+                } else {
+                    titleCheck.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
     }
 
     @OnClick({R.id.calendar_btn, R.id.who_btn, R.id.complete_btn})
@@ -62,15 +86,17 @@ public class MakeTripActivity extends AppCompatActivity {
                 boolean check = true;
 
                 if (TextUtils.isEmpty(titleEt.getText().toString())) {
-                    titleEt.setError(getString(R.string.error_field_required));
-                    titleEt.requestFocus();
+                    imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+                    Toast.makeText(this, "제목을 입력해주세요.", Toast.LENGTH_SHORT).show();
                     check = false;
                 }
 
                 if (calendarCheck.getVisibility() == View.INVISIBLE) {
                     Toast.makeText(this, "날짜를 선택해주세요.", Toast.LENGTH_SHORT).show();
-                    calendarBtn.setBackgroundColor(Color.RED);
+                    calendarBtnLine.setBackgroundColor(Color.RED);
                     check = false;
+                } else {
+                    calendarBtnLine.setBackgroundColor(Color.WHITE);
                 }
 
                 if (check) {
@@ -123,10 +149,14 @@ public class MakeTripActivity extends AppCompatActivity {
         bottomSheetDialog.findViewById(R.id.complete_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                bottomSheetDialog.dismiss();
-                calendarBtn.setBackgroundColor(Color.TRANSPARENT);
-                calendarBtn.setText(start.getText() + " ~ " + end.getText());
-                calendarCheck.setVisibility(View.VISIBLE);
+                if(TextUtils.isEmpty(start.getText()) || TextUtils.isEmpty(end.getText())){
+                    Toast.makeText(MakeTripActivity.this, "날짜를 선택해주세요.", Toast.LENGTH_SHORT).show();
+                } else {
+                    bottomSheetDialog.dismiss();
+                    calendarBtnLine.setBackgroundColor(Color.WHITE);
+                    calendarBtn.setText(start.getText() + " ~ " + end.getText());
+                    calendarCheck.setVisibility(View.VISIBLE);
+                }
             }
         });
     }
@@ -144,7 +174,7 @@ public class MakeTripActivity extends AppCompatActivity {
                     find_et.requestFocus();
                 } else {
                     bottomSheetDialog.findViewById(R.id.relativeLayout).setVisibility(View.VISIBLE);
-                    hideKeyboard(view);
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                 }
             }
         });
@@ -157,13 +187,5 @@ public class MakeTripActivity extends AppCompatActivity {
                 whoCheck.setVisibility(View.VISIBLE);
             }
         });
-    }
-
-    // 키보드 내리기
-    private void hideKeyboard(View view) {
-        if (view != null) {
-            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-        }
     }
 }
