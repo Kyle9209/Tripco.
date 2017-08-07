@@ -25,12 +25,12 @@ public class CandidateLIstFragment extends Fragment {
     @BindView(R.id.container) ViewPager mViewPager;
     @BindView(R.id.toolbar) Toolbar toolbar;
     Unbinder unbinder;
-
+    private View view;
     public CandidateLIstFragment() {}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_candidate_list, container, false);
+        view = inflater.inflate(R.layout.fragment_candidate_list, container, false);
         unbinder = ButterKnife.bind(this, view);
 
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
@@ -46,6 +46,12 @@ public class CandidateLIstFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+        if(view != null){
+            ViewGroup parent = (ViewGroup) view.getParent();
+            if(parent != null){
+                parent.removeView(view);
+            }
+        }
     }
 
     public static class PlaceholderFragment extends Fragment implements OnMapReadyCallback {
@@ -107,4 +113,6 @@ public class CandidateLIstFragment extends Fragment {
             return null;
         }
     }
+
+
 }

@@ -40,34 +40,41 @@ public class U {
     }
 
     // 영속저장 =============================================================================
+    Context context;
+    public Context getContext() {
+        return context;
+    }
+    public void setContext(Context context) {
+        this.context = context;
+    }
     String SAVE_TAG = "ref";
     // String data
-    public void setString(Context context, String key, String value){
+    public void setString(String key, String value){
         SharedPreferences.Editor editor = context.getSharedPreferences(SAVE_TAG, 0).edit();
         editor.putString(key, value);
         editor.commit();
     }
-    public String getString(Context context, String key){
+    public String getString(String key){
         return context.getSharedPreferences(SAVE_TAG, 0).getString(key, "");
     }
     // Int data
-    public void setInt(Context context, String key, int value){
+    public void setInt(String key, int value){
         SharedPreferences.Editor editor = context.getSharedPreferences(SAVE_TAG, 0).edit();
         editor.putInt(key, value);
         editor.commit();
     }
-    public int getInt(Context context, String key){
+    public int getInt(String key){
         return context.getSharedPreferences(SAVE_TAG, 0).getInt(key, 0);
     }
     // Boolean data
-    public void setBoolean(Context context, String key, boolean value){
+    public void setBoolean(String key, boolean value){
         SharedPreferences.Editor editor = context.getSharedPreferences(SAVE_TAG, 0).edit();
         editor.putBoolean(key, value);
         editor.commit();
     }
-    public boolean getBoolean(Context context, String key){
+    public boolean getBoolean( String key){
         return context.getSharedPreferences(SAVE_TAG, 0).getBoolean(key, false);
     }
-    // 영속저장 =============================================================================
+// 영속저장 =============================================================================
 }
 

@@ -17,6 +17,7 @@
 
     <!-- 구글맵 사용 퍼미션 -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <!-- UUID 획득 퍼미션 -->
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
@@ -24,8 +25,12 @@
     <!-- 카메라 사용 퍼미션 -->
     <uses-permission android:name="android.permission.CAMERA" />
 
+    <!-- 앱설치 후 바로가기 설치 퍼미션 -->
+    <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT"/>
+
     <application
         android:name=".TripcoApplication"
+        android:largeHeap="true"
         tools:replace="android:icon"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"

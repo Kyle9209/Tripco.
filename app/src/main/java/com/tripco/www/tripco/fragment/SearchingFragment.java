@@ -1,6 +1,7 @@
 package com.tripco.www.tripco.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
@@ -25,11 +26,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
-import com.google.android.gms.location.places.ui.PlaceSelectionListener;
+import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -50,7 +52,10 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 
-public class WebViewFragment extends Fragment
+import static android.app.Activity.RESULT_CANCELED;
+import static android.app.Activity.RESULT_OK;
+
+public class SearchingFragment extends Fragment
         implements OnMapReadyCallback, GoogleApiClient.OnConnectionFailedListener {
     @BindView(R.id.url_et) EditText urlEt;
     @BindView(R.id.webview) WebView webView;
@@ -69,12 +74,14 @@ public class WebViewFragment extends Fragment
     private InputMethodManager inputMethodManager;
     private int index = 1;
     private GoogleMap mMap = null;
+    private View view;
+    int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
 
-    public WebViewFragment() {} // 생성자
+    public SearchingFragment() {} // 생성자
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_web_view, container, false);
+        view = inflater.inflate(R.layout.fragment_searching, container, false);
         unbinder = ButterKnife.bind(this, view);
 
         // 키보드 객체 획득
@@ -83,7 +90,6 @@ public class WebViewFragment extends Fragment
         webViewInit();
         spinnerInit();
         editTextInit(); // 키패드 완료 버튼 처리
-        googlePlacesInit();
 
         mapView.getMapAsync(this);
 
@@ -129,38 +135,12 @@ public class WebViewFragment extends Fragment
         });
     }
 
-    private void googlePlacesInit(){
-        PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
-                getActivity().getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
-
-        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
-            @Override
-            public void onPlaceSelected(Place place) {
-                LatLng latlng = place.getLatLng();
-                mMap.clear();
-                mMap.addMarker(new MarkerOptions().position(latlng).title(place.getName().toString()));
-                CameraPosition ani = new CameraPosition.Builder()
-                        .target(latlng)
-                        .zoom(16)
-                        .build();
-                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(ani));
-                mapView.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onError(Status status) {
-                U.getInstance().log("An error occurred: " + status);
-                Toast.makeText(getContext(), "검색에러", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
     }
 
-    @OnClick(R.id.search_url_btn) // URL주소검색
+    @OnClick(R.id.search_url_btn) // URL주소검색 (호출하는 곳이 따로 있어서 따로둠)
     public void onClickSearchUrlBtn(){
         String inputAddrStr = urlEt.getText().toString();
         if (!TextUtils.isEmpty(inputAddrStr)) {
@@ -172,7 +152,7 @@ public class WebViewFragment extends Fragment
         }
     }
 
-    @OnClick({ R.id.save_btn, R.id.detail_save_btn, R.id.complete_btn})
+    @OnClick({R.id.save_btn, R.id.detail_save_btn, R.id.complete_btn, R.id.search_address_btn})
     public void onClickBtn(View view) {
         switch (view.getId()) {
             case R.id.save_btn: // 즉시저장
@@ -207,6 +187,43 @@ public class WebViewFragment extends Fragment
                         .negativeActionClickListener(view12 -> dialog.dismiss())
                         .show();
                 break;
+            case R.id.search_address_btn: // 구글플레이스 검색창 열기
+                try {
+                    Intent intent =
+                            new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
+                                    .build(getActivity());
+                    startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
+                } catch (GooglePlayServicesRepairableException e) {
+                    // TODO: Handle the error.
+                } catch (GooglePlayServicesNotAvailableException e) {
+                    // TODO: Handle the error.
+                }
+                break;
+        }
+    }
+
+    // 구글 플레이스에서 검색한 데이터 받아서 처리
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                Place place = PlaceAutocomplete.getPlace(getContext(), data);
+                LatLng latlng = place.getLatLng();
+                mMap.clear();
+                mMap.addMarker(new MarkerOptions().position(latlng).title(place.getName().toString()));
+                CameraPosition ani = new CameraPosition.Builder()
+                        .target(latlng)
+                        .zoom(16)
+                        .build();
+                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(ani));
+                mapView.setVisibility(View.VISIBLE);
+            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
+                Status status = PlaceAutocomplete.getStatus(getContext(), data);
+                U.getInstance().log("RESULT_ERROR 상태 : " + status.getStatusMessage());
+
+            } else if (resultCode == RESULT_CANCELED) {
+                U.getInstance().log("RESULT_CANCELED 상태");
+            }
         }
     }
 
@@ -313,6 +330,12 @@ public class WebViewFragment extends Fragment
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+        if(view != null){
+            ViewGroup parent = (ViewGroup) view.getParent();
+            if(parent != null){
+                parent.removeView(view);
+            }
+        }
     }
     // 구글플레이스 연결 실패 처리
     @Override

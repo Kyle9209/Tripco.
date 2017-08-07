@@ -1,8 +1,9 @@
 package com.tripco.www.tripco;
 
-import android.app.Application;
+import android.support.multidex.MultiDexApplication;
 
 import com.miguelbcr.ui.rx_paparazzo2.RxPaparazzo;
+import com.tripco.www.tripco.util.U;
 
 /**
  * Application을 재정의할때 사용 -> extends Application
@@ -13,10 +14,11 @@ import com.miguelbcr.ui.rx_paparazzo2.RxPaparazzo;
  * => context 객체를 전역적으로 처리해야 할 경우
  */
 
-public class TripcoApplication extends Application {
+public class TripcoApplication extends MultiDexApplication {
     @Override public void onCreate() {
         super.onCreate();
         // 파파라조 라이브러리 등록
         RxPaparazzo.register(this);
+        U.getInstance().setContext(this);
     }
 }

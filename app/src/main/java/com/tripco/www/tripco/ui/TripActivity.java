@@ -1,50 +1,75 @@
 package com.tripco.www.tripco.ui;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.view.MenuItem;
 
+import com.rey.material.app.SimpleDialog;
 import com.tripco.www.tripco.R;
 import com.tripco.www.tripco.fragment.CandidateLIstFragment;
-import com.tripco.www.tripco.fragment.WebViewFragment;
+import com.tripco.www.tripco.fragment.FinalScheduleFragment;
+import com.tripco.www.tripco.fragment.SearchingFragment;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class TripActivity extends AppCompatActivity {
+    @BindView(R.id.navigation) BottomNavigationView navigation;
+    private FragmentTransaction ft;
+    private boolean flag = true; // 탐색창 유지 플래그
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener() {
-        Fragment fragment;
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.navigation_home:
-                    fragment = new WebViewFragment();
-                    break;
-                case R.id.navigation_dashboard:
-                    fragment = new CandidateLIstFragment();
-                    break;
-                case R.id.navigation_notifications:
-                    break;
-            }
-            if (fragment != null) {
-                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                ft.replace(R.id.content, fragment);
-                ft.commit();
-            }
-            return true;
-        }
-    };
+            = item -> {
+        ft = getSupportFragmentManager().beginTransaction();
+                switch (item.getItemId()) {
+                    case R.id.searching:
+                        if(flag) { // flag = true 일 때 탐색창 초기화
+                            ft.replace(R.id.content, new SearchingFragment()).commit();
+                            flag = false;
+                        }
+                        // flag = false 일 때 탐색창 유지
+                        break;
+                    case R.id.candidate_list:
+                        showDialog(new CandidateLIstFragment());
+                        break;
+                    case R.id.final_schedule:
+                        showDialog(new FinalScheduleFragment());
+                        break;
+                }
+                return true;
+            };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trip);
+        ButterKnife.bind(this);
 
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-        navigation.setSelectedItemId(R.id.navigation_home); // 초기 화면 -> 탐색
+        navigation.setSelectedItemId(R.id.searching); // 초기 화면 -> 탐색
+    }
+
+    private void showDialog(Fragment fragment){
+        if(navigation.getSelectedItemId() == R.id.searching) {
+            SimpleDialog dialog = new SimpleDialog(this);
+            dialog.title("저장하지 않으시면 초기화됩니다.\n진행하시겠습니까?")
+                    .positiveAction("예")
+                    .positiveActionClickListener(view -> {
+                        flag = true;
+                        ft.replace(R.id.content, fragment).commit();
+                        dialog.dismiss();
+                    })
+                    .negativeAction("아니오")
+                    .negativeActionClickListener(view -> {
+                        flag = false;
+                        navigation.setSelectedItemId(R.id.searching);
+                        dialog.dismiss();
+                    })
+                    .show();
+        } else {
+            ft.replace(R.id.content, fragment).commit();
+        }
     }
 }

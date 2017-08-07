@@ -6,7 +6,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.tripco.www.tripco.R;
 import com.tripco.www.tripco.holder.MainViewHolder;
@@ -42,7 +41,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainViewHolder> {
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(context, tripModel.getTitle(), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(context, tripModel.getTitle(), Toast.LENGTH_SHORT).show();
                 context.startActivity(new Intent(context, TripActivity.class));
             }
         });

@@ -29,6 +29,6 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         app:fab_backgroundColor="@color/colorPrimary"
-        app:fab_iconSrc="?attr/actionModeCopyDrawable" />
+        app:fab_iconSrc="@drawable/addplus" />
 
 </android.support.design.widget.CoordinatorLayout>
