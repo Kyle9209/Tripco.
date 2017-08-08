@@ -87,6 +87,13 @@
             android:name=".ui.TripActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".ui.MyPageActivity"/>
+        <activity
+            android:name=".ui.NicknameActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".ui.ModifyPasswordActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".ui.AlarmActivity" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

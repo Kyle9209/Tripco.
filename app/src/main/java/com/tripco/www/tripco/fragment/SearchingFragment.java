@@ -117,10 +117,10 @@ public class SearchingFragment extends Fragment
     }
 
     private void spinnerInit(){
-        ArrayList<String> items = new ArrayList<>(Arrays.asList("1일차", "2일차"));
+        ArrayList<String> items = new ArrayList<>(Arrays.asList("1일차(09.01)", "2일차(09.02)"));
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(),
                 android.R.layout.simple_spinner_item, items);
-        adapter.add("3일차");
+        adapter.add("3일차(09.03)");
         adapter.notifyDataSetChanged();
 
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -318,7 +318,6 @@ public class SearchingFragment extends Fragment
     @Override
     public void onDestroy() {
         super.onDestroy();
-        //mapView.onLowMemory();
     }
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -328,6 +327,7 @@ public class SearchingFragment extends Fragment
     // 버터나이프 사용에 필요한 프레그먼트의 오버라이드 메소드
     @Override
     public void onDestroyView() {
+        mapView.onDestroy();
         super.onDestroyView();
         unbinder.unbind();
         if(view != null){

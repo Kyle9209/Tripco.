@@ -54,7 +54,7 @@ public class TripActivity extends AppCompatActivity {
     private void showDialog(Fragment fragment){
         if(navigation.getSelectedItemId() == R.id.searching) {
             SimpleDialog dialog = new SimpleDialog(this);
-            dialog.title("저장하지 않으시면 초기화됩니다.\n진행하시겠습니까?")
+            dialog.title("탐색페이지가 초기화됩니다.")
                     .positiveAction("예")
                     .positiveActionClickListener(view -> {
                         flag = true;

@@ -86,7 +86,6 @@ public class MakeTripActivity extends AppCompatActivity {
                 boolean check = true;
 
                 if (TextUtils.isEmpty(titleEt.getText().toString())) {
-                    imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
                     Toast.makeText(this, "제목을 입력해주세요.", Toast.LENGTH_SHORT).show();
                     check = false;
                 }
@@ -165,27 +164,21 @@ public class MakeTripActivity extends AppCompatActivity {
         setBottomSheetDialog(R.layout.bsd_who_layout);
 
         // 찾기버튼
-        bottomSheetDialog.findViewById(R.id.find_btn).setOnClickListener(new View.OnClickListener() {
-            @Override // 찾기버튼
-            public void onClick(View view) {
-                EditText find_et = bottomSheetDialog.findViewById(R.id.find_et);
-                if (TextUtils.isEmpty(find_et.getText().toString())) {
-                    find_et.setError(getString(R.string.error_field_required));
-                    find_et.requestFocus();
-                } else {
-                    bottomSheetDialog.findViewById(R.id.relativeLayout).setVisibility(View.VISIBLE);
-                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                }
+        bottomSheetDialog.findViewById(R.id.find_btn).setOnClickListener(view -> {
+            android.widget.EditText find_et = bottomSheetDialog.findViewById(R.id.find_et);
+            if (TextUtils.isEmpty(find_et.getText().toString())) {
+                find_et.setError(getString(R.string.error_field_required));
+                find_et.requestFocus();
+            } else {
+                bottomSheetDialog.findViewById(R.id.relativeLayout).setVisibility(View.VISIBLE);
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
             }
         });
 
         // 완료버튼
-        bottomSheetDialog.findViewById(R.id.complete_btn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                bottomSheetDialog.dismiss();
-                whoCheck.setVisibility(View.VISIBLE);
-            }
+        bottomSheetDialog.findViewById(R.id.complete_btn).setOnClickListener(view -> {
+            bottomSheetDialog.dismiss();
+            whoCheck.setVisibility(View.VISIBLE);
         });
     }
 }

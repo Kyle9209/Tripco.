@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="150dp"
+    android:orientation="horizontal">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/profilePhoto"
+        android:layout_width="100dp"
+        android:layout_height="120dp"
+        android:layout_gravity="left"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="30dp"
+        android:src="@drawable/cat" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/alarmContent"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_weight="1"
+            android:text="상대방 닉네임이 ~을 업로드 하였습니다." />
+
+        <TextView
+            android:id="@+id/alarmTime"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:text="3분전" />
+
+    </LinearLayout>
+
+</LinearLayout>

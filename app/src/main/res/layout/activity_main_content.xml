@@ -20,7 +20,20 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_main" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <android.support.v7.widget.RecyclerView
+            android:paddingRight="10dp"
+            android:paddingLeft="10dp"
+            tools:listitem="@layout/cell_trip_list_layout"
+            android:id="@+id/recylerview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </RelativeLayout>
 
     <com.rey.material.widget.FloatingActionButton
         android:id="@+id/fab"

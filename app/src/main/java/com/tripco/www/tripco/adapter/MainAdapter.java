@@ -38,19 +38,11 @@ public class MainAdapter extends RecyclerView.Adapter<MainViewHolder> {
         holder.who.setText(tripModel.getWho());
         holder.when.setText(tripModel.getStart() + " ~ " + tripModel.getEnd());
         holder.tag.setText(tripModel.getTag());
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //Toast.makeText(context, tripModel.getTitle(), Toast.LENGTH_SHORT).show();
-                context.startActivity(new Intent(context, TripActivity.class));
-            }
+        holder.itemView.setOnClickListener(view -> {
+            //Toast.makeText(context, tripModel.getTitle(), Toast.LENGTH_SHORT).show();
+            context.startActivity(new Intent(context, TripActivity.class));
         });
-        holder.update.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                context.startActivity(new Intent(context, MakeTripActivity.class));
-            }
-        });
+        holder.update.setOnClickListener(view -> context.startActivity(new Intent(context, MakeTripActivity.class)));
     }
 
     @Override

@@ -18,33 +18,35 @@
         android:layout_gravity="center" />
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
         <TextView
             android:id="@+id/nickNameTitle"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="20dp"
-            android:layout_weight="1"
-            android:text="Nickname : "
+            android:layout_weight="3"
+            android:hint="닉네임"
             android:textSize="20sp" />
 
-        <TextView
-            android:id="@+id/nickNameValue"
-            android:layout_width="wrap_content"
+        <Button
+            android:id="@+id/button2"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Nickname"
-            android:textSize="20sp" />
+            android:layout_weight="1"
+            android:onClick="onClickNickname"
+            android:text="수정" />
+
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="20dp">
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal">
 
         <TextView
             android:id="@+id/emailTitle"
@@ -57,12 +59,19 @@
             android:textSize="20sp" />
 
         <TextView
-            android:id="@+id/NickNameValue"
+            android:id="@+id/EmailValue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="abc@gmail.com"
             android:textSize="20sp" />
 
     </LinearLayout>
+
+    <Button
+        android:id="@+id/button3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onClickPW"
+        android:text="비밀번호 변경" />
 
 </LinearLayout>

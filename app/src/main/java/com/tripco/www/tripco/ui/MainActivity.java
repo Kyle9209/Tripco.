@@ -105,6 +105,7 @@ public class MainActivity extends AppCompatActivity
 
     // 서버 주소 셋팅
     public void getServerAddress(){
+        if(U.getInstance().getBoolean("MAIN_SERVER_DOMAIN_CHECK")) return;
         final FirebaseRemoteConfig config = FirebaseRemoteConfig.getInstance();
 
         FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
@@ -122,11 +123,13 @@ public class MainActivity extends AppCompatActivity
             if( task.isSuccessful() ){
                 config.activateFetched();
                 U.getInstance().setString("MAIN_SERVER_DOMAIN", config.getString("MAIN_SERVER_DOMAIN"));
+                U.getInstance().setBoolean("MAIN_SERVER_DOMAIN_CHECK", true);
+                U.getInstance().log("주소값 가져오기 최초 1번실행");
             }
         });
     }
 
-    @Override // 좌측 네비게이션
+    @Override // 백키 눌렀을 때 좌측 네비게이션 접기
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
@@ -145,8 +148,9 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_camera) {
             // Handle the camera action
             startActivity(new Intent(this, MyPageActivity.class));
+            drawer.setFocusable(false);
         } else if (id == R.id.nav_slideshow) {
-
+            startActivity(new Intent(this, AlarmActivity.class));
         } else if (id == R.id.nav_manage) {
 
         }
