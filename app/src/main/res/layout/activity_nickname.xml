@@ -6,7 +6,6 @@
     android:orientation="vertical">
 
     <!--상단 툴바 -->
-
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -29,7 +28,7 @@
                     android:layout_centerVertical="true"
                     android:text="닉네임 설정"
                     android:textColor="#fff"
-                    android:textSize="25sp" />
+                    android:textSize="18sp" />
 
                 <Button
                     android:id="@+id/complete_btn"
@@ -49,10 +48,31 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <EditText
-        android:id="@+id/nickname"
-        android:layout_width="match_parent"
+    <android.support.v7.widget.CardView
+        android:layout_margin="5dp"
         android:layout_height="wrap_content"
-        android:hint="닉네임 설정하기" />
+        android:layout_width="match_parent">
+
+        <LinearLayout
+            android:layout_height="match_parent"
+            android:layout_width="match_parent">
+
+            <EditText
+                android:layout_weight="1"
+                android:id="@+id/nickname"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="닉네임을 입력해주세요." />
+
+            <Button
+                android:layout_gravity="center"
+                android:id="@+id/clear_nick_btn"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:background="@drawable/places_ic_clear" />
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
 
 </LinearLayout>

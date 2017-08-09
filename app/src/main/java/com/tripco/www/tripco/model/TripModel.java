@@ -1,57 +1,77 @@
 package com.tripco.www.tripco.model;
 
 public class TripModel {
-    String title;
-    String who;
-    String start;
-    String end;
-    String tag;
+    int trip_no;
+    String trip_title;
+    String start_date;
+    String end_date;
+    int user_no;
+    int partner_no;
+    String hashtag;
 
-    public TripModel(String title, String who, String start, String end, String tag) {
-        this.title = title;
-        this.who = who;
-        this.start = start;
-        this.end = end;
-        this.tag = tag;
+    public TripModel(int trip_no, String trip_title, String start_date, String end_date, int user_no, int partner_no, String hashtag) {
+        this.trip_no = trip_no;
+        this.trip_title = trip_title;
+        this.start_date = start_date;
+        this.end_date = end_date;
+        this.user_no = user_no;
+        this.partner_no = partner_no;
+        this.hashtag = hashtag;
     }
 
-    public String getTitle() {
-        return title;
+    public int getTrip_no() {
+        return trip_no;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setTrip_no(int trip_no) {
+        this.trip_no = trip_no;
     }
 
-    public String getWho() {
-        return who;
+    public String getTrip_title() {
+        return trip_title;
     }
 
-    public void setWho(String who) {
-        this.who = who;
+    public void setTrip_title(String trip_title) {
+        this.trip_title = trip_title;
     }
 
-    public String getStart() {
-        return start;
+    public String getStart_date() {
+        return start_date;
     }
 
-    public void setStart(String start) {
-        this.start = start;
+    public void setStart_date(String start_date) {
+        this.start_date = start_date;
     }
 
-    public String getEnd() {
-        return end;
+    public String getEnd_date() {
+        return end_date;
     }
 
-    public void setEnd(String end) {
-        this.end = end;
+    public void setEnd_date(String end_date) {
+        this.end_date = end_date;
     }
 
-    public String getTag() {
-        return tag;
+    public int getUser_no() {
+        return user_no;
     }
 
-    public void setTag(String tag) {
-        this.tag = tag;
+    public void setUser_no(int user_no) {
+        this.user_no = user_no;
+    }
+
+    public int getPartner_no() {
+        return partner_no;
+    }
+
+    public void setPartner_no(int partner_no) {
+        this.partner_no = partner_no;
+    }
+
+    public String getHashtag() {
+        return hashtag;
+    }
+
+    public void setHashtag(String hashtag) {
+        this.hashtag = hashtag;
     }
 }

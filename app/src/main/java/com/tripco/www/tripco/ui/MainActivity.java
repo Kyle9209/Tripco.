@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -23,9 +24,11 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.rey.material.widget.FloatingActionButton;
+import com.squareup.otto.Subscribe;
 import com.tripco.www.tripco.BuildConfig;
 import com.tripco.www.tripco.R;
 import com.tripco.www.tripco.adapter.MainAdapter;
+import com.tripco.www.tripco.db.DBOpenHelper;
 import com.tripco.www.tripco.model.TripModel;
 import com.tripco.www.tripco.util.U;
 
@@ -49,10 +52,29 @@ public class MainActivity extends AppCompatActivity
         ButterKnife.bind(this);
 
         if(!checkPlayService(this)) return;
-        makeShortCut(this);
+        //makeShortCut(this);
         getServerAddress();
         uiInit();
+        DBOpenHelper.getInstance();
+        U.getInstance().getBus().register(this);
+    }
+
+    @Subscribe
+    public void ottoBus(String BUS_NAME){
+        if(BUS_NAME.equals("MAIN")) recViewInit();
+    }
+
+    @Override // 리사이클러뷰 초기화
+    protected void onResume() {
+        super.onResume();
         recViewInit();
+    }
+
+    @Override // 디비 클로즈
+    protected void onDestroy() {
+        U.getInstance().getBus().unregister(this);
+        DBOpenHelper.dbOpenHelper.close();
+        super.onDestroy();
     }
 
     // 바로가기 셋팅
@@ -187,8 +209,21 @@ public class MainActivity extends AppCompatActivity
     // 리스트 데이터 셋팅
     public ArrayList<TripModel> ArrayListTripModel(){
         ArrayList<TripModel> list = new ArrayList<>();
-        list.add(new TripModel("여행가자", "너랑", "2017-09-01", "2017-09-02", "#힐링여행"));
-        list.add(new TripModel("놀러가자", "누구랑", "2017-09-03", "2017-09-04", "#파산여행"));
+        Cursor csr = DBOpenHelper.dbOpenHelper.getWritableDatabase().rawQuery("select * from Trip_Table;", null);
+
+        while (csr.moveToNext()){
+            list.add(new TripModel(
+                    csr.getInt(0),
+                    csr.getString(1),
+                    csr.getString(2),
+                    csr.getString(3),
+                    csr.getInt(4),
+                    csr.getInt(5),
+                    csr.getString(6)
+            ));
+        }
+        csr.close();
+
         return list;
     }
 
@@ -199,7 +234,7 @@ public class MainActivity extends AppCompatActivity
                 startActivity(new Intent(getBaseContext(), LoginActivity.class));
                 break;
             case R.id.join_btn:
-                startActivity(new Intent(getBaseContext(), JoinMemberActivity.class));
+                startActivity(new Intent(getBaseContext(), JoinActivity.class));
                 break;
         }
     }

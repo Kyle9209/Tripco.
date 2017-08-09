@@ -12,4 +12,13 @@ public interface TripcoFactoryIm {
     // 회원가입
     @POST("/join")
     Call<Res_ResultCode> join(@Body Req_Join req);
+
+    /*// 로그인
+    @POST("/login")
+    Call<RequestModel> login2(@Body Req_Login req);
+
+    // 회원가입
+    @POST("/join")
+    Call<RequestModel<MemberModel>> join2(@Body Req_Join req);*/
 }
+

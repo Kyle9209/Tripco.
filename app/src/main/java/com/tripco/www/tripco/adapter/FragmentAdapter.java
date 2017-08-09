@@ -1,6 +1,7 @@
 package com.tripco.www.tripco.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.view.ViewGroup;
 import com.tripco.www.tripco.R;
 import com.tripco.www.tripco.holder.FragmentViewHolder;
 import com.tripco.www.tripco.model.ListModel;
+import com.tripco.www.tripco.ui.CandidateInfoActivity;
 
 import java.util.ArrayList;
 
@@ -33,7 +35,9 @@ public class FragmentAdapter extends RecyclerView.Adapter<FragmentViewHolder> {
 
     @Override
     public void onBindViewHolder(FragmentViewHolder holder, int position) {
-
+        holder.image.setOnClickListener(view -> {
+            context.startActivity((new Intent(context, CandidateInfoActivity.class)));
+        });
     }
 
     @Override

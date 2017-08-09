@@ -6,6 +6,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.tripco.www.tripco.R;
 import com.tripco.www.tripco.model.LoginModel;
@@ -85,15 +86,19 @@ public class LoginActivity extends AppCompatActivity {
                 if(response.isSuccessful()) { // 성공
                     if(response.body() != null){ // 내용이 있을 때
                         U.getInstance().log("로그인 성공");
+                        Toast.makeText(LoginActivity.this, "로그인 되었습니다.", Toast.LENGTH_SHORT).show();
                     }  else { // 비어 있을 때
                         U.getInstance().log("통신 실패1 : 내용이 비어있음");
+                        Toast.makeText(LoginActivity.this, "로그인 실패", Toast.LENGTH_SHORT).show();
                     }
                 } else { // 실패
                     try {
                         U.getInstance().log("통신 실패2 : " + response.errorBody().string());
+                        Toast.makeText(LoginActivity.this, "로그인 실패", Toast.LENGTH_SHORT).show();
                     } catch (IOException e) {
                         e.printStackTrace();
                         U.getInstance().log("통신 실패3 : " + e.toString());
+                        Toast.makeText(LoginActivity.this, "로그인 실패", Toast.LENGTH_SHORT).show();
                     }
                 }
             }
@@ -101,6 +106,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<Res_ResultCode> call, Throwable t) {
                 U.getInstance().log("통신 실패 onFailure : " + t.getLocalizedMessage());
+                Toast.makeText(LoginActivity.this, "로그인 실패", Toast.LENGTH_SHORT).show();
             }
         });
     }

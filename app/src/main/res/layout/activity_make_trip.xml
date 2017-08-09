@@ -30,7 +30,7 @@
                     android:layout_centerVertical="true"
                     android:text="여행만들기"
                     android:textColor="#fff"
-                    android:textSize="25sp" />
+                    android:textSize="18sp" />
 
                 <Button
                     android:id="@+id/complete_btn"
@@ -59,18 +59,18 @@
 
         <!-- 제목 -->
         <RelativeLayout
+            android:focusable="true"
+            android:focusableInTouchMode="true"
             android:layout_marginTop="20dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <com.rey.material.widget.EditText
-                app:et_labelEnable="true"
-                app:et_dividerColor="@color/colorPrimaryDark"
-                app:et_dividerErrorColor="@color/red"
-                app:et_dividerHeight="2dp"
-                app:et_supportMode="charCounter"
-                app:et_supportMaxChars="10"
-                app:et_supportTextErrorColor="@color/red"
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            <EditText
+                android:maxLength="10"
                 android:textColor="#000"
                 android:textCursorDrawable="@null"
                 android:maxLines="1"
@@ -79,7 +79,9 @@
                 android:hint="여행 제목"
                 android:id="@+id/title_et"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="match_parent" />
+
+            </android.support.design.widget.TextInputLayout>
 
             <ImageView
                 android:visibility="invisible"
@@ -92,6 +94,14 @@
                 android:layout_alignParentEnd="true"/>
 
         </RelativeLayout>
+
+        <!-- 제목 글자수 -->
+        <TextView
+            android:id="@+id/title_cnt_tv"
+            android:text="0/10"
+            android:layout_gravity="right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
         <!-- 달력 -->
         <RelativeLayout

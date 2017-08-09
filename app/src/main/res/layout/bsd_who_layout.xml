@@ -28,7 +28,7 @@
                     android:layout_centerVertical="true"
                     android:text="누구와?"
                     android:textColor="#fff"
-                    android:textSize="25sp" />
+                    android:textSize="18sp" />
 
                 <Button
                     android:id="@+id/complete_btn"

@@ -1,10 +1,14 @@
 package com.tripco.www.tripco.util;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.provider.Settings;
+import android.support.v7.app.AlertDialog;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+
+import com.squareup.otto.Bus;
 
 import java.util.UUID;
 
@@ -17,14 +21,15 @@ public class U {
     public static U getInstance() {
         return ourInstance;
     }
-    private U() {
-    }
+    private U() {}
 
     // 로그출력
     final String TAG = "T";
     public void log(String msg){
         if(msg != null) {
+            Log.i(TAG, "=========================================================================");
             Log.i(TAG, msg);
+            Log.i(TAG, "=========================================================================");
         }
     }
 
@@ -75,6 +80,26 @@ public class U {
     public boolean getBoolean( String key){
         return context.getSharedPreferences(SAVE_TAG, 0).getBoolean(key, false);
     }
-// 영속저장 =============================================================================
+    // 영속저장 =============================================================================
+
+    // 다이얼로그창 띄우기
+    public void showAlertDialog(Context context,String title, String msg,
+                           String pStr, DialogInterface.OnClickListener pOnClickListener,
+                           String nStr, DialogInterface.OnClickListener nOnClickListener){
+        AlertDialog.Builder dialog = new AlertDialog.Builder(context);
+
+        dialog.setTitle(title)
+                .setMessage(msg)
+                .setPositiveButton(pStr, pOnClickListener)
+                .setNegativeButton(nStr, nOnClickListener);
+
+        dialog.create().show();
+    }
+
+    // 오토버스
+    Bus bus = new Bus();
+    public Bus getBus() {
+        return bus;
+    }
 }
 

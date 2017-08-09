@@ -14,20 +14,13 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class ModifyPasswordActivity extends AppCompatActivity {
-
-    @BindView(R.id.modify_btn)
-    Button modifyBtn;
-    @BindView(R.id.complete_btn)
-    Button completeBtn;
-    @BindView(R.id.toolbar)
-    Toolbar toolbar;
-    @BindView(R.id.originalPW)
-    EditText originalPW;
-    @BindView(R.id.newPW)
-    EditText newPW;
-    @BindView(R.id.newPWconfirm)
-    EditText newPWconfirm;
+public class ModifyPwdActivity extends AppCompatActivity {
+    @BindView(R.id.modify_btn) Button modifyBtn;
+    @BindView(R.id.complete_btn) Button completeBtn;
+    @BindView(R.id.toolbar) Toolbar toolbar;
+    @BindView(R.id.originalPW) EditText originalPW;
+    @BindView(R.id.newPW) EditText newPW;
+    @BindView(R.id.newPWconfirm) EditText newPWConfirm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,9 +43,9 @@ public class ModifyPasswordActivity extends AppCompatActivity {
                 View focusView = null;
 
                 newPW.setError(null);
-                newPWconfirm.setError(null);
+                newPWConfirm.setError(null);
                 String newpw = newPW.getText().toString();
-                String newpwConfirm = newPWconfirm.getText().toString();
+                String newpwConfirm = newPWConfirm.getText().toString();
 
                 //새 비밀번호가 빈칸일 경우 알려주기
                 if (TextUtils.isEmpty(newpw))
@@ -65,15 +58,15 @@ public class ModifyPasswordActivity extends AppCompatActivity {
                 // 새 비밀번호 확인이 빈칸일 경우
                 else if (TextUtils.isEmpty(newpwConfirm))
                 {
-                    newPWconfirm.setError("This filed is required");
-                    focusView = newPWconfirm;
+                    newPWConfirm.setError("This filed is required");
+                    focusView = newPWConfirm;
                     cancel = true;
                     if (cancel) {focusView.requestFocus();}
                 }
                 else if (!isConfirmPassword(newpw,newpwConfirm))
                 {
-                    newPWconfirm.setError("비밀번호가 서로 다릅니다.");
-                    focusView = newPWconfirm;
+                    newPWConfirm.setError("비밀번호가 서로 다릅니다.");
+                    focusView = newPWConfirm;
                     cancel = true;
                     if (cancel) {focusView.requestFocus();}
                 }
@@ -107,7 +100,7 @@ public class ModifyPasswordActivity extends AppCompatActivity {
             completeBtn.setVisibility(View.VISIBLE);
             originalPW.setVisibility(View.GONE);
             newPW.setVisibility(View.VISIBLE);
-            newPWconfirm.setVisibility(View.VISIBLE);
+            newPWConfirm.setVisibility(View.VISIBLE);
 
 
         }
@@ -116,6 +109,5 @@ public class ModifyPasswordActivity extends AppCompatActivity {
     public boolean isConfirmPassword(String newpw, String newpwConfrim) {
         return newpw.equals(newpwConfrim);
     }
-
 }
 

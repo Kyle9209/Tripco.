@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.tripco.www.tripco.R;
@@ -24,7 +25,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class JoinMemberActivity extends RootActivity {
+public class JoinActivity extends RootActivity {
     @BindView(R.id.join_email) AutoCompleteTextView joinEmail;
     @BindView(R.id.join_password) EditText joinPassword;
     @BindView(R.id.confirm_password) EditText confirmPassword;
@@ -32,7 +33,7 @@ public class JoinMemberActivity extends RootActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_join_member);
+        setContentView(R.layout.activity_join);
         ButterKnife.bind(this);
     }
 
@@ -118,6 +119,45 @@ public class JoinMemberActivity extends RootActivity {
                 email.split("@")[0]
         ));
 
+        /*Call<RequestModel<MemberModel>> res = Net.getInstance().getApiIm().join2(req_join);
+
+        res.enqueue(new Callback<RequestModel<MemberModel>>() {
+            @Override
+            public void onResponse(Call<RequestModel<MemberModel>> call, Response<RequestModel<MemberModel>> response) {
+                if(response.isSuccessful()) { // 성공
+                    if(response.body() != null){ // 내용이 있을 때
+                        U.getInstance().log("회원가입 성공");
+                        Toast.makeText(JoinActivity.this, "회원가입 되었습니다.", Toast.LENGTH_SHORT).show();
+
+                        RequestModel<MemberModel> requestModel = response.body();
+                        MemberModel memberModel = requestModel.getResult();
+                        stopPD();
+                    }  else { // 비어 있을 때
+                        U.getInstance().log("통신 실패1 : 내용이 비어있음");
+                        Toast.makeText(JoinActivity.this, "회원가입 실패", Toast.LENGTH_SHORT).show();
+                        stopPD();
+                    }
+                } else { // 실패
+                    try {
+                        Toast.makeText(JoinActivity.this, "회원가입 실패", Toast.LENGTH_SHORT).show();
+                        U.getInstance().log("통신 실패2 : " + response.errorBody().string());
+                        stopPD();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        Toast.makeText(JoinActivity.this, "회원가입 실패", Toast.LENGTH_SHORT).show();
+                        U.getInstance().log("통신 실패3 : " + e.toString());
+                        stopPD();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<RequestModel<MemberModel>> call, Throwable t) {
+                Toast.makeText(JoinActivity.this, "로그인 실패", Toast.LENGTH_SHORT).show();
+                U.getInstance().log("통신 실패 onFailure : " + t.getLocalizedMessage());
+                stopPD();
+            }
+        });*/
         Call<Res_ResultCode> res = Net.getInstance().getApiIm().join(req_join);
 
         res.enqueue(new Callback<Res_ResultCode>() {
@@ -126,17 +166,21 @@ public class JoinMemberActivity extends RootActivity {
                 if(response.isSuccessful()) { // 성공
                     if(response.body() != null){ // 내용이 있을 때
                         U.getInstance().log("회원가입 성공");
+                        Toast.makeText(JoinActivity.this, "회원가입 되었습니다.", Toast.LENGTH_SHORT).show();
                         stopPD();
                     }  else { // 비어 있을 때
                         U.getInstance().log("통신 실패1 : 내용이 비어있음");
+                        Toast.makeText(JoinActivity.this, "회원가입 실패", Toast.LENGTH_SHORT).show();
                         stopPD();
                     }
                 } else { // 실패
                     try {
+                        Toast.makeText(JoinActivity.this, "회원가입 실패", Toast.LENGTH_SHORT).show();
                         U.getInstance().log("통신 실패2 : " + response.errorBody().string());
                         stopPD();
                     } catch (IOException e) {
                         e.printStackTrace();
+                        Toast.makeText(JoinActivity.this, "회원가입 실패", Toast.LENGTH_SHORT).show();
                         U.getInstance().log("통신 실패3 : " + e.toString());
                         stopPD();
                     }
@@ -145,6 +189,7 @@ public class JoinMemberActivity extends RootActivity {
 
             @Override
             public void onFailure(Call<Res_ResultCode> call, Throwable t) {
+                Toast.makeText(JoinActivity.this, "로그인 실패", Toast.LENGTH_SHORT).show();
                 U.getInstance().log("통신 실패 onFailure : " + t.getLocalizedMessage());
                 stopPD();
             }

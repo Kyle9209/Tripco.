@@ -39,7 +39,6 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.rey.material.app.SimpleDialog;
 import com.rey.material.widget.Spinner;
 import com.tripco.www.tripco.R;
 import com.tripco.www.tripco.util.U;
@@ -168,11 +167,9 @@ public class SearchingFragment extends Fragment
                 frontLayout.setClickable(true); // 뒷부분 터치이벤트 막기
                 break;
             case R.id.complete_btn: // 상세페이지 저장 / 알림창 / 열려있는 뷰 닫기
-                final SimpleDialog dialog = new SimpleDialog(getContext());
-                dialog.title("저장하시겠습니까?")
-                        .positiveAction("예")
-                        .positiveActionTextColor(Color.BLACK)
-                        .positiveActionClickListener(view1 -> {
+                U.getInstance().showAlertDialog(getContext(), "알림", "저장하시겠습니까?",
+                        "예",
+                        (dialogInterface, i) -> {
                             line1.setVisibility(View.GONE);
                             line2.setVisibility(View.GONE);
                             line3.setVisibility(View.GONE);
@@ -180,12 +177,12 @@ public class SearchingFragment extends Fragment
                             mapView.setVisibility(View.GONE);
                             frontLayout.setVisibility(View.GONE);
                             Toast.makeText(getContext(), "후보지리스트에 추가되었습니다.", Toast.LENGTH_SHORT).show();
-                            dialog.dismiss();
-                        })
-                        .negativeAction("아니오")
-                        .negativeActionTextColor(Color.BLACK)
-                        .negativeActionClickListener(view12 -> dialog.dismiss())
-                        .show();
+                            dialogInterface.dismiss();
+                        },
+                        "아니오",
+                        (dialogInterface, i) -> {
+                            dialogInterface.dismiss();
+                        });
                 break;
             case R.id.search_address_btn: // 구글플레이스 검색창 열기
                 try {

@@ -4,18 +4,18 @@ import android.os.Bundle;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
 
-import com.rey.material.app.SimpleDialog;
 import com.tripco.www.tripco.R;
+import com.tripco.www.tripco.RootActivity;
 import com.tripco.www.tripco.fragment.CandidateLIstFragment;
 import com.tripco.www.tripco.fragment.FinalScheduleFragment;
 import com.tripco.www.tripco.fragment.SearchingFragment;
+import com.tripco.www.tripco.util.U;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class TripActivity extends AppCompatActivity {
+public class TripActivity extends RootActivity {
     @BindView(R.id.navigation) BottomNavigationView navigation;
     private FragmentTransaction ft;
     private boolean flag = true; // 탐색창 유지 플래그
@@ -53,21 +53,19 @@ public class TripActivity extends AppCompatActivity {
 
     private void showDialog(Fragment fragment){
         if(navigation.getSelectedItemId() == R.id.searching) {
-            SimpleDialog dialog = new SimpleDialog(this);
-            dialog.title("탐색페이지가 초기화됩니다.")
-                    .positiveAction("예")
-                    .positiveActionClickListener(view -> {
+            U.getInstance().showAlertDialog(this, "주의!", "탐색페이지초기화",
+                    "예",
+                    (dialogInterface, i) -> {
                         flag = true;
                         ft.replace(R.id.content, fragment).commit();
-                        dialog.dismiss();
-                    })
-                    .negativeAction("아니오")
-                    .negativeActionClickListener(view -> {
+                        dialogInterface.dismiss();
+                    },
+                    "아니오",
+                    (dialogInterface, i) -> {
                         flag = false;
                         navigation.setSelectedItemId(R.id.searching);
-                        dialog.dismiss();
-                    })
-                    .show();
+                        dialogInterface.dismiss();
+                    });
         } else {
             ft.replace(R.id.content, fragment).commit();
         }
