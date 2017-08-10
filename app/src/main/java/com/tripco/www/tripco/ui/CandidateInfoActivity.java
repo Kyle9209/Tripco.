@@ -2,9 +2,7 @@ package com.tripco.www.tripco.ui;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.tripco.www.tripco.R;
@@ -15,10 +13,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class CandidateInfoActivity extends AppCompatActivity {
-    @BindView(R.id.modify_btn) Button modifyBtn;
-    @BindView(R.id.toolbar) Toolbar toolbar;
-    @BindView(R.id.candidateImg) ImageButton candidateImg;
-    @BindView(R.id.trip_title) TextView tripTitle;
+    @BindView(R.id.toolbar_title_tv) TextView toolbarTitleTv;
+    @BindView(R.id.toolbar_right_btn) Button toolbarRightBtn;
     @BindView(R.id.location_name) TextView locationName;
     @BindView(R.id.address) TextView address;
     @BindView(R.id.memo1) TextView memo;
@@ -28,9 +24,15 @@ public class CandidateInfoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_candidate_info);
         ButterKnife.bind(this);
+        toolbarInit();
     }
 
-    @OnClick(R.id.modify_btn)
+    private void toolbarInit(){
+        toolbarTitleTv.setText("위치명");
+        toolbarRightBtn.setText("수정");
+    }
+
+    @OnClick(R.id.toolbar_right_btn)
     public void onViewClicked() {
         //수정페이지에서 완료 후 값을 받아오기 위해서
         Intent intent = new Intent(CandidateInfoActivity.this, ModifyCandidateInfoActivity.class);

@@ -1,319 +1,299 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.tripco.www.tripco.fragment.SearchingFragment">
 
     <!-- backLayout (WebView) -->
     <LinearLayout
-            android:id="@+id/backLayout"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
+        android:id="@+id/backLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:orientation="vertical">
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="?attr/actionBarSize"
+            android:layout_weight="0"
+            android:background="?attr/colorPrimary"
+            android:gravity="center">
 
-            <LinearLayout
-                android:gravity="center"
+            <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_weight="0">
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1">
 
-                <android.support.v7.widget.CardView
-                    android:layout_margin="5dp"
-                    android:layout_weight="1"
-                    android:layout_height="match_parent"
-                    android:layout_width="match_parent">
+                <EditText
+                    android:id="@+id/url_et"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="주소를 입력하세요."
+                    android:inputType="textUri"
+                    android:maxLines="1"
+                    android:selectAllOnFocus="true"
+                    android:text="www.naver.com" />
 
-                    <EditText
-                        android:text="www.naver.com"
-                        android:selectAllOnFocus="true"
-                        android:maxLines="1"
-                        android:inputType="textUri"
-                        android:id="@+id/url_et"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:hint="주소를 입력하세요." />
-
-                </android.support.v7.widget.CardView>
+            </android.support.v7.widget.CardView>
 
 
-                <Button
-                    android:layout_gravity="center"
-                    android:id="@+id/search_url_btn"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_weight="0"
-                    android:background="@android:drawable/ic_menu_search" />
-
-                <Button
-                    android:layout_gravity="center"
-                    android:id="@+id/save_btn"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_weight="0"
-                    android:background="@android:drawable/ic_menu_save" />
-
-                <Button
-                    android:layout_gravity="center"
-                    android:id="@+id/detail_save_btn"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_weight="0"
-                    android:background="@android:drawable/ic_menu_add" />
-
-            </LinearLayout>
-
-            <android.support.v4.widget.ContentLoadingProgressBar
-                style="?android:attr/progressBarStyleHorizontal"
-                android:id="@+id/webview_pb"
-                android:layout_width="match_parent"
-                android:layout_height="3dp"
+            <Button
+                android:id="@+id/search_url_btn"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
                 android:layout_weight="0"
-                android:max="100" />
+                android:background="@android:drawable/ic_menu_search" />
 
-            <WebView
-                android:layout_weight="1"
-                android:id="@+id/webview"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+            <Button
+                android:id="@+id/save_btn"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:layout_weight="0"
+                android:background="@android:drawable/ic_menu_save" />
+
+            <Button
+                android:id="@+id/detail_save_btn"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:layout_weight="0"
+                android:background="@android:drawable/ic_menu_add" />
 
         </LinearLayout>
+
+        <android.support.v4.widget.ContentLoadingProgressBar
+            android:id="@+id/webview_pb"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:layout_weight="0"
+            android:max="100" />
+
+        <WebView
+            android:id="@+id/webview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+    </LinearLayout>
 
     <!-- frontLayout (DetailPage) -->
     <LinearLayout
-            android:visibility="gone"
-            android:id="@+id/frontLayout"
-            android:orientation="vertical"
-            android:background="#99000000"
+        android:id="@+id/frontLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#99000000"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <!-- titleBar -->
+        <include
+            layout="@layout/custom_toolbar_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content" />
 
-            <!-- titleBar -->
-            <RelativeLayout
-                android:background="@color/colorPrimary"
-                android:layout_width="match_parent"
-                android:layout_height="50dp">
+        <!-- body -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-                <TextView
-                    android:layout_marginLeft="15dp"
-                    android:layout_centerVertical="true"
-                    android:id="@+id/front_title_tv"
-                    android:textSize="18sp"
-                    android:textColor="#fff"
-                    android:text="유형선택"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-                <Button
-                    android:textColor="#fff"
-                    android:id="@+id/complete_btn"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/complete"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"/>
-
-            </RelativeLayout>
-
-            <!-- body -->
+            <!-- line1 -->
             <LinearLayout
-                android:orientation="vertical"
+                android:id="@+id/line1"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="match_parent"
+                android:background="#fff"
+                android:padding="10dp"
+                android:visibility="gone">
 
-                <!-- line1 -->
-                <LinearLayout
-                    android:visibility="gone"
-                    android:padding="10dp"
-                    android:background="#fff"
-                    android:id="@+id/line1"
+                <RadioGroup
+                    android:id="@+id/rbs_rg"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="50dp"
+                    android:orientation="horizontal">
 
-                    <RadioGroup
-                        android:id="@+id/rbs_rg"
-                        android:orientation="horizontal"
-                        android:layout_width="match_parent"
-                        android:layout_height="50dp">
-
-                        <RadioButton
-                            android:gravity="center"
-
-                            android:button="@null"
-                            android:id="@+id/tour_rb"
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:text="관광" />
-
-                        <RadioButton
-                            android:gravity="center"
-
-                            android:button="@null"
-                            android:id="@+id/house_rb"
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:text="숙박" />
-
-                        <RadioButton
-                            android:gravity="center"
-
-                            android:button="@null"
-                            android:id="@+id/restaurant_rb"
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:text="식당" />
-
-                        <RadioButton
-                            android:gravity="center"
-
-                            android:button="@null"
-                            android:id="@+id/trans_rb"
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:text="교통" />
-
-                    </RadioGroup>
-
-                </LinearLayout>
-
-                <!-- line2 -->
-                <LinearLayout
-                    android:visibility="gone"
-                    android:padding="10dp"
-                    android:background="#fff"
-                    android:orientation="vertical"
-                    android:id="@+id/line2"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <LinearLayout
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent">
-
-                        <android.support.v7.widget.CardView
-                            android:layout_margin="1dp"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
-
-                            <Button
-                                android:textSize="20sp"
-                                android:id="@+id/search_address_btn"
-                                style="@style/Widget.AppCompat.Button.Borderless"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="주소검색" />
-
-                        </android.support.v7.widget.CardView>
-
-                    </LinearLayout>
-
-                </LinearLayout>
-
-                <!-- line3 -->
-                <LinearLayout
-                    android:visibility="gone"
-                    android:padding="10dp"
-                    android:background="#fff"
-                    android:orientation="vertical"
-                    android:id="@+id/line3"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <RelativeLayout
+                    <RadioButton
+                        android:background="@drawable/hashtag"
+                        android:id="@+id/tour_rb"
+                        android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_width="match_parent">
+                        android:layout_weight="1"
+                        android:button="@null"
+                        android:gravity="center"
+                        android:text="관광" />
 
-                        <com.rey.material.widget.Spinner
-                            app:spn_labelEnable="true"
-                            app:spn_label="날짜를 선택해주세요."
-                            app:spn_labelTextColor="#000"
-                            app:spn_arrowSwitchMode="true"
-                            android:layout_centerVertical="true"
-                            android:layout_centerHorizontal="true"
-                            style="@style/Material.Widget.Spinner"
-                            android:id="@+id/days_spin"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
+                    <RadioButton
+                        android:background="@drawable/hashtag"
+                        android:id="@+id/house_rb"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:button="@null"
+                        android:gravity="center"
+                        android:text="숙박" />
 
-                    </RelativeLayout>
+                    <RadioButton
+                        android:background="@drawable/hashtag"
+                        android:id="@+id/restaurant_rb"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:button="@null"
+                        android:gravity="center"
+                        android:text="식당" />
 
+                    <RadioButton
+                        android:background="@drawable/hashtag"
+                        android:id="@+id/trans_rb"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:button="@null"
+                        android:gravity="center"
+                        android:text="교통" />
 
-                </LinearLayout>
+                </RadioGroup>
 
-                <!-- line4 -->
+            </LinearLayout>
+
+            <!-- line2 -->
+            <LinearLayout
+                android:id="@+id/line2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#fff"
+                android:orientation="vertical"
+                android:padding="10dp"
+                android:visibility="gone">
+
                 <LinearLayout
-                    android:visibility="gone"
-                    android:padding="10dp"
-                    android:background="#fff"
-                    android:orientation="vertical"
-                    android:id="@+id/line4"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:orientation="vertical">
 
-                    <EditText
-                        android:id="@+id/title_et"
-                        android:hint="제목"
+                    <android.support.v7.widget.CardView
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:layout_margin="1dp">
 
-                    <EditText
-                        android:id="@+id/memo_et"
-                        android:hint="메모"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        <Button
+                            android:id="@+id/search_address_btn"
+                            style="@style/Widget.AppCompat.Button.Borderless"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="주소검색"
+                            android:textSize="20sp" />
+
+                    </android.support.v7.widget.CardView>
 
                 </LinearLayout>
 
             </LinearLayout>
 
-            <!-- footer -->
-            <RelativeLayout
+            <!-- line3 -->
+            <LinearLayout
+                android:id="@+id/line3"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:background="#fff"
+                android:orientation="vertical"
+                android:padding="10dp"
+                android:visibility="gone">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <com.rey.material.widget.Spinner
+                        android:id="@+id/days_spin"
+                        style="@style/Material.Widget.Spinner"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:layout_centerVertical="true"
+                        app:spn_arrowSwitchMode="true"
+                        app:spn_label="날짜를 선택해주세요."
+                        app:spn_labelEnable="true"
+                        app:spn_labelTextColor="#000" />
+
+                </RelativeLayout>
+
+
+            </LinearLayout>
+
+            <!-- line4 -->
+            <LinearLayout
+                android:id="@+id/line4"
                 android:layout_width="match_parent"
-                android:layout_height="50dp">
+                android:layout_height="match_parent"
+                android:background="#fff"
+                android:orientation="vertical"
+                android:padding="10dp"
+                android:visibility="gone">
 
-                <Button
-                    android:id="@+id/previous_btn"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="wrap_content"
+                <EditText
+                    android:id="@+id/title_et"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"
-                    android:text="이전"
-                    android:visibility="invisible" />
+                    android:hint="제목" />
 
-                <Button
-                    android:id="@+id/next_btn"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="wrap_content"
+                <EditText
+                    android:id="@+id/memo_et"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:text="다음" />
+                    android:hint="메모" />
 
-            </RelativeLayout>
-
-            <!-- googleMap -->
-            <com.google.android.gms.maps.MapView
-                android:layout_margin="10dp"
-                android:visibility="invisible"
-                android:id="@+id/map"
-                android:name="com.google.android.gms.maps.SupportMapFragment"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+            </LinearLayout>
 
         </LinearLayout>
+
+        <!-- footer -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="#fff">
+
+            <Button
+                android:id="@+id/previous_btn"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:text="이전"
+                android:visibility="invisible" />
+
+            <Button
+                android:id="@+id/next_btn"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:text="다음" />
+
+        </RelativeLayout>
+
+        <!-- googleMap -->
+        <com.google.android.gms.maps.MapView
+            android:id="@+id/map"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="10dp"
+            android:visibility="invisible" />
+
+    </LinearLayout>
 
 </FrameLayout>

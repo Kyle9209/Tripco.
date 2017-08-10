@@ -37,7 +37,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class MakeTripActivity extends AppCompatActivity {
-    @BindView(R.id.activity_title_tv) TextView titleTv;
+    @BindView(R.id.toolbar_title_tv) TextView toolbarTitleTv;
+    @BindView(R.id.toolbar_right_btn) Button toolbarRightBtn;
     @BindView(R.id.title_et) EditText titleEt;
     @BindView(R.id.title_cnt_tv) TextView titleCntTv;
     @BindView(R.id.title_check) ImageView titleCheck;
@@ -60,7 +61,6 @@ public class MakeTripActivity extends AppCompatActivity {
     @BindView(R.id.hashtag_cb13) CheckBox hashtagCb13;
     @BindView(R.id.hashtag_cb14) CheckBox hashtagCb14;
     @BindView(R.id.hashtag_cb15) CheckBox hashtagCb15;
-
     private int MAX_TITLE_CNT = 10; // 여행제목 최대 글자수 = 10
     private int trip_no;
     private String startDate, endDate;
@@ -77,15 +77,19 @@ public class MakeTripActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_make_trip);
-        ButterKnife.bind(this);
         imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        ButterKnife.bind(this);
+        toolbarInit();
         titleCntCheck();
+        getExtraData();
+    }
 
+    private void getExtraData(){
         TripModel sTripModel = (TripModel) getIntent().getSerializableExtra("serializableTripModel");
         if (sTripModel != null) {
             updateFlag = true;
+            toolbarTitleTv.setText("여행 수정");
             trip_no = sTripModel.getTrip_no();
-            titleTv.setText("여행수정하기");
             titleEt.setText(sTripModel.getTrip_title());
             titleCheck.setVisibility(View.VISIBLE);
             startDate = sTripModel.getStart_date();
@@ -113,7 +117,12 @@ public class MakeTripActivity extends AppCompatActivity {
         }
     }
 
-    @OnClick({R.id.calendar_btn, R.id.who_btn, R.id.complete_btn})
+    private void toolbarInit(){
+        toolbarTitleTv.setText("여행 만들기");
+        toolbarRightBtn.setText("완료");
+    }
+
+    @OnClick({R.id.calendar_btn, R.id.who_btn, R.id.toolbar_right_btn})
     public void onClickBtn(View view) {
         switch (view.getId()) {
             case R.id.calendar_btn:
@@ -122,7 +131,7 @@ public class MakeTripActivity extends AppCompatActivity {
             case R.id.who_btn:
                 OnFindWho();
                 break;
-            case R.id.complete_btn:
+            case R.id.toolbar_right_btn:
                 if (checkData(true)) {
                     if (hashtagCb1.isChecked()) hashTags = hashTags + hashtagCb1.getText().toString();
                     if (hashtagCb2.isChecked()) hashTags = hashTags + hashtagCb2.getText().toString();
@@ -245,6 +254,10 @@ public class MakeTripActivity extends AppCompatActivity {
         setBottomSheetDialog(R.layout.bsd_calendar_layout);
 
         MaterialCalendarView calendar = bottomSheetDialog.findViewById(R.id.calendarView);
+        TextView toolbarTitleTv = bottomSheetDialog.findViewById(R.id.toolbar_title_tv);
+        Button toolbarRightBtn = bottomSheetDialog.findViewById(R.id.toolbar_right_btn);
+        toolbarTitleTv.setText("언제?");
+        toolbarRightBtn.setText("완료");
         TextView start = bottomSheetDialog.findViewById(R.id.start_day_tv);
         TextView end = bottomSheetDialog.findViewById(R.id.end_day_tv);
 
@@ -275,7 +288,7 @@ public class MakeTripActivity extends AppCompatActivity {
         });
 
         // 완료버튼
-        bottomSheetDialog.findViewById(R.id.complete_btn).setOnClickListener(view -> {
+        toolbarRightBtn.setOnClickListener(view -> {
             if (TextUtils.isEmpty(start.getText()) || TextUtils.isEmpty(end.getText())) {
                 Toast.makeText(MakeTripActivity.this, "날짜를 선택해주세요.", Toast.LENGTH_SHORT).show();
             } else {
@@ -291,6 +304,11 @@ public class MakeTripActivity extends AppCompatActivity {
 
     private void OnFindWho() {
         setBottomSheetDialog(R.layout.bsd_who_layout);
+
+        TextView toolbarTitleTv = bottomSheetDialog.findViewById(R.id.toolbar_title_tv);
+        Button toolbarRightBtn = bottomSheetDialog.findViewById(R.id.toolbar_right_btn);
+        toolbarTitleTv.setText("누구와?");
+        toolbarRightBtn.setText("완료");
 
         // 찾기버튼
         bottomSheetDialog.findViewById(R.id.find_btn).setOnClickListener(view -> {
@@ -317,7 +335,7 @@ public class MakeTripActivity extends AppCompatActivity {
         });
 
         // 완료버튼
-        bottomSheetDialog.findViewById(R.id.complete_btn).setOnClickListener(view -> {
+        toolbarRightBtn.setOnClickListener(view -> {
             if (loginFlag) whoCheck.setVisibility(View.VISIBLE);
             bottomSheetDialog.dismiss();
         });

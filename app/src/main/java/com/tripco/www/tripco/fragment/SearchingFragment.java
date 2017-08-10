@@ -61,7 +61,9 @@ import static android.app.Activity.RESULT_OK;
 public class SearchingFragment extends Fragment
         implements OnMapReadyCallback,
         GoogleApiClient.OnConnectionFailedListener,
-        TripActivity.onKeyBackPressedListener  {
+        TripActivity.onKeyBackPressedListener {
+    @BindView(R.id.toolbar_title_tv) TextView toolbarTitleTv;
+    @BindView(R.id.toolbar_right_btn) Button toolbarRightBtn;
     @BindView(R.id.url_et) EditText urlEt;
     @BindView(R.id.webview) WebView webView;
     @BindView(R.id.webview_pb) ProgressBar progressBar;
@@ -73,7 +75,6 @@ public class SearchingFragment extends Fragment
     @BindView(R.id.line2) LinearLayout line2;
     @BindView(R.id.line3) LinearLayout line3;
     @BindView(R.id.line4) LinearLayout line4;
-    @BindView(R.id.front_title_tv) TextView frontTitleTv;
     @BindView(R.id.title_et) EditText titleEt;
     @BindView(R.id.memo_et) EditText memoEt;
     @BindView(R.id.map) MapView mapView;
@@ -91,24 +92,21 @@ public class SearchingFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_searching, container, false);
         unbinder = ButterKnife.bind(this, view);
-
         // 키보드 객체 획득
         inputMethodManager = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-
         webViewInit();
         spinnerInit();
         editTextInit(); // 키패드 완료 버튼 처리
+        toolbarInit();
 
         mapView.getMapAsync(this);
 
-
-
-        rbsGroup.setOnCheckedChangeListener((radioGroup, i) -> {
-
-            Toast.makeText(getContext(), i + "눌린번호 : " + radioGroup.getCheckedRadioButtonId(), Toast.LENGTH_SHORT).show();
-        });
-
         return view;
+    }
+
+    private void toolbarInit(){
+        toolbarTitleTv.setText("유형선택");
+        toolbarRightBtn.setText("완료");
     }
 
     private void webViewInit(){
@@ -182,7 +180,7 @@ public class SearchingFragment extends Fragment
         }
     }
 
-    @OnClick({R.id.save_btn, R.id.detail_save_btn, R.id.complete_btn, R.id.search_address_btn})
+    @OnClick({R.id.save_btn, R.id.detail_save_btn, R.id.toolbar_right_btn, R.id.search_address_btn})
     public void onClickBtn(View view) {
         switch (view.getId()) {
             case R.id.save_btn: // 즉시저장
@@ -191,13 +189,13 @@ public class SearchingFragment extends Fragment
             case R.id.detail_save_btn: // 상세페이지 열기 / 초기화
                 frontLayout.setVisibility(View.VISIBLE);
                 index = 1;
-                frontTitleTv.setText("유형선택");
+                toolbarTitleTv.setText("유형선택");
                 line1.setVisibility(View.VISIBLE);
                 nextBtn.setVisibility(View.VISIBLE);
                 previousBtn.setVisibility(View.INVISIBLE);
                 frontLayout.setClickable(true); // 뒷부분 터치이벤트 막기
                 break;
-            case R.id.complete_btn: // 상세페이지 저장 / 알림창 / 열려있는 뷰 닫기
+            case R.id.toolbar_right_btn: // 상세페이지 저장 / 알림창 / 열려있는 뷰 닫기
                 inputMethodManager.hideSoftInputFromWindow(urlEt.getWindowToken(), 0); // 키보드 내리기
                 U.getInstance().showAlertDialog(getContext(), "알림", "저장하시겠습니까?",
                         "예",
@@ -269,18 +267,18 @@ public class SearchingFragment extends Fragment
                 switch (index){
                     case 1:
                         line1.setVisibility(View.VISIBLE);
-                        frontTitleTv.setText("유형선택");
+                        toolbarTitleTv.setText("유형선택");
                         line2.setVisibility(View.GONE);
                         previousBtn.setVisibility(View.INVISIBLE);
                         break;
                     case 2:
                         line2.setVisibility(View.VISIBLE);
-                        frontTitleTv.setText("위치검색");
+                        toolbarTitleTv.setText("위치검색");
                         line3.setVisibility(View.GONE);
                         break;
                     case 3:
                         line3.setVisibility(View.VISIBLE);
-                        frontTitleTv.setText("날짜선택");
+                        toolbarTitleTv.setText("날짜선택");
                         line4.setVisibility(View.GONE);
                         break;
                 }
@@ -291,17 +289,17 @@ public class SearchingFragment extends Fragment
                 switch (index){
                     case 2:
                         line1.setVisibility(View.GONE);
-                        frontTitleTv.setText("위치검색");
+                        toolbarTitleTv.setText("위치검색");
                         line2.setVisibility(View.VISIBLE);
                         break;
                     case 3:
                         line2.setVisibility(View.GONE);
-                        frontTitleTv.setText("날짜선택");
+                        toolbarTitleTv.setText("날짜선택");
                         line3.setVisibility(View.VISIBLE);
                         break;
                     case 4:
                         line3.setVisibility(View.GONE);
-                        frontTitleTv.setText("제목&메모");
+                        toolbarTitleTv.setText("제목&메모");
                         line4.setVisibility(View.VISIBLE);
                         nextBtn.setVisibility(View.INVISIBLE);
                         break;

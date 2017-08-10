@@ -44,7 +44,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainViewHolder> {
         if(tripModel.getPartner_no() == 0) holder.who.setText(ALONE);
         holder.when.setText(tripModel.getStart_date() + " ~ " + tripModel.getEnd_date());
         holder.tag.setText(tripModel.getHashtag());
-        holder.itemView.setOnClickListener(view -> { // 짧게누르면 탐색으로
+        holder.itemView.setOnClickListener(view -> { // 짧게누르면 후보지리스트로
             context.startActivity(new Intent(context, TripActivity.class));
         });
         holder.update.setOnClickListener(view -> { // 수정버튼 클릭
