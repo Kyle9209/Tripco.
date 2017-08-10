@@ -70,7 +70,7 @@ public class LoginActivity extends AppCompatActivity {
         if (cancel) {
             focusView.requestFocus();
         } else { // 서버로
-            connectServer(email, password);
+           //connectServer(email, password);
         }
     }
 

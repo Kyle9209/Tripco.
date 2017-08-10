@@ -41,7 +41,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainViewHolder> {
         // 데이터 셋팅
         final TripModel tripModel = tripModels.get(position);
         holder.title.setText(tripModel.getTrip_title());
-        if(tripModel.getPartner_no() == 0) holder.who.setText(ALONE);
+        if(tripModel.getPartner_id().equals(ALONE)) holder.who.setText(ALONE);
         holder.when.setText(tripModel.getStart_date() + " ~ " + tripModel.getEnd_date());
         holder.tag.setText(tripModel.getHashtag());
         holder.itemView.setOnClickListener(view -> { // 짧게누르면 후보지리스트로
@@ -54,8 +54,8 @@ public class MainAdapter extends RecyclerView.Adapter<MainViewHolder> {
                     tripModel.getTrip_title(),
                     tripModel.getStart_date(),
                     tripModel.getEnd_date(),
-                    tripModel.getUser_no(),
-                    tripModel.getPartner_no(),
+                    tripModel.getUser_id(),
+                    tripModel.getPartner_id(),
                     tripModel.getHashtag());
             intent.putExtra("serializableTripModel", serializableTripModel);
             context.startActivity(intent);

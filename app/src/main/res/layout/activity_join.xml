@@ -26,7 +26,6 @@
                 android:layout_height="wrap_content">
 
                 <AutoCompleteTextView
-                    android:text="test@"
                     android:id="@+id/join_email"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -42,7 +41,6 @@
                 android:layout_height="wrap_content">
 
                 <EditText
-                    android:text="11111"
                     android:id="@+id/join_password"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -61,7 +59,6 @@
                 android:layout_height="wrap_content">
 
                 <EditText
-                    android:text="11111"
                     android:id="@+id/confirm_password"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

@@ -217,8 +217,8 @@ public class MainActivity extends AppCompatActivity
                     csr.getString(1),
                     csr.getString(2),
                     csr.getString(3),
-                    csr.getInt(4),
-                    csr.getInt(5),
+                    csr.getString(4),
+                    csr.getString(5),
                     csr.getString(6)
             ));
         }

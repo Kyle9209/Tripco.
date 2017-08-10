@@ -28,8 +28,8 @@ public class DBOpenHelper extends SQLiteOpenHelper {
         sb.append(" trip_title TEXT, ");
         sb.append(" start_date TEXT, ");
         sb.append(" end_date TEXT, ");
-        sb.append(" user_no INTEGER, ");
-        sb.append(" partner_no INTEGER, ");
+        sb.append(" user_id TEXT, ");
+        sb.append(" partner_id TEXT, ");
         sb.append(" hashtag TEXT ) ");
         db.execSQL(sb.toString());
 

@@ -65,6 +65,7 @@ public class MakeTripActivity extends AppCompatActivity {
     private int trip_no;
     private String startDate, endDate;
     private String hashTags = "";
+    private final static String ALONE = "혼자";
     private boolean dateSelectFlag; // 시작 날짜를 선택했는지 확인
     private boolean loginFlag = false; // 로그인되어있지 않다고 가정
     private boolean updateFlag = false; // 수정하기로 들어온건지 확인
@@ -96,7 +97,7 @@ public class MakeTripActivity extends AppCompatActivity {
             endDate = sTripModel.getEnd_date();
             calendarBtn.setText(startDate + " ~ " + endDate);
             calendarCheck.setVisibility(View.VISIBLE);
-            if (sTripModel.getPartner_no() != 0) {
+            if (!sTripModel.getPartner_id().equals(ALONE)) {
                 // 혼자가 아니라면 친구도 셋팅
             }
             if (sTripModel.getHashtag().contains(hashtagCb1.getText())) hashtagCb1.setChecked(true);
@@ -181,15 +182,15 @@ public class MakeTripActivity extends AppCompatActivity {
                     "trip_title, " +
                     "start_date, " +
                     "end_date, " +
-                    "user_no, " +
-                    "partner_no, " +
+                    "user_id, " +
+                    "partner_id, " +
                     "hashtag) " +
                     "values(" +
                     "'" + titleEt.getText().toString() + "', " +
                     "'" + startDate + "', " +
                     "'" + endDate + "', " +
-                    "'" + 0 + "', " +
-                    "'" + 0 + "', " +
+                    "'" + ALONE + "', " +
+                    "'" + ALONE + "', " +
                     "'" + hashTags + "');";
             DBOpenHelper.dbOpenHelper.getWritableDatabase().execSQL(sql);
             Toast.makeText(this, "저장되었습니다.", Toast.LENGTH_SHORT).show();
