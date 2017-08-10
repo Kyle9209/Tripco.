@@ -1,7 +1,9 @@
 package com.tripco.www.tripco.fragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
@@ -41,6 +43,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.rey.material.widget.Spinner;
 import com.tripco.www.tripco.R;
+import com.tripco.www.tripco.ui.TripActivity;
 import com.tripco.www.tripco.util.U;
 
 import java.util.ArrayList;
@@ -55,7 +58,7 @@ import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 
 public class SearchingFragment extends Fragment
-        implements OnMapReadyCallback, GoogleApiClient.OnConnectionFailedListener {
+        implements OnMapReadyCallback, GoogleApiClient.OnConnectionFailedListener, TripActivity.onKeyBackPressedListener  {
     @BindView(R.id.url_et) EditText urlEt;
     @BindView(R.id.webview) WebView webView;
     @BindView(R.id.webview_pb) ProgressBar progressBar;
@@ -96,13 +99,28 @@ public class SearchingFragment extends Fragment
     }
 
     private void webViewInit(){
-        webView.getSettings().setJavaScriptEnabled(true); // 자바스크립트 허용
-        webView.setWebViewClient(new WebViewClient() { // 클릭시 새창 X
-            @Override // 페이지 로딩이 끝나면 주소창 새로고침
+        // ProgressBar 설정 ============================================================================
+
+        webView.getSettings().setJavaScriptEnabled(true);
+        webView.setWebViewClient(new WebViewClient(){
+
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url)
+            {
+                view.loadUrl(url);
+                return true;
+            }
+
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                super.onPageStarted(view, url, favicon);
+                progressBar.setVisibility(View.VISIBLE);
+            }
+
+            @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                urlEt.setText(url);
-                progressBar.setProgress(0);
+                progressBar.setVisibility(View.INVISIBLE);
             }
         });
         webView.setWebChromeClient(new WebChromeClient() {
@@ -113,6 +131,7 @@ public class SearchingFragment extends Fragment
         });
 
         progressBar.getProgressDrawable().setColorFilter(Color.BLUE, PorterDuff.Mode.SRC_IN);
+        //==========================================================================================
     }
 
     private void spinnerInit(){
@@ -167,6 +186,7 @@ public class SearchingFragment extends Fragment
                 frontLayout.setClickable(true); // 뒷부분 터치이벤트 막기
                 break;
             case R.id.complete_btn: // 상세페이지 저장 / 알림창 / 열려있는 뷰 닫기
+                inputMethodManager.hideSoftInputFromWindow(urlEt.getWindowToken(), 0); // 키보드 내리기
                 U.getInstance().showAlertDialog(getContext(), "알림", "저장하시겠습니까?",
                         "예",
                         (dialogInterface, i) -> {
@@ -199,8 +219,7 @@ public class SearchingFragment extends Fragment
         }
     }
 
-    // 구글 플레이스에서 검색한 데이터 받아서 처리
-    @Override
+    @Override // 구글 플레이스에서 검색한 데이터 받아서 처리
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
@@ -281,6 +300,23 @@ public class SearchingFragment extends Fragment
         else return "https://" + inputUrl;
     }
 
+    // 백키눌렀을때 웹뷰 뒤로가기
+    @Override
+    public void onBack() {
+        if(webView.canGoBack()){
+            webView.goBack();
+        }else{
+            TripActivity activity = (TripActivity) getActivity();
+            activity.setOnKeyBackPressedListener(null);
+            activity.onBackPressed();
+        }
+    }
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        ((TripActivity) activity).setOnKeyBackPressedListener(this);
+    }
+
     // 구글맵 사용에 필요한 프레그먼트의 오버라이드 메소드들
     @Override
     public void onStart() {
@@ -321,8 +357,7 @@ public class SearchingFragment extends Fragment
         super.onActivityCreated(savedInstanceState);
         if(mapView != null) mapView.onCreate(savedInstanceState);
     }
-    // 버터나이프 사용에 필요한 프레그먼트의 오버라이드 메소드
-    @Override
+    @Override // 버터나이프 사용에 필요한 프레그먼트의 오버라이드 메소드
     public void onDestroyView() {
         mapView.onDestroy();
         super.onDestroyView();
@@ -334,8 +369,7 @@ public class SearchingFragment extends Fragment
             }
         }
     }
-    // 구글플레이스 연결 실패 처리
-    @Override
+    @Override // 구글플레이스 연결 실패 처리
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
     }

@@ -26,18 +26,18 @@
     <uses-permission android:name="android.permission.CAMERA" />
 
     <!-- 앱설치 후 바로가기 설치 퍼미션 -->
-    <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT"/>
+    <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
 
     <application
         android:name=".TripcoApplication"
-        android:largeHeap="true"
-        tools:replace="android:icon"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        tools:replace="android:icon">
         <activity
             android:name=".ui.MainActivity"
             android:label="@string/title_activity_main"
@@ -58,10 +58,11 @@
             android:label="@string/join" />
         <activity
             android:name=".ui.TripActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
         <activity
             android:name=".ui.MyPageActivity"
-            android:label="마이페이지"/>
+            android:label="마이페이지" />
         <activity
             android:name=".ui.NicknameActivity"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -70,13 +71,13 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ui.AlarmActivity"
-            android:label="알림"/>
+            android:label="알림" />
         <activity
             android:name=".ui.CandidateInfoActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ui.ModifyCandidateInfoActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <!-- 저장 경로에 대한 설정 -->
         <provider

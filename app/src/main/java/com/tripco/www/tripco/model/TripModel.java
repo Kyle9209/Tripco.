@@ -1,6 +1,8 @@
 package com.tripco.www.tripco.model;
 
-public class TripModel {
+import java.io.Serializable;
+
+public class TripModel implements Serializable {
     int trip_no;
     String trip_title;
     String start_date;

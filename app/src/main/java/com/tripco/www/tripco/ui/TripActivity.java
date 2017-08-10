@@ -53,7 +53,7 @@ public class TripActivity extends RootActivity {
 
     private void showDialog(Fragment fragment){
         if(navigation.getSelectedItemId() == R.id.searching) {
-            U.getInstance().showAlertDialog(this, "주의!", "탐색페이지초기화",
+            U.getInstance().showAlertDialog(this, "주의!", "탐색페이지가 초기화됩니다.",
                     "예",
                     (dialogInterface, i) -> {
                         flag = true;
@@ -68,6 +68,23 @@ public class TripActivity extends RootActivity {
                     });
         } else {
             ft.replace(R.id.content, fragment).commit();
+        }
+    }
+
+    // 백키눌렀을때 웹뷰 뒤로가기
+    public interface onKeyBackPressedListener {
+        public void onBack();
+    }
+    private onKeyBackPressedListener mOnKeyBackPressedListener;
+    public void setOnKeyBackPressedListener(onKeyBackPressedListener listener) {
+        mOnKeyBackPressedListener = listener;
+    }
+    @Override
+    public void onBackPressed() {
+        if(mOnKeyBackPressedListener !=null){
+            mOnKeyBackPressedListener.onBack();
+        }else {
+            super.onBackPressed();
         }
     }
 }

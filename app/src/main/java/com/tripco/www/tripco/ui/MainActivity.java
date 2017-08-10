@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity
         ButterKnife.bind(this);
 
         if(!checkPlayService(this)) return;
-        //makeShortCut(this);
+        makeShortCut(this);
         getServerAddress();
         uiInit();
         DBOpenHelper.getInstance();

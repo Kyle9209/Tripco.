@@ -48,7 +48,17 @@ public class MainAdapter extends RecyclerView.Adapter<MainViewHolder> {
             context.startActivity(new Intent(context, TripActivity.class));
         });
         holder.update.setOnClickListener(view -> { // 수정버튼 클릭
-            context.startActivity(new Intent(context, MakeTripActivity.class));
+            Intent intent = new Intent(context, MakeTripActivity.class);
+            // putextra 처리
+            TripModel serializableTripModel = new TripModel(tripModel.getTrip_no(),
+                    tripModel.getTrip_title(),
+                    tripModel.getStart_date(),
+                    tripModel.getEnd_date(),
+                    tripModel.getUser_no(),
+                    tripModel.getPartner_no(),
+                    tripModel.getHashtag());
+            intent.putExtra("serializableTripModel", serializableTripModel);
+            context.startActivity(intent);
         });
         holder.itemView.setOnLongClickListener(view -> { // 길게누르면 삭제로
             U.getInstance().showAlertDialog(context, "알림", "삭제하시겠습니까?",

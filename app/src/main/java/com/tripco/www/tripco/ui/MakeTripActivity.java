@@ -24,6 +24,7 @@ import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 import com.rey.material.app.BottomSheetDialog;
 import com.tripco.www.tripco.R;
 import com.tripco.www.tripco.db.DBOpenHelper;
+import com.tripco.www.tripco.model.TripModel;
 import com.tripco.www.tripco.util.U;
 
 import java.text.ParseException;
@@ -36,6 +37,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class MakeTripActivity extends AppCompatActivity {
+    @BindView(R.id.activity_title_tv) TextView titleTv;
     @BindView(R.id.title_et) EditText titleEt;
     @BindView(R.id.title_cnt_tv) TextView titleCntTv;
     @BindView(R.id.title_check) ImageView titleCheck;
@@ -47,40 +49,45 @@ public class MakeTripActivity extends AppCompatActivity {
     @BindView(R.id.hashtag_cb2) CheckBox hashTagCb2;
     @BindView(R.id.hashtag_cb3) CheckBox hashTagCb3;
     @BindView(R.id.hashtag_cb4) CheckBox hashTagCb4;
+    private int MAX_TITLE_CNT = 10; // 여행제목 최대 글자수 = 10
+    private int trip_no;
     private String startDate, endDate;
     private String hashTags = "";
-    private BottomSheetDialog bottomSheetDialog;
-    private boolean selectFlag;
-    private InputMethodManager imm; // 키보드 객체
-    private int MAX_TITLE_CNT = 10;
+    private boolean dateSelectFlag; // 시작 날짜를 선택했는지 확인
     private boolean loginFlag = false; // 로그인되어있지 않다고 가정
+    private boolean updateFlag = false; // 수정하기로 들어온건지 확인
+    private BottomSheetDialog bottomSheetDialog;
+    private InputMethodManager imm; // 키보드 객체
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.KOREA);
-    Date stringToStartDate, stringToEndDate;
+    private Date stringToStartDate, stringToEndDate;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_make_trip);
         ButterKnife.bind(this);
-
         imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        titleCntCheck();
 
-        titleEt.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        TripModel sTripModel  = (TripModel) getIntent().getSerializableExtra("serializableTripModel");
+        if(sTripModel != null){
+            updateFlag = true;
+            trip_no = sTripModel.getTrip_no();
+            titleTv.setText("여행수정하기");
+            titleEt.setText(sTripModel.getTrip_title());
+            titleCheck.setVisibility(View.VISIBLE);
+            startDate = sTripModel.getStart_date();
+            endDate = sTripModel.getEnd_date();
+            calendarBtn.setText(startDate + " ~ " + endDate);
+            calendarCheck.setVisibility(View.VISIBLE);
+            if(sTripModel.getPartner_no() != 0){
+                // 혼자가 아니라면 친구도 셋팅
             }
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
-            @Override
-            public void afterTextChanged(Editable editable) {
-                if(editable.toString().length() <= MAX_TITLE_CNT)
-                    titleCntTv.setText(editable.toString().length() + "/" + MAX_TITLE_CNT);
-                if(TextUtils.isEmpty(titleEt.getText()))
-                    titleCheck.setVisibility(View.INVISIBLE);
-                else
-                    titleCheck.setVisibility(View.VISIBLE);
-            }
-        });
+            if(sTripModel.getHashtag().contains(hashTagCb1.getText())) hashTagCb1.setChecked(true);
+            if(sTripModel.getHashtag().contains(hashTagCb2.getText())) hashTagCb2.setChecked(true);
+            if(sTripModel.getHashtag().contains(hashTagCb3.getText())) hashTagCb3.setChecked(true);
+            if(sTripModel.getHashtag().contains(hashTagCb4.getText())) hashTagCb4.setChecked(true);
+        }
     }
 
     @OnClick({R.id.calendar_btn, R.id.who_btn, R.id.complete_btn})
@@ -102,11 +109,27 @@ public class MakeTripActivity extends AppCompatActivity {
                     if(loginFlag){ // 로그인되어있으니 서버로
                         finish();
                     } else { // 로그인되어있지않음 ->// 로컬디비로
-                        SQLiteInsert();
+                        if(updateFlag) SQLiteUpdate();
+                        else SQLiteInsert();
                         finish();
                     }
                 }
                 break;
+        }
+    }
+
+    private void SQLiteUpdate(){
+        try {
+            String sql = "update Trip_Table set" +
+                    " trip_title = '" +titleEt.getText().toString()+ "'," +
+                    " start_date = '" +startDate+ "'," +
+                    " end_date = '" +endDate+ "'," +
+                    " hashtag = '" +hashTags+ "'" +
+                    " where trip_no = " + trip_no + ";";
+            DBOpenHelper.dbOpenHelper.getWritableDatabase().execSQL(sql);
+            Toast.makeText(this, "수정되었습니다.", Toast.LENGTH_SHORT).show();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
@@ -151,6 +174,26 @@ public class MakeTripActivity extends AppCompatActivity {
         return check;
     }
 
+    private void titleCntCheck(){
+        titleEt.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if(editable.toString().length() <= MAX_TITLE_CNT)
+                    titleCntTv.setText(editable.toString().length() + "/" + MAX_TITLE_CNT);
+                if(TextUtils.isEmpty(titleEt.getText()))
+                    titleCheck.setVisibility(View.INVISIBLE);
+                else
+                    titleCheck.setVisibility(View.VISIBLE);
+            }
+        });
+    }
+
     private void setBottomSheetDialog(int layout) {
         bottomSheetDialog = new BottomSheetDialog(this);
 
@@ -163,7 +206,7 @@ public class MakeTripActivity extends AppCompatActivity {
     }
 
     private void OnCalendar() {
-        selectFlag = false;
+        dateSelectFlag = false;
         setBottomSheetDialog(R.layout.bsd_calendar_layout);
 
         MaterialCalendarView calendar = bottomSheetDialog.findViewById(R.id.calendarView);
@@ -174,7 +217,7 @@ public class MakeTripActivity extends AppCompatActivity {
         calendar.setOnDateChangedListener((widget, date, selected) -> {
             String selectedDate = date.getYear() + "-" + (date.getMonth() + 1) + "-" + date.getDay();
 
-            if (!selectFlag) {
+            if (!dateSelectFlag) {
                 start.setText(selectedDate);
                 try {
                     stringToStartDate = dateFormat.parse(selectedDate);
@@ -184,7 +227,7 @@ public class MakeTripActivity extends AppCompatActivity {
                 calendar.state().edit()
                         .setMinimumDate(CalendarDay.from(stringToStartDate))
                         .commit();
-                selectFlag = true;
+                dateSelectFlag = true;
             } else {
                 end.setText(selectedDate);
                 try {
