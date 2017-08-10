@@ -123,45 +123,64 @@
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="100dp">
+                android:layout_height="wrap_content">
 
                 <!-- line1 -->
                 <LinearLayout
                     android:visibility="gone"
                     android:padding="10dp"
                     android:background="#fff"
-                    android:orientation="horizontal"
                     android:id="@+id/line1"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
-                    <Button
-                        android:id="@+id/tour_btn"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:text="관광" />
+                    <RadioGroup
+                        android:id="@+id/rbs_rg"
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp">
 
-                    <Button
-                        android:id="@+id/house_btn"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:text="숙박" />
+                        <RadioButton
+                            android:gravity="center"
 
-                    <Button
-                        android:id="@+id/restaurant_btn"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:text="식당" />
+                            android:button="@null"
+                            android:id="@+id/tour_rb"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:text="관광" />
 
-                    <Button
-                        android:id="@+id/trans_btn"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:text="교통" />
+                        <RadioButton
+                            android:gravity="center"
+
+                            android:button="@null"
+                            android:id="@+id/house_rb"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:text="숙박" />
+
+                        <RadioButton
+                            android:gravity="center"
+
+                            android:button="@null"
+                            android:id="@+id/restaurant_rb"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:text="식당" />
+
+                        <RadioButton
+                            android:gravity="center"
+
+                            android:button="@null"
+                            android:id="@+id/trans_rb"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:text="교통" />
+
+                    </RadioGroup>
 
                 </LinearLayout>
 
@@ -202,7 +221,7 @@
 
                 <!-- line3 -->
                 <LinearLayout
-                    android:visibility="visible"
+                    android:visibility="gone"
                     android:padding="10dp"
                     android:background="#fff"
                     android:orientation="vertical"
@@ -242,14 +261,16 @@
                     android:layout_height="match_parent">
 
                     <EditText
+                        android:id="@+id/title_et"
                         android:hint="제목"
                         android:layout_width="match_parent"
-                        android:layout_height="40dp" />
+                        android:layout_height="wrap_content" />
 
                     <EditText
+                        android:id="@+id/memo_et"
                         android:hint="메모"
                         android:layout_width="match_parent"
-                        android:layout_height="40dp" />
+                        android:layout_height="wrap_content" />
 
                 </LinearLayout>
 

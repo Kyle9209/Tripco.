@@ -7,65 +7,55 @@
     android:orientation="vertical"
     tools:context="com.tripco.www.tripco.fragment.CandidateLIstFragment">
 
-    <android.support.design.widget.AppBarLayout
-        android:id="@+id/appbar"
+    <LinearLayout
+        android:gravity="center"
+        android:padding="5dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
+        <com.rey.material.widget.Spinner
+            android:id="@+id/days_spin"
+            style="@style/Material.Widget.Spinner.Light"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_weight="1"
+            app:spn_arrowAnimClockwise="true"
+            app:spn_arrowSwitchMode="true"
+            app:spn_label="날짜선택"
+            app:spn_labelEnable="true"
+            app:spn_arrowColor="#fff"
+            app:spn_dividerColor="#fff"
+            app:spn_labelTextColor="#fff"/>
+
+        <ImageButton
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_margin="5dp"
+            android:layout_weight="0"
             android:background="?attr/colorPrimary"
-            app:layout_scrollFlags="scroll|enterAlways"
-            app:popupTheme="@style/AppTheme.PopupOverlay">
+            android:scaleType="centerCrop"
+            android:src="@android:drawable/stat_notify_more" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="5dp">
+        <Button
+            android:id="@+id/change_view_btn"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_margin="5dp"
+            android:layout_weight="0"
+            android:background="@android:drawable/ic_dialog_map" />
 
-                <com.rey.material.widget.Spinner
-                    android:id="@+id/days_spin"
-                    style="@style/Material.Widget.Spinner"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginRight="5dp"
-                    android:layout_weight="1"
-                    app:spn_arrowAnimClockwise="true"
-                    app:spn_arrowSwitchMode="true"
-                    app:spn_label="날짜선택"
-                    app:spn_labelEnable="true"
-                    app:spn_labelTextColor="#fff" />
+    </LinearLayout>
 
-                <ImageButton
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_margin="5dp"
-                    android:layout_weight="0"
-                    android:background="?attr/colorPrimary"
-                    android:scaleType="centerCrop"
-                    android:src="@android:drawable/stat_notify_more" />
-
-                <Button
-                    android:id="@+id/change_view_btn"
-                    android:layout_width="30dp"
-                    android:layout_height="match_parent"
-                    android:layout_margin="5dp"
-                    android:layout_weight="0"
-                    android:background="@android:drawable/ic_dialog_map" />
-
-            </LinearLayout>
-
-        </android.support.v7.widget.Toolbar>
-
-        <android.support.design.widget.TabLayout
-            android:id="@+id/tabs"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-    </android.support.design.widget.AppBarLayout>
+    <android.support.design.widget.TabLayout
+        app:tabSelectedTextColor="#fff"
+        app:tabIndicatorColor="#fff"
+        android:background="?attr/colorPrimary"
+        android:id="@+id/tabs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
     <android.support.v4.view.ViewPager
         android:id="@+id/container"

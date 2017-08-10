@@ -1,11 +1,12 @@
 package com.tripco.www.tripco.fragment;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,7 @@ import com.rey.material.widget.Spinner;
 import com.tripco.www.tripco.R;
 import com.tripco.www.tripco.adapter.FinalScheduleAdapter;
 import com.tripco.www.tripco.model.FinalScheduleModel;
+import com.tripco.www.tripco.ui.TripActivity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,12 +33,14 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 
-public class FinalScheduleFragment extends Fragment implements OnMapReadyCallback {
-    @BindView(R.id.toolbar) Toolbar toolbar;
+public class FinalScheduleFragment extends Fragment
+        implements OnMapReadyCallback,
+        TripActivity.onKeyBackPressedListener  {
     @BindView(R.id.days_spin) Spinner spinner;
     @BindView(R.id.map) MapView mapView;
     @BindView(R.id.change_view_btn) Button changeViewBtn;
     @BindView(R.id.recycler_view) RecyclerView recyclerView;
+    @BindView(R.id.swipeContainer) SwipeRefreshLayout swipeContainer;
     private GoogleMap mMap = null;
     private Unbinder unbinder;
     private View view;
@@ -49,6 +53,7 @@ public class FinalScheduleFragment extends Fragment implements OnMapReadyCallbac
         unbinder = ButterKnife.bind(this, view);
         spinnerInit();
         recViewInit();
+        swipeRefreshInit();
         return view;
     }
 
@@ -58,7 +63,6 @@ public class FinalScheduleFragment extends Fragment implements OnMapReadyCallbac
         FinalScheduleAdapter adapter = new FinalScheduleAdapter(getContext(), finalScheduleModels);
         recyclerView.setAdapter(adapter);
     }
-
 
     private void spinnerInit(){
         ArrayList<String> items = new ArrayList<>(Arrays.asList("1일차(09.01)", "2일차(09.02)"));
@@ -71,6 +75,19 @@ public class FinalScheduleFragment extends Fragment implements OnMapReadyCallbac
         spinner.setAdapter(adapter);
     }
 
+    public void swipeRefreshInit(){
+        swipeContainer.setColorSchemeResources(
+                android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light
+        );
+        swipeContainer.setOnRefreshListener(() -> {
+            recyclerView.getAdapter().notifyDataSetChanged();
+            swipeContainer.setRefreshing(false);
+        });
+    }
+
     @OnClick(R.id.change_view_btn) // 리스트 <-> 지도 전환 버튼
     public void onClickBtn(){
         if(mapView.getVisibility() == View.GONE) {
@@ -80,6 +97,20 @@ public class FinalScheduleFragment extends Fragment implements OnMapReadyCallbac
             changeViewBtn.setBackgroundResource(android.R.drawable.ic_dialog_map);
             mapView.setVisibility(View.GONE);
         }
+    }
+
+    // 백키눌렀을때 웹뷰 뒤로가기
+    @Override
+    public void onBack() {
+        TripActivity activity = (TripActivity) getActivity();
+        activity.setOnKeyBackPressedListener(null);
+        activity.onBackPressed();
+
+    }
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        ((TripActivity) activity).setOnKeyBackPressedListener(this);
     }
 
 

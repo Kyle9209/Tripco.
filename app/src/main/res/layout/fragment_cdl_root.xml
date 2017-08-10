@@ -4,10 +4,17 @@
     android:layout_height="match_parent"
     tools:context="com.tripco.www.tripco.fragment.CdlRootFragment">
 
-    <android.support.v7.widget.RecyclerView
-        tools:listitem="@layout/cell_grid_list_layout"
-        android:id="@+id/grid_list_rv"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipeContainer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.RecyclerView
+            tools:listitem="@layout/cell_grid_list_layout"
+            android:id="@+id/grid_list_rv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
 
 </FrameLayout>

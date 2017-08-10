@@ -32,10 +32,14 @@ public class TripActivity extends RootActivity {
                         // flag = false 일 때 탐색창 유지
                         break;
                     case R.id.candidate_list:
-                        showDialog(new CandidateLIstFragment());
+                        //showDialog(new CandidateLIstFragment());
+                        ft.replace(R.id.content, new CandidateLIstFragment()).commit();
+                        flag = true;
                         break;
                     case R.id.final_schedule:
-                        showDialog(new FinalScheduleFragment());
+                        ft.replace(R.id.content, new FinalScheduleFragment()).commit();
+                        flag = true;
+                        //showDialog(new FinalScheduleFragment());
                         break;
                 }
                 return true;
@@ -48,7 +52,7 @@ public class TripActivity extends RootActivity {
         ButterKnife.bind(this);
 
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-        navigation.setSelectedItemId(R.id.searching); // 초기 화면 -> 탐색
+        navigation.setSelectedItemId(R.id.candidate_list); // 초기 화면 -> 후보지리스트
     }
 
     private void showDialog(Fragment fragment){
@@ -72,16 +76,14 @@ public class TripActivity extends RootActivity {
     }
 
     // 백키눌렀을때 웹뷰 뒤로가기
-    public interface onKeyBackPressedListener {
-        public void onBack();
-    }
     private onKeyBackPressedListener mOnKeyBackPressedListener;
+    public interface onKeyBackPressedListener { void onBack(); }
     public void setOnKeyBackPressedListener(onKeyBackPressedListener listener) {
         mOnKeyBackPressedListener = listener;
     }
     @Override
     public void onBackPressed() {
-        if(mOnKeyBackPressedListener !=null){
+        if(mOnKeyBackPressedListener != null){
             mOnKeyBackPressedListener.onBack();
         }else {
             super.onBackPressed();

@@ -24,6 +24,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -58,7 +59,9 @@ import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 
 public class SearchingFragment extends Fragment
-        implements OnMapReadyCallback, GoogleApiClient.OnConnectionFailedListener, TripActivity.onKeyBackPressedListener  {
+        implements OnMapReadyCallback,
+        GoogleApiClient.OnConnectionFailedListener,
+        TripActivity.onKeyBackPressedListener  {
     @BindView(R.id.url_et) EditText urlEt;
     @BindView(R.id.webview) WebView webView;
     @BindView(R.id.webview_pb) ProgressBar progressBar;
@@ -71,13 +74,16 @@ public class SearchingFragment extends Fragment
     @BindView(R.id.line3) LinearLayout line3;
     @BindView(R.id.line4) LinearLayout line4;
     @BindView(R.id.front_title_tv) TextView frontTitleTv;
+    @BindView(R.id.title_et) EditText titleEt;
+    @BindView(R.id.memo_et) EditText memoEt;
     @BindView(R.id.map) MapView mapView;
+    @BindView(R.id.rbs_rg) RadioGroup rbsGroup;
     private Unbinder unbinder;
     private InputMethodManager inputMethodManager;
     private int index = 1;
     private GoogleMap mMap = null;
     private View view;
-    int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
+    private int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
 
     public SearchingFragment() {} // 생성자
 
@@ -95,6 +101,13 @@ public class SearchingFragment extends Fragment
 
         mapView.getMapAsync(this);
 
+
+
+        rbsGroup.setOnCheckedChangeListener((radioGroup, i) -> {
+
+            Toast.makeText(getContext(), i + "눌린번호 : " + radioGroup.getCheckedRadioButtonId(), Toast.LENGTH_SHORT).show();
+        });
+
         return view;
     }
 
@@ -103,10 +116,8 @@ public class SearchingFragment extends Fragment
 
         webView.getSettings().setJavaScriptEnabled(true);
         webView.setWebViewClient(new WebViewClient(){
-
             @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url)
-            {
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 view.loadUrl(url);
                 return true;
             }
@@ -121,6 +132,7 @@ public class SearchingFragment extends Fragment
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
                 progressBar.setVisibility(View.INVISIBLE);
+                urlEt.setText(url);
             }
         });
         webView.setWebChromeClient(new WebChromeClient() {
@@ -190,6 +202,10 @@ public class SearchingFragment extends Fragment
                 U.getInstance().showAlertDialog(getContext(), "알림", "저장하시겠습니까?",
                         "예",
                         (dialogInterface, i) -> {
+                            rbsGroup.clearCheck();
+                            titleEt.setText("");
+                            memoEt.setText("");
+                            spinner.setSelection(0);
                             line1.setVisibility(View.GONE);
                             line2.setVisibility(View.GONE);
                             line3.setVisibility(View.GONE);
@@ -226,7 +242,8 @@ public class SearchingFragment extends Fragment
                 Place place = PlaceAutocomplete.getPlace(getContext(), data);
                 LatLng latlng = place.getLatLng();
                 mMap.clear();
-                mMap.addMarker(new MarkerOptions().position(latlng).title(place.getName().toString()));
+                mMap.addMarker(new MarkerOptions().position(latlng).title(place.getName().toString()))
+                        .showInfoWindow();
                 CameraPosition ani = new CameraPosition.Builder()
                         .target(latlng)
                         .zoom(16)
@@ -301,14 +318,24 @@ public class SearchingFragment extends Fragment
     }
 
     // 백키눌렀을때 웹뷰 뒤로가기
-    @Override
     public void onBack() {
-        if(webView.canGoBack()){
-            webView.goBack();
-        }else{
-            TripActivity activity = (TripActivity) getActivity();
-            activity.setOnKeyBackPressedListener(null);
-            activity.onBackPressed();
+        if(frontLayout.getVisibility() == View.VISIBLE )
+        {
+            line1.setVisibility(View.GONE);
+            line2.setVisibility(View.GONE);
+            line3.setVisibility(View.GONE);
+            line4.setVisibility(View.GONE);
+            mapView.setVisibility(View.GONE);
+            frontLayout.setVisibility(View.GONE);
+        }else
+        {
+            if(webView.canGoBack()){
+                webView.goBack();
+            }else{
+                TripActivity activity = (TripActivity) getActivity();
+                activity.setOnKeyBackPressedListener(null);
+                activity.onBackPressed();
+            }
         }
     }
     @Override

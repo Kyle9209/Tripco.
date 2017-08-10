@@ -1,5 +1,6 @@
 package com.tripco.www.tripco.fragment;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
@@ -7,8 +8,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +23,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.rey.material.widget.Spinner;
 import com.tripco.www.tripco.R;
+import com.tripco.www.tripco.ui.TripActivity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,10 +33,11 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 
-public class CandidateLIstFragment extends Fragment implements OnMapReadyCallback {
+public class CandidateLIstFragment extends Fragment
+        implements OnMapReadyCallback,
+        TripActivity.onKeyBackPressedListener  {
     @BindView(R.id.tabs) TabLayout tabLayout;
     @BindView(R.id.container) ViewPager mViewPager;
-    @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.days_spin) Spinner spinner;
     @BindView(R.id.map) MapView mapView;
     @BindView(R.id.change_view_btn) Button changeViewBtn;
@@ -58,8 +59,6 @@ public class CandidateLIstFragment extends Fragment implements OnMapReadyCallbac
     }
 
     private void uiInit(){
-        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
-
         SectionsPagerAdapter spAdapter = new SectionsPagerAdapter(getChildFragmentManager());
         mViewPager.setAdapter(spAdapter);
         tabLayout.setupWithViewPager(mViewPager);
@@ -130,6 +129,20 @@ public class CandidateLIstFragment extends Fragment implements OnMapReadyCallbac
             }
             return null;
         }
+    }
+
+    // 백키눌렀을때 웹뷰 뒤로가기
+    @Override
+    public void onBack() {
+        TripActivity activity = (TripActivity) getActivity();
+        activity.setOnKeyBackPressedListener(null);
+        activity.onBackPressed();
+
+    }
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        ((TripActivity) activity).setOnKeyBackPressedListener(this);
     }
 
     // 구글맵사용에 필요한 오버라이드 메소드들

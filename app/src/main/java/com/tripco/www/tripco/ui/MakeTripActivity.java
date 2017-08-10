@@ -45,10 +45,22 @@ public class MakeTripActivity extends AppCompatActivity {
     @BindView(R.id.calendar_btn_line) LinearLayout calendarBtnLine;
     @BindView(R.id.calendar_check) ImageView calendarCheck;
     @BindView(R.id.who_check) ImageView whoCheck;
-    @BindView(R.id.hashtag_cb1) CheckBox hashTagCb1;
-    @BindView(R.id.hashtag_cb2) CheckBox hashTagCb2;
-    @BindView(R.id.hashtag_cb3) CheckBox hashTagCb3;
-    @BindView(R.id.hashtag_cb4) CheckBox hashTagCb4;
+    @BindView(R.id.hashtag_cb1) CheckBox hashtagCb1;
+    @BindView(R.id.hashtag_cb2) CheckBox hashtagCb2;
+    @BindView(R.id.hashtag_cb3) CheckBox hashtagCb3;
+    @BindView(R.id.hashtag_cb4) CheckBox hashtagCb4;
+    @BindView(R.id.hashtag_cb5) CheckBox hashtagCb5;
+    @BindView(R.id.hashtag_cb6) CheckBox hashtagCb6;
+    @BindView(R.id.hashtag_cb7) CheckBox hashtagCb7;
+    @BindView(R.id.hashtag_cb8) CheckBox hashtagCb8;
+    @BindView(R.id.hashtag_cb9) CheckBox hashtagCb9;
+    @BindView(R.id.hashtag_cb10) CheckBox hashtagCb10;
+    @BindView(R.id.hashtag_cb11) CheckBox hashtagCb11;
+    @BindView(R.id.hashtag_cb12) CheckBox hashtagCb12;
+    @BindView(R.id.hashtag_cb13) CheckBox hashtagCb13;
+    @BindView(R.id.hashtag_cb14) CheckBox hashtagCb14;
+    @BindView(R.id.hashtag_cb15) CheckBox hashtagCb15;
+
     private int MAX_TITLE_CNT = 10; // 여행제목 최대 글자수 = 10
     private int trip_no;
     private String startDate, endDate;
@@ -69,8 +81,8 @@ public class MakeTripActivity extends AppCompatActivity {
         imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         titleCntCheck();
 
-        TripModel sTripModel  = (TripModel) getIntent().getSerializableExtra("serializableTripModel");
-        if(sTripModel != null){
+        TripModel sTripModel = (TripModel) getIntent().getSerializableExtra("serializableTripModel");
+        if (sTripModel != null) {
             updateFlag = true;
             trip_no = sTripModel.getTrip_no();
             titleTv.setText("여행수정하기");
@@ -80,13 +92,24 @@ public class MakeTripActivity extends AppCompatActivity {
             endDate = sTripModel.getEnd_date();
             calendarBtn.setText(startDate + " ~ " + endDate);
             calendarCheck.setVisibility(View.VISIBLE);
-            if(sTripModel.getPartner_no() != 0){
+            if (sTripModel.getPartner_no() != 0) {
                 // 혼자가 아니라면 친구도 셋팅
             }
-            if(sTripModel.getHashtag().contains(hashTagCb1.getText())) hashTagCb1.setChecked(true);
-            if(sTripModel.getHashtag().contains(hashTagCb2.getText())) hashTagCb2.setChecked(true);
-            if(sTripModel.getHashtag().contains(hashTagCb3.getText())) hashTagCb3.setChecked(true);
-            if(sTripModel.getHashtag().contains(hashTagCb4.getText())) hashTagCb4.setChecked(true);
+            if (sTripModel.getHashtag().contains(hashtagCb1.getText())) hashtagCb1.setChecked(true);
+            if (sTripModel.getHashtag().contains(hashtagCb2.getText())) hashtagCb2.setChecked(true);
+            if (sTripModel.getHashtag().contains(hashtagCb3.getText())) hashtagCb3.setChecked(true);
+            if (sTripModel.getHashtag().contains(hashtagCb4.getText())) hashtagCb4.setChecked(true);
+            if (sTripModel.getHashtag().contains(hashtagCb5.getText())) hashtagCb5.setChecked(true);
+            if (sTripModel.getHashtag().contains(hashtagCb6.getText())) hashtagCb6.setChecked(true);
+            if (sTripModel.getHashtag().contains(hashtagCb7.getText())) hashtagCb7.setChecked(true);
+            if (sTripModel.getHashtag().contains(hashtagCb8.getText())) hashtagCb8.setChecked(true);
+            if (sTripModel.getHashtag().contains(hashtagCb9.getText())) hashtagCb9.setChecked(true);
+            if (sTripModel.getHashtag().contains(hashtagCb10.getText())) hashtagCb10.setChecked(true);
+            if (sTripModel.getHashtag().contains(hashtagCb11.getText())) hashtagCb11.setChecked(true);
+            if (sTripModel.getHashtag().contains(hashtagCb12.getText())) hashtagCb12.setChecked(true);
+            if (sTripModel.getHashtag().contains(hashtagCb13.getText())) hashtagCb13.setChecked(true);
+            if (sTripModel.getHashtag().contains(hashtagCb14.getText())) hashtagCb14.setChecked(true);
+            if (sTripModel.getHashtag().contains(hashtagCb15.getText())) hashtagCb15.setChecked(true);
         }
     }
 
@@ -101,15 +124,25 @@ public class MakeTripActivity extends AppCompatActivity {
                 break;
             case R.id.complete_btn:
                 if (checkData(true)) {
-                    if(hashTagCb1.isChecked()) hashTags = hashTags + hashTagCb1.getText().toString();
-                    if(hashTagCb2.isChecked()) hashTags = hashTags + hashTagCb2.getText().toString();
-                    if(hashTagCb3.isChecked()) hashTags = hashTags + hashTagCb3.getText().toString();
-                    if(hashTagCb4.isChecked()) hashTags = hashTags + hashTagCb4.getText().toString();
-
-                    if(loginFlag){ // 로그인되어있으니 서버로
+                    if (hashtagCb1.isChecked()) hashTags = hashTags + hashtagCb1.getText().toString();
+                    if (hashtagCb2.isChecked()) hashTags = hashTags + hashtagCb2.getText().toString();
+                    if (hashtagCb3.isChecked()) hashTags = hashTags + hashtagCb3.getText().toString();
+                    if (hashtagCb4.isChecked()) hashTags = hashTags + hashtagCb4.getText().toString();
+                    if (hashtagCb5.isChecked()) hashTags = hashTags + hashtagCb5.getText().toString();
+                    if (hashtagCb6.isChecked()) hashTags = hashTags + hashtagCb6.getText().toString();
+                    if (hashtagCb7.isChecked()) hashTags = hashTags + hashtagCb7.getText().toString();
+                    if (hashtagCb8.isChecked()) hashTags = hashTags + hashtagCb8.getText().toString();
+                    if (hashtagCb9.isChecked()) hashTags = hashTags + hashtagCb9.getText().toString();
+                    if (hashtagCb10.isChecked()) hashTags = hashTags + hashtagCb10.getText().toString();
+                    if (hashtagCb11.isChecked()) hashTags = hashTags + hashtagCb11.getText().toString();
+                    if (hashtagCb12.isChecked()) hashTags = hashTags + hashtagCb12.getText().toString();
+                    if (hashtagCb13.isChecked()) hashTags = hashTags + hashtagCb13.getText().toString();
+                    if (hashtagCb14.isChecked()) hashTags = hashTags + hashtagCb14.getText().toString();
+                    if (hashtagCb15.isChecked()) hashTags = hashTags + hashtagCb15.getText().toString();
+                    if (loginFlag) { // 로그인되어있으니 서버로
                         finish();
                     } else { // 로그인되어있지않음 ->// 로컬디비로
-                        if(updateFlag) SQLiteUpdate();
+                        if (updateFlag) SQLiteUpdate();
                         else SQLiteInsert();
                         finish();
                     }
@@ -118,13 +151,13 @@ public class MakeTripActivity extends AppCompatActivity {
         }
     }
 
-    private void SQLiteUpdate(){
+    private void SQLiteUpdate() {
         try {
             String sql = "update Trip_Table set" +
-                    " trip_title = '" +titleEt.getText().toString()+ "'," +
-                    " start_date = '" +startDate+ "'," +
-                    " end_date = '" +endDate+ "'," +
-                    " hashtag = '" +hashTags+ "'" +
+                    " trip_title = '" + titleEt.getText().toString() + "'," +
+                    " start_date = '" + startDate + "'," +
+                    " end_date = '" + endDate + "'," +
+                    " hashtag = '" + hashTags + "'" +
                     " where trip_no = " + trip_no + ";";
             DBOpenHelper.dbOpenHelper.getWritableDatabase().execSQL(sql);
             Toast.makeText(this, "수정되었습니다.", Toast.LENGTH_SHORT).show();
@@ -133,22 +166,22 @@ public class MakeTripActivity extends AppCompatActivity {
         }
     }
 
-    private void SQLiteInsert(){
+    private void SQLiteInsert() {
         try {
             String sql = "insert into Trip_Table(" +
-                            "trip_title, " +
-                            "start_date, " +
-                            "end_date, " +
-                            "user_no, " +
-                            "partner_no, " +
-                            "hashtag) " +
-                            "values(" +
-                            "'"+titleEt.getText().toString()+"', " +
-                            "'"+startDate+"', " +
-                            "'"+endDate+"', " +
-                            "'"+0+"', " +
-                            "'"+0+"', " +
-                            "'"+hashTags+"');";
+                    "trip_title, " +
+                    "start_date, " +
+                    "end_date, " +
+                    "user_no, " +
+                    "partner_no, " +
+                    "hashtag) " +
+                    "values(" +
+                    "'" + titleEt.getText().toString() + "', " +
+                    "'" + startDate + "', " +
+                    "'" + endDate + "', " +
+                    "'" + 0 + "', " +
+                    "'" + 0 + "', " +
+                    "'" + hashTags + "');";
             DBOpenHelper.dbOpenHelper.getWritableDatabase().execSQL(sql);
             Toast.makeText(this, "저장되었습니다.", Toast.LENGTH_SHORT).show();
         } catch (SQLException e) {
@@ -156,7 +189,7 @@ public class MakeTripActivity extends AppCompatActivity {
         }
     }
 
-    private boolean checkData(boolean check){
+    private boolean checkData(boolean check) {
         if (TextUtils.isEmpty(titleEt.getText().toString())) {
             titleEt.setError("제목을 입력해주세요.");
             titleEt.requestFocus();
@@ -174,19 +207,21 @@ public class MakeTripActivity extends AppCompatActivity {
         return check;
     }
 
-    private void titleCntCheck(){
+    private void titleCntCheck() {
         titleEt.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
             }
+
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
             }
+
             @Override
             public void afterTextChanged(Editable editable) {
-                if(editable.toString().length() <= MAX_TITLE_CNT)
+                if (editable.toString().length() <= MAX_TITLE_CNT)
                     titleCntTv.setText(editable.toString().length() + "/" + MAX_TITLE_CNT);
-                if(TextUtils.isEmpty(titleEt.getText()))
+                if (TextUtils.isEmpty(titleEt.getText()))
                     titleCheck.setVisibility(View.INVISIBLE);
                 else
                     titleCheck.setVisibility(View.VISIBLE);
@@ -241,7 +276,7 @@ public class MakeTripActivity extends AppCompatActivity {
 
         // 완료버튼
         bottomSheetDialog.findViewById(R.id.complete_btn).setOnClickListener(view -> {
-            if(TextUtils.isEmpty(start.getText()) || TextUtils.isEmpty(end.getText())){
+            if (TextUtils.isEmpty(start.getText()) || TextUtils.isEmpty(end.getText())) {
                 Toast.makeText(MakeTripActivity.this, "날짜를 선택해주세요.", Toast.LENGTH_SHORT).show();
             } else {
                 bottomSheetDialog.dismiss();
@@ -259,12 +294,12 @@ public class MakeTripActivity extends AppCompatActivity {
 
         // 찾기버튼
         bottomSheetDialog.findViewById(R.id.find_btn).setOnClickListener(view -> {
-            android.widget.EditText find_et = bottomSheetDialog.findViewById(R.id.find_et);
+            EditText find_et = bottomSheetDialog.findViewById(R.id.find_et);
             if (TextUtils.isEmpty(find_et.getText().toString())) {
                 find_et.setError(getString(R.string.error_field_required));
                 find_et.requestFocus();
             } else {
-                if(loginFlag){
+                if (loginFlag) {
                     // 로그인되어있음 -> 서버에서 친구데이터 맞는지 확인
                 } else {
                     U.getInstance().showAlertDialog(this, "알림", "로그인하시겠습니까?",
@@ -283,7 +318,7 @@ public class MakeTripActivity extends AppCompatActivity {
 
         // 완료버튼
         bottomSheetDialog.findViewById(R.id.complete_btn).setOnClickListener(view -> {
-            if(loginFlag) whoCheck.setVisibility(View.VISIBLE);
+            if (loginFlag) whoCheck.setVisibility(View.VISIBLE);
             bottomSheetDialog.dismiss();
         });
     }
