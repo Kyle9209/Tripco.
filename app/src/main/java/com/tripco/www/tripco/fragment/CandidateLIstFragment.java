@@ -112,7 +112,7 @@ public class CandidateLIstFragment extends Fragment
 
         @Override
         public int getCount() {
-            return 4;
+            return 3;
         }
 
         @Override
@@ -124,8 +124,8 @@ public class CandidateLIstFragment extends Fragment
                     return "음식";
                 case 2:
                     return "숙박";
-                case 3:
-                    return "교통";
+//                case 3:
+//                    return "교통";
             }
             return null;
         }

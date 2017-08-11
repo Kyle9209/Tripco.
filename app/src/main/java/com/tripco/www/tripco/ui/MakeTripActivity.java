@@ -127,9 +127,11 @@ public class MakeTripActivity extends AppCompatActivity {
     public void onClickBtn(View view) {
         switch (view.getId()) {
             case R.id.calendar_btn:
+                imm.hideSoftInputFromWindow(titleEt.getWindowToken(), 0);
                 OnCalendar();
                 break;
             case R.id.who_btn:
+                imm.hideSoftInputFromWindow(titleEt.getWindowToken(), 0);
                 OnFindWho();
                 break;
             case R.id.toolbar_right_btn:

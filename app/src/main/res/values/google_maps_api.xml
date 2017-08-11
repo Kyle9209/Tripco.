@@ -20,8 +20,10 @@
     Once you have your key (it starts with "AIza"), replace the "google_maps_key"
     string in this file.
     -->
+    <!--구글맵-->  <!--AIzaSyCwNU38mzcJzbH6kmNUeUACBGJ6475nw80-->
+    <!--구글플레이스--> <!--AIzaSyAvKPBg2g1WMaJE_f_Azjob2i861oCC9xs-->
+    <!-- 릴리즈키 --> <!--AIzaSyDep4j1v1OkNhaZE_s94gRv20uL_UX0d94-->
     <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">
-         <!--구글맵-->  <!--AIzaSyCwNU38mzcJzbH6kmNUeUACBGJ6475nw80-->
-        <!--구글플레이스--> AIzaSyAvKPBg2g1WMaJE_f_Azjob2i861oCC9xs
+        AIzaSyAvKPBg2g1WMaJE_f_Azjob2i861oCC9xs
     </string>
 </resources>
