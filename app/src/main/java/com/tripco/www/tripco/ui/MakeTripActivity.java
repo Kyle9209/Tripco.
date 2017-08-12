@@ -28,9 +28,7 @@ import com.tripco.www.tripco.model.TripModel;
 import com.tripco.www.tripco.util.U;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -71,7 +69,6 @@ public class MakeTripActivity extends AppCompatActivity {
     private boolean updateFlag = false; // 수정하기로 들어온건지 확인
     private BottomSheetDialog bottomSheetDialog;
     private InputMethodManager imm; // 키보드 객체
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.KOREA);
     private Date stringToStartDate, stringToEndDate;
 
     @Override
@@ -81,11 +78,11 @@ public class MakeTripActivity extends AppCompatActivity {
         imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         ButterKnife.bind(this);
         toolbarInit();
-        titleCntCheck();
+        checkTitleCnt();
         getExtraData();
     }
 
-    private void getExtraData(){
+    private void getExtraData() {
         TripModel sTripModel = (TripModel) getIntent().getSerializableExtra("serializableTripModel");
         if (sTripModel != null) {
             updateFlag = true;
@@ -118,7 +115,7 @@ public class MakeTripActivity extends AppCompatActivity {
         }
     }
 
-    private void toolbarInit(){
+    private void toolbarInit() {
         toolbarTitleTv.setText("여행 만들기");
         toolbarRightBtn.setText("완료");
     }
@@ -128,11 +125,11 @@ public class MakeTripActivity extends AppCompatActivity {
         switch (view.getId()) {
             case R.id.calendar_btn:
                 imm.hideSoftInputFromWindow(titleEt.getWindowToken(), 0);
-                OnCalendar();
+                onCalendar();
                 break;
             case R.id.who_btn:
                 imm.hideSoftInputFromWindow(titleEt.getWindowToken(), 0);
-                OnFindWho();
+                onFindWho();
                 break;
             case R.id.toolbar_right_btn:
                 if (checkData(true)) {
@@ -154,8 +151,8 @@ public class MakeTripActivity extends AppCompatActivity {
                     if (loginFlag) { // 로그인되어있으니 서버로
                         finish();
                     } else { // 로그인되어있지않음 ->// 로컬디비로
-                        if (updateFlag) SQLiteUpdate();
-                        else SQLiteInsert();
+                        if (updateFlag) updateSQLite();
+                        else insertSQLite();
                         finish();
                     }
                 }
@@ -163,7 +160,7 @@ public class MakeTripActivity extends AppCompatActivity {
         }
     }
 
-    private void SQLiteUpdate() {
+    private void updateSQLite() {
         try {
             String sql = "update Trip_Table set" +
                     " trip_title = '" + titleEt.getText().toString() + "'," +
@@ -178,9 +175,9 @@ public class MakeTripActivity extends AppCompatActivity {
         }
     }
 
-    private void SQLiteInsert() {
+    private void insertSQLite() {
         try {
-            String sql = "insert into Trip_Table(" +
+            String sql = "insert into ScheduleList_Table(" +
                     "trip_title, " +
                     "start_date, " +
                     "end_date, " +
@@ -212,14 +209,12 @@ public class MakeTripActivity extends AppCompatActivity {
             Toast.makeText(this, "날짜를 선택해주세요.", Toast.LENGTH_SHORT).show();
             calendarBtnLine.setBackgroundColor(Color.RED);
             check = false;
-        } else {
-            calendarBtnLine.setBackgroundColor(Color.WHITE);
-        }
+        } else calendarBtnLine.setBackgroundColor(Color.WHITE);
 
         return check;
     }
 
-    private void titleCntCheck() {
+    private void checkTitleCnt() {
         titleEt.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -243,7 +238,6 @@ public class MakeTripActivity extends AppCompatActivity {
 
     private void setBottomSheetDialog(int layout) {
         bottomSheetDialog = new BottomSheetDialog(this);
-
         bottomSheetDialog
                 .contentView(layout)
                 .heightParam(ViewGroup.LayoutParams.MATCH_PARENT)
@@ -252,7 +246,7 @@ public class MakeTripActivity extends AppCompatActivity {
                 .show();
     }
 
-    private void OnCalendar() {
+    private void onCalendar() {
         dateSelectFlag = false;
         setBottomSheetDialog(R.layout.bsd_calendar_layout);
 
@@ -271,7 +265,7 @@ public class MakeTripActivity extends AppCompatActivity {
             if (!dateSelectFlag) {
                 start.setText(selectedDate);
                 try {
-                    stringToStartDate = dateFormat.parse(selectedDate);
+                    stringToStartDate = U.getInstance().getDateFormat().parse(selectedDate);
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
@@ -282,7 +276,7 @@ public class MakeTripActivity extends AppCompatActivity {
             } else {
                 end.setText(selectedDate);
                 try {
-                    stringToEndDate = dateFormat.parse(selectedDate);
+                    stringToEndDate = U.getInstance().getDateFormat().parse(selectedDate);
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
@@ -305,7 +299,7 @@ public class MakeTripActivity extends AppCompatActivity {
         });
     }
 
-    private void OnFindWho() {
+    private void onFindWho() {
         setBottomSheetDialog(R.layout.bsd_who_layout);
 
         TextView toolbarTitleTv = bottomSheetDialog.findViewById(R.id.toolbar_title_tv);

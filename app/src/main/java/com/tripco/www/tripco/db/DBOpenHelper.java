@@ -2,6 +2,7 @@ package com.tripco.www.tripco.db;
 
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.widget.Toast;
 
 import com.tripco.www.tripco.util.U;
 
@@ -33,27 +34,29 @@ public class DBOpenHelper extends SQLiteOpenHelper {
         sb.append(" hashtag TEXT ) ");
         db.execSQL(sb.toString());
 
-        /*// ScheduleList_Table 생성
-        sb.append(" CREATE TABLE ScheduleList_Table ( ");
+        // ScheduleList_Table 생성
+        sb = new StringBuffer();
+        sb.append(" CREATE TABLE ScheduleList_Table ( " );
+        sb.append(" trip_no INTEGER REFERENCES Trip_Table (trip_no) ");
+        sb.append(" ON DELETE CASCADE, ");
         sb.append(" schedule_no INTEGER PRIMARY KEY AUTOINCREMENT, ");
-        sb.append(" trip_no INTEGER FOREIGN KEY REFERENCES Trip_Table (trip_no), ");
-        sb.append(" schedule_date TEXT ) ");
+        sb.append(" schedule_date TEXT, ");
+        sb.append(" item_url TEXT, ");
+        sb.append(" cate_no INTEGER, ");
+        sb.append(" item_lat TEXT, ");
+        sb.append(" item_long TEXT, ");
+        sb.append(" item_location TEXT, ");
+        sb.append(" item_title TEXT, ");
+        sb.append(" item_memo TEXT, ");
+        sb.append(" item_check INTEGER DEFAULT 0, ");
+        sb.append(" item_time TEXT )");
         db.execSQL(sb.toString());
-
-        // Item_Table 생성
-        sb.append(" CREATE TABLE Item_Table ( ");
-        sb.append(" item_no INTEGER PRIMARY KEY AUTOINCREMENT, ");
-        sb.append(" trip_title TEXT, ");
-        sb.append(" start_date TEXT, ");
-        sb.append(" end_date TEXT, ");
-        sb.append(" user_no INTEGER, ");
-        sb.append(" partner_no INTEGER, ");
-        sb.append(" hashtag TEXT ) ");
-        db.execSQL(sb.toString());*/
 
         U.getInstance().log("테이블생성");
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {}
+    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
+        Toast.makeText(U.getInstance().getContext(), "DB UPGRADE!", Toast.LENGTH_SHORT).show();
+    }
 }

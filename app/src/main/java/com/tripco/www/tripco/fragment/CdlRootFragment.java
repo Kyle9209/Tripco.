@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 
 import com.tripco.www.tripco.R;
 import com.tripco.www.tripco.adapter.FragmentAdapter;
-import com.tripco.www.tripco.model.ListModel;
+import com.tripco.www.tripco.model.ScheduleModel;
 
 import java.util.ArrayList;
 
@@ -25,7 +25,7 @@ public class CdlRootFragment extends Fragment {
     @BindView(R.id.swipeContainer) SwipeRefreshLayout swipeContainer;
     private Unbinder unbinder;
     private View view;
-    ArrayList<ListModel> listModels;
+    ArrayList<ScheduleModel> scheduleModels;
 
     public CdlRootFragment() {}
 
@@ -56,8 +56,8 @@ public class CdlRootFragment extends Fragment {
 
         recyclerView.setLayoutManager
                 (new GridLayoutManager(getContext(), 3, GridLayoutManager.VERTICAL, false));
-        listModels = null;
-        FragmentAdapter adapter = new FragmentAdapter(getContext(), listModels);
+        scheduleModels = null;
+        FragmentAdapter adapter = new FragmentAdapter(getContext(), scheduleModels);
         recyclerView.setAdapter(adapter);
     }
 

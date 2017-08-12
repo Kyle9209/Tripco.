@@ -3,6 +3,7 @@ package com.tripco.www.tripco.fragment;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.database.SQLException;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -24,6 +25,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -44,11 +46,14 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.rey.material.widget.Spinner;
 import com.tripco.www.tripco.R;
+import com.tripco.www.tripco.db.DBOpenHelper;
+import com.tripco.www.tripco.model.AtoFModel;
 import com.tripco.www.tripco.ui.TripActivity;
 import com.tripco.www.tripco.util.U;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.text.ParseException;
+import java.util.Calendar;
+import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -82,14 +87,23 @@ public class SearchingFragment extends Fragment
     private Unbinder unbinder;
     private InputMethodManager inputMethodManager;
     private int index = 1;
+    private int tripNo;
+    private String startDate, endDate;
     private GoogleMap mMap = null;
     private View view;
     private int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
+    private LatLng latlng = null;
+    private String placeName = "";
 
     public SearchingFragment() {} // 생성자
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        AtoFModel atoFModel = (AtoFModel) getArguments().getSerializable("atoFModel");
+        tripNo = atoFModel.getTrip_no();
+        startDate = atoFModel.getStart_date();
+        endDate = atoFModel.getEnd_date();
+        //U.getInstance().getBus().register(this);
         view = inflater.inflate(R.layout.fragment_searching, container, false);
         unbinder = ButterKnife.bind(this, view);
         // 키보드 객체 획득
@@ -98,11 +112,17 @@ public class SearchingFragment extends Fragment
         spinnerInit();
         editTextInit(); // 키패드 완료 버튼 처리
         toolbarInit();
-
         mapView.getMapAsync(this);
-
         return view;
     }
+
+//    @Subscribe
+//    public void ottoBus(AtoFModel model) {
+//        U.getInstance().log(model.getTrip_no() + model.getStart_date() + model.getEnd_date());
+//        tripNo = model.getTrip_no();
+//        startDate = model.getStart_date();
+//        endDate = model.getEnd_date();
+//    }
 
     private void toolbarInit(){
         toolbarTitleTv.setText("유형선택");
@@ -144,13 +164,26 @@ public class SearchingFragment extends Fragment
         //==========================================================================================
     }
 
-    private void spinnerInit(){
-        ArrayList<String> items = new ArrayList<>(Arrays.asList("1일차(09.01)", "2일차(09.02)"));
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(),
-                android.R.layout.simple_spinner_item, items);
-        adapter.add("3일차(09.03)");
+    private void spinnerInit() {
+        Date start = null;
+        Date end = null;
+        try {
+            start = U.getInstance().getDateFormat().parse(startDate);
+            end = U.getInstance().getDateFormat().parse(endDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(start);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, 0);
+        int n = 1;
+        while (true){
+            adapter.add(n + "일차(" + U.getInstance().getDateFormat().format(calendar.getTime()) + ")");
+            n++;
+            calendar.add(Calendar.DATE, 1);
+            if(calendar.getTime().after(end)) break;
+        }
         adapter.notifyDataSetChanged();
-
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
     }
@@ -172,7 +205,7 @@ public class SearchingFragment extends Fragment
     public void onClickSearchUrlBtn(){
         String inputAddrStr = urlEt.getText().toString();
         if (!TextUtils.isEmpty(inputAddrStr)) {
-            String httpAddress = httpsAddressCheck(inputAddrStr);
+            String httpAddress = checkHttps(inputAddrStr);
             webView.loadUrl(httpAddress);
             inputMethodManager.hideSoftInputFromWindow(urlEt.getWindowToken(), 0); // 키보드 내리기
         } else {
@@ -200,23 +233,11 @@ public class SearchingFragment extends Fragment
                 U.getInstance().showAlertDialog(getContext(), "알림", "저장하시겠습니까?",
                         "예",
                         (dialogInterface, i) -> {
-                            rbsGroup.clearCheck();
-                            titleEt.setText("");
-                            memoEt.setText("");
-                            spinner.setSelection(0);
-                            line1.setVisibility(View.GONE);
-                            line2.setVisibility(View.GONE);
-                            line3.setVisibility(View.GONE);
-                            line4.setVisibility(View.GONE);
-                            mapView.setVisibility(View.GONE);
-                            frontLayout.setVisibility(View.GONE);
-                            Toast.makeText(getContext(), "후보지리스트에 추가되었습니다.", Toast.LENGTH_SHORT).show();
+                            saveDetail();
                             dialogInterface.dismiss();
                         },
                         "아니오",
-                        (dialogInterface, i) -> {
-                            dialogInterface.dismiss();
-                        });
+                        (dialogInterface, i) -> dialogInterface.dismiss());
                 break;
             case R.id.search_address_btn: // 구글플레이스 검색창 열기
                 try {
@@ -233,14 +254,82 @@ public class SearchingFragment extends Fragment
         }
     }
 
+    private void saveDetail(){
+        RadioButton rb = rbsGroup.findViewById(rbsGroup.getCheckedRadioButtonId());
+        String[] itemDate = spinner.getSelectedItem().toString().split("\\(");
+        U.getInstance().log("url : " + urlEt.getText() +
+                "\n선택한라디오버튼 : " + rb.getText().toString() +
+                "\n위도경도 : " + latlng.latitude + "/" + latlng.longitude +
+                "\n위치명 : " + placeName +
+                "\n날짜 : " + itemDate[1].substring(0, itemDate[1].length()-1) +
+                "\n제목 : " + titleEt.getText() +
+                "\n메모 : " + memoEt.getText() +
+                "\ntrip_no : " + tripNo);
+        try {
+            String sql = "insert into ScheduleList_Table(" +
+                    "trip_no, "+
+                    "schedule_date, "+
+                    " item_url, "+
+                    " cate_no, "+
+                    " item_lat, "+
+                    " item_long, "+
+                    " item_location, "+
+                    " item_title, "+
+                    " item_memo) "+
+                    "values(" +
+                    "'" + tripNo + "', " +
+                    "'" + itemDate[1].substring(0, itemDate[1].length()-1) + "', " +
+                    "'" + urlEt.getText() + "', " +
+                    "'" + getIntCateNo(rb.getText().toString())+ "', " +
+                    "'" + latlng.latitude + "', " +
+                    "'" + latlng.longitude + "', " +
+                    "'" + placeName + "', " +
+                    "'" + titleEt.getText() + "', " +
+                    "'" + memoEt.getText() + "');";
+            DBOpenHelper.dbOpenHelper.getWritableDatabase().execSQL(sql);
+
+            DetailInit();
+            Toast.makeText(getContext(), "후보지리스트에 추가되었습니다.", Toast.LENGTH_SHORT).show();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private int getIntCateNo(String cateStr){
+        switch (cateStr){
+            case "관광":
+                return 0;
+            case "식사":
+                return 1;
+            case "숙박":
+                return 2;
+        }
+        return -1;
+    }
+
+    private void DetailInit(){
+        rbsGroup.clearCheck();
+        titleEt.setText("");
+        memoEt.setText("");
+        spinner.setSelection(0);
+        line1.setVisibility(View.GONE);
+        line2.setVisibility(View.GONE);
+        line3.setVisibility(View.GONE);
+        line4.setVisibility(View.GONE);
+        mapView.setVisibility(View.GONE);
+        frontLayout.setVisibility(View.GONE);
+    }
+
     @Override // 구글 플레이스에서 검색한 데이터 받아서 처리
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 Place place = PlaceAutocomplete.getPlace(getContext(), data);
-                LatLng latlng = place.getLatLng();
+                latlng = place.getLatLng();
+                placeName = place.getName().toString();
+                titleEt.setText(placeName);
                 mMap.clear();
-                mMap.addMarker(new MarkerOptions().position(latlng).title(place.getName().toString()))
+                mMap.addMarker(new MarkerOptions().position(latlng).title(placeName))
                         .showInfoWindow();
                 CameraPosition ani = new CameraPosition.Builder()
                         .target(latlng)
@@ -309,7 +398,7 @@ public class SearchingFragment extends Fragment
     }
 
     // "https://" 동적 추가
-    private String httpsAddressCheck(String inputUrl) {
+    private String checkHttps(String inputUrl) {
         if (inputUrl.indexOf("https://") != -1) return inputUrl;
         else if (inputUrl.indexOf("http://") != -1) return inputUrl;
         else return "https://" + inputUrl;
@@ -375,6 +464,7 @@ public class SearchingFragment extends Fragment
     }
     @Override
     public void onDestroy() {
+        //U.getInstance().getBus().unregister(this);
         super.onDestroy();
     }
     @Override

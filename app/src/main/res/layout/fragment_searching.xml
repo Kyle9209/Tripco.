@@ -120,7 +120,6 @@
 
                     <RadioButton
                         android:background="@drawable/hashtag"
-                        android:id="@+id/tour_rb"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -130,23 +129,21 @@
 
                     <RadioButton
                         android:background="@drawable/hashtag"
-                        android:id="@+id/house_rb"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:button="@null"
+                        android:gravity="center"
+                        android:text="식사" />
+
+                    <RadioButton
+                        android:background="@drawable/hashtag"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:button="@null"
                         android:gravity="center"
                         android:text="숙박" />
-
-                    <RadioButton
-                        android:background="@drawable/hashtag"
-                        android:id="@+id/restaurant_rb"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:button="@null"
-                        android:gravity="center"
-                        android:text="식당" />
 
                 </RadioGroup>
 

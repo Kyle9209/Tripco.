@@ -23,10 +23,13 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.rey.material.widget.Spinner;
 import com.tripco.www.tripco.R;
+import com.tripco.www.tripco.model.AtoFModel;
 import com.tripco.www.tripco.ui.TripActivity;
+import com.tripco.www.tripco.util.U;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.text.ParseException;
+import java.util.Calendar;
+import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -34,8 +37,7 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 
 public class CandidateLIstFragment extends Fragment
-        implements OnMapReadyCallback,
-        TripActivity.onKeyBackPressedListener  {
+        implements OnMapReadyCallback, TripActivity.onKeyBackPressedListener  {
     @BindView(R.id.tabs) TabLayout tabLayout;
     @BindView(R.id.container) ViewPager mViewPager;
     @BindView(R.id.days_spin) Spinner spinner;
@@ -44,17 +46,21 @@ public class CandidateLIstFragment extends Fragment
     private GoogleMap mMap = null;
     private Unbinder unbinder;
     private View view;
+    private int tripNo;
+    private String startDate, endDate;
 
     public CandidateLIstFragment() {}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        AtoFModel atoFModel = (AtoFModel) getArguments().getSerializable("atoFModel");
+        tripNo = atoFModel.getTrip_no();
+        startDate = atoFModel.getStart_date();
+        endDate = atoFModel.getEnd_date();
         view = inflater.inflate(R.layout.fragment_candidate_list, container, false);
         unbinder = ButterKnife.bind(this, view);
-
         uiInit();
         spinnerInit();
-
         return view;
     }
 
@@ -65,12 +71,25 @@ public class CandidateLIstFragment extends Fragment
     }
 
     private void spinnerInit(){
-        ArrayList<String> items = new ArrayList<>(Arrays.asList("1일차(09.01)", "2일차(09.02)"));
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(),
-                R.layout.custom_spinner_item, items);
-        adapter.add("3일차(09.03)");
+        Date start = null;
+        Date end = null;
+        try {
+            start = U.getInstance().getDateFormat().parse(startDate);
+            end = U.getInstance().getDateFormat().parse(endDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(start);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), R.layout.custom_spinner_item, 0);
+        int n = 1;
+        while (true){
+            adapter.add(n + "일차(" + U.getInstance().getDateFormat().format(calendar.getTime()) + ")");
+            n++;
+            calendar.add(Calendar.DATE, 1);
+            if(calendar.getTime().after(end)) break;
+        }
         adapter.notifyDataSetChanged();
-
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
     }
@@ -121,17 +140,15 @@ public class CandidateLIstFragment extends Fragment
                 case 0:
                     return "관광";
                 case 1:
-                    return "음식";
+                    return "식사";
                 case 2:
                     return "숙박";
-//                case 3:
-//                    return "교통";
             }
             return null;
         }
     }
 
-    // 백키눌렀을때 웹뷰 뒤로가기
+    // 백키눌렀을때 메인으로
     @Override
     public void onBack() {
         TripActivity activity = (TripActivity) getActivity();

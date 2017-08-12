@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 
 import com.tripco.www.tripco.R;
 import com.tripco.www.tripco.holder.FragmentViewHolder;
-import com.tripco.www.tripco.model.ListModel;
+import com.tripco.www.tripco.model.ScheduleModel;
 import com.tripco.www.tripco.ui.CandidateInfoActivity;
 
 import java.util.ArrayList;
@@ -20,11 +20,11 @@ import java.util.ArrayList;
 
 public class FragmentAdapter extends RecyclerView.Adapter<FragmentViewHolder> {
     Context context;
-    ArrayList<ListModel> listModels;
+    ArrayList<ScheduleModel> scheduleModels;
 
-    public FragmentAdapter(Context context, ArrayList<ListModel> listModel) {
+    public FragmentAdapter(Context context, ArrayList<ScheduleModel> scheduleModel) {
         this.context = context;
-        this.listModels = listModel;
+        this.scheduleModels = scheduleModel;
     }
 
     @Override
@@ -42,6 +42,6 @@ public class FragmentAdapter extends RecyclerView.Adapter<FragmentViewHolder> {
 
     @Override
     public int getItemCount() {
-        return listModels==null ? 10 : listModels.size();
+        return scheduleModels ==null ? 10 : scheduleModels.size();
     }
 }

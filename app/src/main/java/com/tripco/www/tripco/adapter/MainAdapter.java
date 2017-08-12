@@ -12,6 +12,7 @@ import android.widget.Toast;
 import com.tripco.www.tripco.R;
 import com.tripco.www.tripco.db.DBOpenHelper;
 import com.tripco.www.tripco.holder.MainViewHolder;
+import com.tripco.www.tripco.model.AtoFModel;
 import com.tripco.www.tripco.model.TripModel;
 import com.tripco.www.tripco.ui.MakeTripActivity;
 import com.tripco.www.tripco.ui.TripActivity;
@@ -44,9 +45,15 @@ public class MainAdapter extends RecyclerView.Adapter<MainViewHolder> {
         if(tripModel.getPartner_id().equals(ALONE)) holder.who.setText(ALONE);
         holder.when.setText(tripModel.getStart_date() + " ~ " + tripModel.getEnd_date());
         holder.tag.setText(tripModel.getHashtag());
+
         holder.itemView.setOnClickListener(view -> { // 짧게누르면 후보지리스트로
-            context.startActivity(new Intent(context, TripActivity.class));
+            //U.getInstance().getBus().post(new AtoFModel(tripModel.getTrip_no(), tripModel.getStart_date(), tripModel.getEnd_date()));
+            Intent intent = new Intent(context, TripActivity.class);
+            AtoFModel atoFModel = new AtoFModel(tripModel.getTrip_no(), tripModel.getStart_date(), tripModel.getEnd_date());
+            intent.putExtra("atoFModel", atoFModel);
+            context.startActivity(intent);
         });
+
         holder.update.setOnClickListener(view -> { // 수정버튼 클릭
             Intent intent = new Intent(context, MakeTripActivity.class);
             // putextra 처리
@@ -60,6 +67,7 @@ public class MainAdapter extends RecyclerView.Adapter<MainViewHolder> {
             intent.putExtra("serializableTripModel", serializableTripModel);
             context.startActivity(intent);
         });
+
         holder.itemView.setOnLongClickListener(view -> { // 길게누르면 삭제로
             U.getInstance().showAlertDialog(context, "알림", "삭제하시겠습니까?",
                     "예", (dialogInterface, i) -> {

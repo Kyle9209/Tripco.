@@ -10,11 +10,9 @@ import android.util.Log;
 
 import com.squareup.otto.Bus;
 
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 import java.util.UUID;
-
-/**
- * Created by kkmnb on 2017-07-06.
- */
 
 public class U {
     private static U ourInstance = new U();
@@ -25,8 +23,8 @@ public class U {
 
     // 로그출력
     final String TAG = "T";
-    public void log(String msg){
-        if(msg != null) {
+    public void log(String msg) {
+        if (msg != null) {
             Log.i(TAG, "=========================================================================");
             Log.i(TAG, msg);
             Log.i(TAG, "=========================================================================");
@@ -34,14 +32,14 @@ public class U {
     }
 
     // UUID 획득 : 사용자 고유 기기 정보 획득 동일 기종으로 가입했다면 앱을 삭제후 재설치해도 별도 가입처리 X
-    public String getUUID(Context context){
+    public String getUUID(Context context) {
         TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-        String tmDevice  = "" + tm.getDeviceId();
-        String tmSerial  = "" + tm.getSimSerialNumber();
+        String tmDevice = "" + tm.getDeviceId();
+        String tmSerial = "" + tm.getSimSerialNumber();
         String androidId = "" + android.provider.Settings.Secure.getString(context.getContentResolver(),
                 Settings.Secure.ANDROID_ID);
-        UUID uuid = new UUID(androidId.hashCode(), ((long)tmDevice.hashCode() << 32) | tmSerial.hashCode());
-        return  uuid.toString();
+        UUID uuid = new UUID(androidId.hashCode(), ((long) tmDevice.hashCode() << 32) | tmSerial.hashCode());
+        return uuid.toString();
     }
 
     // 영속저장 =============================================================================
@@ -54,38 +52,38 @@ public class U {
     }
     String SAVE_TAG = "ref";
     // String data
-    public void setString(String key, String value){
+    public void setString(String key, String value) {
         SharedPreferences.Editor editor = context.getSharedPreferences(SAVE_TAG, 0).edit();
         editor.putString(key, value);
         editor.commit();
     }
-    public String getString(String key){
+    public String getString(String key) {
         return context.getSharedPreferences(SAVE_TAG, 0).getString(key, "");
     }
     // Int data
-    public void setInt(String key, int value){
+    public void setInt(String key, int value) {
         SharedPreferences.Editor editor = context.getSharedPreferences(SAVE_TAG, 0).edit();
         editor.putInt(key, value);
         editor.commit();
     }
-    public int getInt(String key){
+    public int getInt(String key) {
         return context.getSharedPreferences(SAVE_TAG, 0).getInt(key, 0);
     }
     // Boolean data
-    public void setBoolean(String key, boolean value){
+    public void setBoolean(String key, boolean value) {
         SharedPreferences.Editor editor = context.getSharedPreferences(SAVE_TAG, 0).edit();
         editor.putBoolean(key, value);
         editor.commit();
     }
-    public boolean getBoolean( String key){
+    public boolean getBoolean(String key) {
         return context.getSharedPreferences(SAVE_TAG, 0).getBoolean(key, false);
     }
     // 영속저장 =============================================================================
 
     // 다이얼로그창 띄우기
-    public void showAlertDialog(Context context,String title, String msg,
-                           String pStr, DialogInterface.OnClickListener pOnClickListener,
-                           String nStr, DialogInterface.OnClickListener nOnClickListener){
+    public void showAlertDialog(Context context, String title, String msg,
+                                String pStr, DialogInterface.OnClickListener pOnClickListener,
+                                String nStr, DialogInterface.OnClickListener nOnClickListener) {
         AlertDialog.Builder dialog = new AlertDialog.Builder(context);
 
         dialog.setTitle(title)
@@ -100,6 +98,12 @@ public class U {
     Bus bus = new Bus();
     public Bus getBus() {
         return bus;
+    }
+
+    // 날짜 포맷 설정
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.KOREA);
+    public SimpleDateFormat getDateFormat() {
+        return dateFormat;
     }
 }
 
