@@ -1,6 +1,7 @@
 package com.tripco.www.tripco.fragment;
 
 import android.app.Activity;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -21,9 +22,10 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.rey.material.widget.Spinner;
 import com.tripco.www.tripco.R;
-import com.tripco.www.tripco.adapter.FinalScheduleAdapter;
+import com.tripco.www.tripco.adapter.FinScheduleListAdapter;
+import com.tripco.www.tripco.db.DBOpenHelper;
 import com.tripco.www.tripco.model.AtoFModel;
-import com.tripco.www.tripco.model.FinalScheduleModel;
+import com.tripco.www.tripco.model.ScheduleModel;
 import com.tripco.www.tripco.ui.TripActivity;
 import com.tripco.www.tripco.util.U;
 
@@ -49,6 +51,7 @@ public class FinalScheduleFragment extends Fragment
     private View view;
     private int tripNo;
     private String startDate, endDate;
+    private String scheduleDate;
 
     public FinalScheduleFragment() {}
 
@@ -61,6 +64,7 @@ public class FinalScheduleFragment extends Fragment
         view = inflater.inflate(R.layout.fragment_final_schedule, container, false);
         unbinder = ButterKnife.bind(this, view);
         spinnerInit();
+        scheduleDate = U.getInstance().getDate(spinner.getSelectedItem().toString()).replace(".","-");
         recViewInit();
         swipeRefreshInit();
         return view;
@@ -68,8 +72,8 @@ public class FinalScheduleFragment extends Fragment
 
     private void recViewInit(){
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        ArrayList<FinalScheduleModel> finalScheduleModels = null;
-        FinalScheduleAdapter adapter = new FinalScheduleAdapter(getContext(), finalScheduleModels);
+        ArrayList<ScheduleModel> scheduleModels = setScheduleModel();
+        FinScheduleListAdapter adapter = new FinScheduleListAdapter(getContext(), scheduleModels);
         recyclerView.setAdapter(adapter);
     }
 
@@ -87,7 +91,7 @@ public class FinalScheduleFragment extends Fragment
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), R.layout.custom_spinner_item, 0);
         int n = 1;
         while (true){
-            adapter.add(n + "일차(" + U.getInstance().getDateFormat().format(calendar.getTime()) + ")");
+            adapter.add(n + "일차(" + U.getInstance().getDateFormat().format(calendar.getTime()).replace("-",".") + ")");
             n++;
             calendar.add(Calendar.DATE, 1);
             if(calendar.getTime().after(end)) break;
@@ -95,6 +99,36 @@ public class FinalScheduleFragment extends Fragment
         adapter.notifyDataSetChanged();
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
+
+        spinner.setOnItemSelectedListener((parent, view1, position, id) -> {
+            scheduleDate = U.getInstance().getDate(parent.getSelectedItem().toString()).replace(".","-");
+            recViewInit();
+        });
+    }
+
+    private ArrayList<ScheduleModel> setScheduleModel(){
+        ArrayList<ScheduleModel> list = new ArrayList<>();
+        String sql = "select * from ScheduleList_Table where trip_no=" +tripNo +
+                " and schedule_date= '" + scheduleDate + "' and item_check = 1;";
+        Cursor csr = DBOpenHelper.dbOpenHelper.getWritableDatabase().rawQuery(sql, null);
+        while (csr.moveToNext()) {
+            list.add(new ScheduleModel(
+                    csr.getInt(0),
+                    csr.getInt(1),
+                    csr.getString(2),
+                    csr.getString(3),
+                    csr.getInt(4),
+                    csr.getString(5),
+                    csr.getString(6),
+                    csr.getString(7),
+                    csr.getString(8),
+                    csr.getString(9),
+                    csr.getInt(10),
+                    csr.getString(11)
+            ));
+        }
+        csr.close();
+        return list;
     }
 
     public void swipeRefreshInit(){

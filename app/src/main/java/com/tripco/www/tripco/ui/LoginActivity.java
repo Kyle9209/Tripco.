@@ -1,11 +1,15 @@
 package com.tripco.www.tripco.ui;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.AutoCompleteTextView;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.tripco.www.tripco.R;
@@ -25,7 +29,9 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity {
-    @BindView(R.id.email) AutoCompleteTextView mEmailView;
+    @BindView(R.id.toolbar_title_tv) TextView toolbarTitleTv;
+    @BindView(R.id.toolbar_right_btn) Button toolbarRightBtn;
+    @BindView(R.id.email) EditText mEmailView;
     @BindView(R.id.password) EditText mPasswordView;
 
     @Override
@@ -33,17 +39,34 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
+        toolbarInit();
+
+        mPasswordView.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        mPasswordView.setOnEditorActionListener((v, actionId, event) -> {
+            if(actionId == EditorInfo.IME_ACTION_DONE)
+            {
+                attemptLogin();
+                return true;
+            }
+            return false;
+        });
     }
 
-    @OnClick(R.id.email_sign_in_button)
+    private void toolbarInit(){
+        toolbarTitleTv.setText("로그인");
+        toolbarRightBtn.setText("완료");
+    }
+
+    @OnClick(R.id.toolbar_right_btn)
     public void onClickEmailSignInButton(){
         attemptLogin();
     }
 
     private void attemptLogin() {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+
         mEmailView.setError(null);
         mPasswordView.setError(null);
-
 
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
@@ -51,7 +74,7 @@ public class LoginActivity extends AppCompatActivity {
         boolean cancel = false;
         View focusView = null;
 
-        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
+        if (TextUtils.isEmpty(password) || !isPasswordValid(password)) {
             mPasswordView.setError(getString(R.string.error_invalid_password));
             focusView = mPasswordView;
             cancel = true;
@@ -69,7 +92,9 @@ public class LoginActivity extends AppCompatActivity {
 
         if (cancel) {
             focusView.requestFocus();
+            imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
         } else { // 서버로
+            imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
            //connectServer(email, password);
         }
     }

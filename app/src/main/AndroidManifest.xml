@@ -52,6 +52,7 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ui.LoginActivity"
+            android:theme="@style/AppTheme.NoActionBar"
             android:label="로그인" />
         <activity
             android:name=".ui.JoinActivity"

@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 
 import com.squareup.otto.Subscribe;
 import com.tripco.www.tripco.R;
-import com.tripco.www.tripco.adapter.FragmentAdapter;
+import com.tripco.www.tripco.adapter.CanScheduleListAdapter;
 import com.tripco.www.tripco.db.DBOpenHelper;
 import com.tripco.www.tripco.model.FtoFModel;
 import com.tripco.www.tripco.model.ScheduleModel;
@@ -25,7 +25,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
-public class CdlRootFragment extends Fragment {
+public class ViewPagerFragment extends Fragment {
     @BindView(R.id.grid_list_rv) RecyclerView recyclerView;
     @BindView(R.id.swipeContainer) SwipeRefreshLayout swipeContainer;
     private Unbinder unbinder;
@@ -34,7 +34,7 @@ public class CdlRootFragment extends Fragment {
     private String scheduleDate;
     private int cateNo;
 
-    public CdlRootFragment() {}
+    public ViewPagerFragment() {}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -77,7 +77,7 @@ public class CdlRootFragment extends Fragment {
     private void recViewInit(){
         recyclerView.setLayoutManager
                 (new GridLayoutManager(getContext(), 3, GridLayoutManager.VERTICAL, false));
-        FragmentAdapter adapter = new FragmentAdapter(getContext(), setScheduleModel());
+        CanScheduleListAdapter adapter = new CanScheduleListAdapter(getContext(), setScheduleModel());
         recyclerView.setAdapter(adapter);
     }
 

@@ -10,14 +10,14 @@ import com.tripco.www.tripco.R;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainViewHolder extends RecyclerView.ViewHolder {
+public class TripListViewHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.title_tv) public TextView title;
     @BindView(R.id.who_tv) public TextView who;
     @BindView(R.id.when_tv) public TextView when;
     @BindView(R.id.tag_tv) public  TextView tag;
     @BindView(R.id.update_btn) public Button update;
 
-    public MainViewHolder(View itemView) {
+    public TripListViewHolder(View itemView) {
         super(itemView);
         ButterKnife.bind(this, itemView);
     }

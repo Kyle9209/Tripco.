@@ -12,6 +12,7 @@
         android:layout_height="match_parent">
 
         <TextView
+            android:textStyle="bold"
             android:id="@+id/toolbar_title_tv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -22,6 +23,7 @@
             android:textSize="20sp" />
 
         <Button
+            android:textStyle="bold"
             android:id="@+id/toolbar_right_btn"
             style="@style/Widget.AppCompat.Button.ButtonBar.AlertDialog"
             android:layout_width="wrap_content"
@@ -29,7 +31,6 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:background="@color/colorPrimary"
             android:text="button"
             android:textColor="#fff" />
 

@@ -1,6 +1,7 @@
 package com.tripco.www.tripco.fragment;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
@@ -13,7 +14,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Toast;
 
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -37,6 +44,9 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 
+import static android.app.Activity.RESULT_CANCELED;
+import static android.app.Activity.RESULT_OK;
+
 public class CandidateLIstFragment extends Fragment
         implements OnMapReadyCallback, TripActivity.onKeyBackPressedListener  {
     @BindView(R.id.tabs) TabLayout tabLayout;
@@ -49,6 +59,7 @@ public class CandidateLIstFragment extends Fragment
     private View view;
     private int tripNo;
     private String startDate, endDate;
+    private int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
 
     public CandidateLIstFragment() {}
 
@@ -100,18 +111,49 @@ public class CandidateLIstFragment extends Fragment
         });
     }
 
-    @OnClick(R.id.change_view_btn) // 리스트 <-> 지도 전환 버튼
-    public void onClickBtn(){
-        if(mapView.getVisibility() == View.GONE) {
-            changeViewBtn.setBackgroundResource(android.R.drawable.ic_dialog_dialer);
-            tabLayout.setVisibility(View.GONE);
-            mViewPager.setVisibility(View.GONE);
-            mapView.setVisibility(View.VISIBLE);
-        } else {
-            changeViewBtn.setBackgroundResource(android.R.drawable.ic_dialog_map);
-            tabLayout.setVisibility(View.VISIBLE);
-            mViewPager.setVisibility(View.VISIBLE);
-            mapView.setVisibility(View.GONE);
+    @OnClick({R.id.change_view_btn, R.id.search_btn})
+    public void onClickBtn(View view){
+        switch (view.getId()) {
+            case R.id.change_view_btn: // 리스트 <-> 지도 전환 버튼
+                if (mapView.getVisibility() == View.GONE) {
+                    changeViewBtn.setBackgroundResource(android.R.drawable.ic_dialog_dialer);
+                    tabLayout.setVisibility(View.GONE);
+                    mViewPager.setVisibility(View.GONE);
+                    mapView.setVisibility(View.VISIBLE);
+                } else {
+                    changeViewBtn.setBackgroundResource(android.R.drawable.ic_dialog_map);
+                    tabLayout.setVisibility(View.VISIBLE);
+                    mViewPager.setVisibility(View.VISIBLE);
+                    mapView.setVisibility(View.GONE);
+                }
+                break;
+            case R.id.search_btn: // googleplace 호출
+                try {
+                    Intent intent =
+                            new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
+                                    .build(getActivity());
+                    startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
+                } catch (GooglePlayServicesRepairableException e) {
+                    // TODO: Handle the error.
+                } catch (GooglePlayServicesNotAvailableException e) {
+                    // TODO: Handle the error.
+                }
+                break;
+        }
+    }
+
+    @Override // 구글 플레이스에서 검색한 데이터 받아서 처리
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                Place place = PlaceAutocomplete.getPlace(getContext(), data);
+                Toast.makeText(getContext(), place.getName() + "선택", Toast.LENGTH_SHORT).show();
+            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
+                Status status = PlaceAutocomplete.getStatus(getContext(), data);
+                U.getInstance().log("RESULT_ERROR 상태 : " + status.getStatusMessage());
+            } else if (resultCode == RESULT_CANCELED) {
+                U.getInstance().log("RESULT_CANCELED 상태");
+            }
         }
     }
 
@@ -124,11 +166,11 @@ public class CandidateLIstFragment extends Fragment
         public Fragment getItem(int position) {
             switch (position){
                 case 0:
-                    return setFragment(new CdlRootFragment(), 0);
+                    return setFragment(new ViewPagerFragment(), 0);
                 case 1:
-                    return setFragment(new CdlRootFragment(), 1);
+                    return setFragment(new ViewPagerFragment(), 1);
                 case 2:
-                    return setFragment(new CdlRootFragment(), 2);
+                    return setFragment(new ViewPagerFragment(), 2);
             }
             return null;
         }

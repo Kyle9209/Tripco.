@@ -1,6 +1,7 @@
 package com.tripco.www.tripco.ui;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +13,7 @@ import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -44,6 +46,7 @@ public class CandidateInfoActivity extends AppCompatActivity
     @BindView(R.id.schedule_date_tv) TextView scheduleDateTv;
     @BindView(R.id.memo) TextView memo;
     @BindView(R.id.loading_img_pb) ProgressBar loadingImgPb;
+    @BindView(R.id.open_url_tv) TextView openUrlTv;
     private ScheduleModel scheduleModel;
     private GoogleApiClient mGoogleApiClient;
 
@@ -58,13 +61,16 @@ public class CandidateInfoActivity extends AppCompatActivity
         if(!scheduleModel.getItem_placeid().equals("null")) getPlaceData();
         else loadingImgPb.setVisibility(View.GONE);
 
-        tripTitle.setText(scheduleModel.getItem_title());
+        if(scheduleModel.getItem_title().equals("")) tripTitle.setVisibility(View.GONE);
+        else tripTitle.setText(scheduleModel.getItem_title());
+
         if(scheduleModel.getItem_check() == 1) checkCb.isChecked();
         if(scheduleModel.getCate_no() == 0) rb0.setChecked(true);
         if(scheduleModel.getCate_no() == 1) rb1.setChecked(true);
         if(scheduleModel.getCate_no() == 2) rb2.setChecked(true);
         scheduleDateTv.setText(scheduleModel.getSchedule_date());
         memo.setText(scheduleModel.getItem_memo());
+        openUrlTv.setText(scheduleModel.getItem_url());
     }
 
     @Override
@@ -99,13 +105,6 @@ public class CandidateInfoActivity extends AppCompatActivity
                 });
     }
 
-    // 사진받기위한 콜백메소드
-    private ResultCallback<PlacePhotoResult> mDisplayPhotoResultCallback = placePhotoResult -> {
-        if (!placePhotoResult.getStatus().isSuccess()) return;
-        loadingImgPb.setVisibility(View.GONE);
-        placeImgIv.setImageBitmap(placePhotoResult.getBitmap());
-    };
-
     // 구글에서 사진을 비동기로 가져옴
     private void placePhotosAsync() {
         Places.GeoDataApi.getPlacePhotos(mGoogleApiClient, scheduleModel.getItem_placeid())
@@ -121,25 +120,35 @@ public class CandidateInfoActivity extends AppCompatActivity
                 });
     }
 
-    @OnClick(R.id.toolbar_right_btn)
-    public void onViewClicked() {
-        //수정페이지에서 완료 후 값을 받아오기 위해서
-        Intent intent = new Intent(CandidateInfoActivity.this, ModifyCandidateInfoActivity.class);
-        //기존의 값을 전달
-        intent.putExtra("locationName", locationName.getText().toString());
-        intent.putExtra("memo1", memo.getText().toString());
-        startActivityForResult(intent, 2); //값을 가져오기로 위해서
-    }
-
-    @OnClick(R.id.delete_btn)
-    public void onClickBtn(){
-        U.getInstance().showAlertDialog(this, "주의!", "해당 정보를 삭제하시겠습니까?",
-                "예", (dialogInterface, i) -> {
-                    dialogInterface.dismiss();
-                },
-                "아니오", (dialogInterface, i) -> {
-                    dialogInterface.dismiss();
-                });
+    @OnClick({R.id.toolbar_right_btn, R.id.open_url_line, R.id.delete_btn})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.toolbar_right_btn:
+                //수정페이지에서 완료 후 값을 받아오기 위해서
+                Intent intent = new Intent(CandidateInfoActivity.this, ModifyCandidateInfoActivity.class);
+                //기존의 값을 전달
+                intent.putExtra("locationName", locationName.getText().toString());
+                intent.putExtra("memo1", memo.getText().toString());
+                startActivityForResult(intent, 2); //값을 가져오기로 위해서
+                break;
+            case R.id.open_url_line:
+                try {
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(openUrlTv.getText().toString())));
+                } catch (Exception e) {
+                    Toast.makeText(this, "잘못된 URL페이지이거나 이동할 URL페이지가 없습니다.", Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                }
+                break;
+            case R.id.delete_btn:
+                U.getInstance().showAlertDialog(this, "주의!", "해당 정보를 삭제하시겠습니까?",
+                        "예", (dialogInterface, i) -> {
+                            dialogInterface.dismiss();
+                        },
+                        "아니오", (dialogInterface, i) -> {
+                            dialogInterface.dismiss();
+                        });
+                break;
+        }
     }
 
     //수정 페이지에서 받아온 결과 값으로 바꾸기
@@ -154,6 +163,12 @@ public class CandidateInfoActivity extends AppCompatActivity
         }
     }
 
+    // 사진받기위한 콜백메소드
+    private ResultCallback<PlacePhotoResult> mDisplayPhotoResultCallback = placePhotoResult -> {
+        if (!placePhotoResult.getStatus().isSuccess()) return;
+        loadingImgPb.setVisibility(View.GONE);
+        placeImgIv.setImageBitmap(placePhotoResult.getBitmap());
+    };
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 

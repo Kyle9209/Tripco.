@@ -23,9 +23,10 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
+            <!-- 이미지 영역 -->
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="200dp">
 
                 <ImageView
                     android:layout_centerHorizontal="true"
@@ -38,24 +39,70 @@
                     android:background="#00000000"
                     android:id="@+id/place_img_iv"
                     android:layout_width="match_parent"
-                    android:layout_height="200dp"
+                    android:layout_height="match_parent"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:layout_alignParentTop="true"
                     android:scaleType="centerCrop" />
 
+                <CheckBox
+                    android:layout_margin="10dp"
+                    android:clickable="false"
+                    android:id="@+id/check_cb"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true" />
+
                 <TextView
-                    android:padding="5dp"
+                    android:paddingRight="5dp"
+                    android:paddingLeft="5dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
                     android:background="#99000000"
                     android:id="@+id/trip_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignBottom="@+id/place_img_iv"
-                    android:layout_margin="15dp"
-                    android:text="여행일정 제목"
+                    android:text="여행제목"
                     android:textColor="#fff"
                     android:textSize="30sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:layout_alignBottom="@+id/loading_img_pb" />
+
+                <LinearLayout
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:id="@+id/open_url_line"
+                    android:background="#99ffffff"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_margin="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_weight="1"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:id="@+id/open_url_tv"
+                        android:textColor="#303f9f"
+                        android:text="url"
+                        android:textSize="18sp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:textStyle="bold"
+                        android:textSize="18sp"
+                        android:layout_weight="0"
+                        android:textColor="#000"
+                        android:text="이동"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
 
                 <ProgressBar
                     android:id="@+id/loading_img_pb"
@@ -64,18 +111,9 @@
                     android:layout_centerHorizontal="true"
                     android:layout_centerVertical="true" />
 
-                <CheckBox
-                    android:clickable="false"
-                    android:id="@+id/check_cb"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignBaseline="@+id/trip_title"
-                    android:layout_alignBottom="@+id/trip_title"
-                    android:layout_toEndOf="@+id/trip_title"
-                    android:layout_toRightOf="@+id/trip_title" />
-
             </RelativeLayout>
 
+            <!-- 유형~메모 영역 -->
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"
@@ -185,8 +223,7 @@
                         android:id="@+id/memo"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="-메모"
-                        android:textSize="20sp" />
+                        android:hint="-메모없음" />
 
                 </LinearLayout>
 
@@ -198,11 +235,12 @@
 
     <Button
         android:id="@+id/delete_btn"
-        android:text="삭제"
-        android:layout_marginRight="15dp"
+        style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="right"
-        android:layout_weight="0" />
+        android:layout_marginRight="15dp"
+        android:layout_weight="0"
+        android:text="삭제" />
 
 </LinearLayout>

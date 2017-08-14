@@ -27,7 +27,7 @@ import com.rey.material.widget.FloatingActionButton;
 import com.squareup.otto.Subscribe;
 import com.tripco.www.tripco.BuildConfig;
 import com.tripco.www.tripco.R;
-import com.tripco.www.tripco.adapter.MainAdapter;
+import com.tripco.www.tripco.adapter.TripListAdapter;
 import com.tripco.www.tripco.db.DBOpenHelper;
 import com.tripco.www.tripco.model.TripModel;
 import com.tripco.www.tripco.util.U;
@@ -174,11 +174,9 @@ public class MainActivity extends AppCompatActivity
             drawer.setFocusable(false);
         } else if (id == R.id.nav_slideshow) {
             startActivity(new Intent(this, AlarmActivity.class));
-        } else if (id == R.id.nav_manage) {
-
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -186,24 +184,17 @@ public class MainActivity extends AppCompatActivity
     // 기본 UI 셋팅
     private void uiInit() {
         setSupportActionBar(toolbar);
-
-        fab.setOnClickListener(view -> {
-            // 여행만들기
-            startActivity(new Intent(getBaseContext(), MakeTripActivity.class));
-        });
-
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        fab.setOnClickListener(view -> startActivity(new Intent(getBaseContext(), MakeTripActivity.class)));
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, 0, 0);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
-
         navigationView.setNavigationItemSelectedListener(this);
     }
 
     // RecyclerView 셋팅
     private void recViewInit(){
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        MainAdapter adapter = new MainAdapter(this, ArrayListTripModel());
+        TripListAdapter adapter = new TripListAdapter(this, ArrayListTripModel());
         recyclerView.setAdapter(adapter);
     }
 

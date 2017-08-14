@@ -56,6 +56,7 @@ public class MakeTripActivity extends AppCompatActivity {
     @BindView(R.id.hashtag_cb13) CheckBox hashtagCb13;
     @BindView(R.id.hashtag_cb14) CheckBox hashtagCb14;
     @BindView(R.id.hashtag_cb15) CheckBox hashtagCb15;
+    @BindView(R.id.delete_btn) Button deleteBtn;
     private int MAX_TITLE_CNT = 10; // 여행제목 최대 글자수 = 10
     private int trip_no;
     private String startDate, endDate;
@@ -67,6 +68,7 @@ public class MakeTripActivity extends AppCompatActivity {
     private BottomSheetDialog bottomSheetDialog;
     private InputMethodManager imm; // 키보드 객체
     private Date stringToStartDate, stringToEndDate;
+    private final static String BUS_NAME = "MAIN";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +86,7 @@ public class MakeTripActivity extends AppCompatActivity {
         if (sTripModel != null) {
             updateFlag = true;
             toolbarTitleTv.setText("여행 수정");
+            deleteBtn.setVisibility(View.VISIBLE);
             trip_no = sTripModel.getTrip_no();
             titleEt.setText(sTripModel.getTrip_title());
             startDate = sTripModel.getStart_date();
@@ -115,7 +118,8 @@ public class MakeTripActivity extends AppCompatActivity {
         toolbarRightBtn.setText("완료");
     }
 
-    @OnClick({R.id.calendar_btn, R.id.who_btn, R.id.toolbar_right_btn, R.id.clear_title_btn})
+    @OnClick({R.id.calendar_btn, R.id.who_btn, R.id.toolbar_right_btn,
+            R.id.clear_title_btn, R.id.delete_btn, R.id.discon_partner_btn})
     public void onClickBtn(View view) {
         switch (view.getId()) {
             case R.id.calendar_btn:
@@ -154,6 +158,32 @@ public class MakeTripActivity extends AppCompatActivity {
                 break;
             case R.id.clear_title_btn:
                 titleEt.setText("");
+                break;
+            case R.id.delete_btn:
+                U.getInstance().showAlertDialog(this, "알림", "본인의 여행 계획 및 저장된 데이터들이 모두 삭제됩니다. 계속 하시겠습니다?",
+                        "계속", (dialogInterface, i) -> {
+                            try {
+                                DBOpenHelper.dbOpenHelper.getWritableDatabase().execSQL(
+                                        "delete from Trip_Table where trip_no="+trip_no
+                                );
+                                U.getInstance().getBus().post(BUS_NAME);
+                                Toast.makeText(this, "삭제되었습니다.", Toast.LENGTH_SHORT).show();
+                            } catch (SQLException e) {
+                                e.printStackTrace();
+                                Toast.makeText(this, "DB Error", Toast.LENGTH_SHORT).show();
+                            }
+                            dialogInterface.dismiss();
+                            finish();
+                        },
+                        "취소", (dialogInterface, i) -> dialogInterface.dismiss());
+                break;
+            case R.id.discon_partner_btn:
+                U.getInstance().showAlertDialog(this, "알림", "파트너와의 연결을 끊으시겠습니까?",
+                        "예", (dialogInterface, i) -> {
+                            Toast.makeText(this, "연결을 끊었습니다.", Toast.LENGTH_SHORT).show();
+                            dialogInterface.dismiss();
+                        },
+                        "아니오", (dialogInterface, i) -> dialogInterface.dismiss());
                 break;
         }
     }
@@ -251,18 +281,18 @@ public class MakeTripActivity extends AppCompatActivity {
         MaterialCalendarView calendar = bottomSheetDialog.findViewById(R.id.calendarView);
         TextView toolbarTitleTv = bottomSheetDialog.findViewById(R.id.toolbar_title_tv);
         Button toolbarRightBtn = bottomSheetDialog.findViewById(R.id.toolbar_right_btn);
+        TextView text = bottomSheetDialog.findViewById(R.id.set_text_tv);
         toolbarTitleTv.setText("언제?");
         toolbarRightBtn.setText("완료");
-        TextView start = bottomSheetDialog.findViewById(R.id.start_day_tv);
-        TextView end = bottomSheetDialog.findViewById(R.id.end_day_tv);
 
         calendar.setSelectedDate(new Date(System.currentTimeMillis())); // 현재날짜로 선택 초기화
         calendar.setOnDateChangedListener((widget, date, selected) -> {
             String selectedDate = date.getYear() + "-" + (date.getMonth() + 1) + "-" + date.getDay();
 
             if (!dateSelectFlag) {
-                start.setText(selectedDate);
+                text.setText("여행종료일을 설정하세요.");
                 try {
+                    startDate = selectedDate;
                     stringToStartDate = U.getInstance().getDateFormat().parse(selectedDate);
                 } catch (ParseException e) {
                     e.printStackTrace();
@@ -272,8 +302,8 @@ public class MakeTripActivity extends AppCompatActivity {
                         .commit();
                 dateSelectFlag = true;
             } else {
-                end.setText(selectedDate);
                 try {
+                    endDate = selectedDate;
                     stringToEndDate = U.getInstance().getDateFormat().parse(selectedDate);
                 } catch (ParseException e) {
                     e.printStackTrace();
@@ -284,13 +314,11 @@ public class MakeTripActivity extends AppCompatActivity {
 
         // 완료버튼
         toolbarRightBtn.setOnClickListener(view -> {
-            if (TextUtils.isEmpty(start.getText()) || TextUtils.isEmpty(end.getText())) {
+            if (TextUtils.isEmpty(startDate) || TextUtils.isEmpty(endDate)) {
                 Toast.makeText(MakeTripActivity.this, "날짜를 선택해주세요.", Toast.LENGTH_SHORT).show();
             } else {
                 bottomSheetDialog.dismiss();
                 calendarBtnLine.setBackgroundColor(Color.WHITE);
-                startDate = start.getText().toString();
-                endDate = end.getText().toString();
                 calendarBtn.setText(startDate + " ~ " + endDate);
             }
         });

@@ -82,6 +82,7 @@ public class SearchingFragment extends Fragment implements OnMapReadyCallback,
     @BindView(R.id.memo_et) EditText memoEt;
     @BindView(R.id.map) MapView mapView;
     @BindView(R.id.rbs_rg) RadioGroup rbsGroup;
+    @BindView(R.id.google_places_btn) Button googlePlacesbtn;
     //@BindView(R.id.add_memo_btn) Button addMemoBtn;
     private Unbinder unbinder;
     private InputMethodManager inputMethodManager;
@@ -97,8 +98,9 @@ public class SearchingFragment extends Fragment implements OnMapReadyCallback,
     private Double lng = null;
     private String placeId = null;
     private String rbStr = U.getInstance().category0;
-    private String memo = null;
+    //private String memo = null;
     private boolean mapFlag = false;
+    final static String INIT_TITLE = "무엇에 대한 정보인가요?";
 
     public SearchingFragment() {} // 생성자
 
@@ -108,10 +110,8 @@ public class SearchingFragment extends Fragment implements OnMapReadyCallback,
         tripNo = atoFModel.getTrip_no();
         startDate = atoFModel.getStart_date();
         endDate = atoFModel.getEnd_date();
-        //U.getInstance().getBus().register(this);
         view = inflater.inflate(R.layout.fragment_searching, container, false);
         unbinder = ButterKnife.bind(this, view);
-        // 키보드 객체 획득
         inputMethodManager = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         webViewInit();
         spinnerInit();
@@ -121,17 +121,9 @@ public class SearchingFragment extends Fragment implements OnMapReadyCallback,
         return view;
     }
 
-//    @Subscribe
-//    public void ottoBus(AtoFModel model) {
-//        U.getInstance().log(model.getTrip_no() + model.getStart_date() + model.getEnd_date());
-//        tripNo = model.getTrip_no();
-//        startDate = model.getStart_date();
-//        endDate = model.getEnd_date();
-//    }
-
     private void toolbarInit(){
-        toolbarTitleTv.setText("유형선택");
-        toolbarRightBtn.setText("완료");
+        toolbarTitleTv.setText(INIT_TITLE);
+        toolbarRightBtn.setText("저장");
     }
 
     private void webViewInit(){
@@ -226,20 +218,20 @@ public class SearchingFragment extends Fragment implements OnMapReadyCallback,
                 if(!TextUtils.isEmpty(urlEt.getText())) {
                     insertSQLite();
                 } else {
-                    Toast.makeText(getContext(), "주소를 입력해주세요.", Toast.LENGTH_SHORT).show();
+                    showDialog();
                 }
                 break;
             case R.id.show_detail_btn: // 상세페이지 열기 / 초기화
                 if(!TextUtils.isEmpty(urlEt.getText())) {
                     frontLayout.setVisibility(View.VISIBLE);
                     index = 1;
-                    toolbarTitleTv.setText("유형선택");
+                    toolbarTitleTv.setText(INIT_TITLE);
                     line1.setVisibility(View.VISIBLE);
                     nextBtn.setVisibility(View.VISIBLE);
                     previousBtn.setVisibility(View.INVISIBLE);
                     frontLayout.setClickable(true); // 뒷부분 터치이벤트 막기
                 } else {
-                    Toast.makeText(getContext(), "주소를 입력해주세요.", Toast.LENGTH_SHORT).show();
+                    showDialog();
                 }
                 break;
             case R.id.toolbar_right_btn: // 상세페이지 저장 / 알림창 / 열려있는 뷰 닫기
@@ -255,12 +247,12 @@ public class SearchingFragment extends Fragment implements OnMapReadyCallback,
                                 lat = latlng.latitude;
                                 lng = latlng.longitude;
                             }
-                            memo = memoEt.getText().toString();
-                            /*for (int j = 1; j <= memoIdx; j++) {
-                                EditText et = view.findViewById(memoEt.getId()+j);
-                                memo += "/" + et.getText().toString();
-                                U.getInstance().log("메모추가");
-                            }*/
+//                            memo = memoEt.getText().toString();
+//                            for (int j = 1; j <= memoIdx; j++) {
+//                                EditText et = view.findViewById(memoEt.getId()+j);
+//                                memo += "/" + et.getText().toString();
+//                                U.getInstance().log("메모추가");
+//                            }
                             insertSQLite();
                             dialogInterface.dismiss();
                         },
@@ -279,18 +271,33 @@ public class SearchingFragment extends Fragment implements OnMapReadyCallback,
                     // TODO: Handle the error.
                 }
                 break;
-/*            case R.id.add_memo_btn: // 메모추가
-                if(memoIdx < 4) {
-                    memoIdx++;
-                    EditText editText = new EditText(getContext());
-                    editText.setSingleLine();
-                    editText.setId(memoEt.getId()+memoIdx);
-                    editText.setHint("메모를 추가하세요.");
-                    line4.addView(editText);
-                    if(memoIdx == 4) addMemoBtn.setEnabled(false);
-                }
-                break;*/
+//            case R.id.add_memo_btn: // 메모추가
+//                if(memoIdx < 4) {
+//                    memoIdx++;
+//                    EditText editText = new EditText(getContext());
+//                    editText.setSingleLine();
+//                    editText.setId(memoEt.getId()+memoIdx);
+//                    editText.setHint("메모를 추가하세요.");
+//                    line4.addView(editText);
+//                    if(memoIdx == 4) addMemoBtn.setEnabled(false);
+//                }
+//                break;
         }
+    }
+
+    public void showDialog(){
+        U.getInstance().showAlertDialog(getContext(), "알림", "URL을 입력한 뒤 이용해주세요." +
+                        "URL없이 저장은 후보지 > 위치검색을 통해 가능합니다.",
+                "URL입력", (dialogInterface, i) -> {
+                    urlEt.requestFocus();
+                    inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED,
+                            InputMethodManager.HIDE_IMPLICIT_ONLY);
+                    dialogInterface.dismiss();
+                },
+                "위치 검색", (dialogInterface, i) -> {
+                    //위치검색으로 이동
+                    dialogInterface.dismiss();
+                });
     }
 
     private void insertSQLite() {
@@ -314,7 +321,7 @@ public class SearchingFragment extends Fragment implements OnMapReadyCallback,
                     "'" + lng + "', " +
                     "'" + placeId + "', " +
                     "'" + titleEt.getText() + "', " +
-                    "'" + memo + "');";
+                    "'" + memoEt.getText() + "');";
             DBOpenHelper.dbOpenHelper.getWritableDatabase().execSQL(sql);
 
             detailInit();
@@ -339,7 +346,7 @@ public class SearchingFragment extends Fragment implements OnMapReadyCallback,
         latlng = null;
         lat = null;
         lng = null;
-        memo = null;
+        //memo = null;
         placeId = null;
         line1.setVisibility(View.GONE);
         line2.setVisibility(View.GONE);
@@ -355,6 +362,7 @@ public class SearchingFragment extends Fragment implements OnMapReadyCallback,
             if (resultCode == RESULT_OK) {
                 mapFlag = true;
                 Place place = PlaceAutocomplete.getPlace(getContext(), data);
+                googlePlacesbtn.setText(place.getName());
                 placeId = place.getId();
                 latlng = place.getLatLng();
                 titleEt.setText(place.getName());
@@ -370,7 +378,6 @@ public class SearchingFragment extends Fragment implements OnMapReadyCallback,
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                 Status status = PlaceAutocomplete.getStatus(getContext(), data);
                 U.getInstance().log("RESULT_ERROR 상태 : " + status.getStatusMessage());
-
             } else if (resultCode == RESULT_CANCELED) {
                 U.getInstance().log("RESULT_CANCELED 상태");
             }
@@ -386,7 +393,7 @@ public class SearchingFragment extends Fragment implements OnMapReadyCallback,
                 switch (index){
                     case 1:
                         line1.setVisibility(View.VISIBLE);
-                        toolbarTitleTv.setText("유형선택");
+                        toolbarTitleTv.setText(INIT_TITLE);
                         line2.setVisibility(View.GONE);
                         mapView.setVisibility(View.GONE);
                         previousBtn.setVisibility(View.INVISIBLE);
@@ -394,12 +401,12 @@ public class SearchingFragment extends Fragment implements OnMapReadyCallback,
                     case 2:
                         if(mapFlag) mapView.setVisibility(View.VISIBLE);
                         line2.setVisibility(View.VISIBLE);
-                        toolbarTitleTv.setText("위치검색");
+                        toolbarTitleTv.setText("위치를 알려주세요!");
                         line3.setVisibility(View.GONE);
                         break;
                     case 3:
                         line3.setVisibility(View.VISIBLE);
-                        toolbarTitleTv.setText("날짜선택");
+                        toolbarTitleTv.setText("언제 방문하면 좋을까요?");
                         mapView.setVisibility(View.GONE);
                         line4.setVisibility(View.GONE);
                         break;
@@ -412,18 +419,18 @@ public class SearchingFragment extends Fragment implements OnMapReadyCallback,
                     case 2:
                         if(mapFlag) mapView.setVisibility(View.VISIBLE);
                         line1.setVisibility(View.GONE);
-                        toolbarTitleTv.setText("위치검색");
+                        toolbarTitleTv.setText("위치를 알려주세요!");
                         line2.setVisibility(View.VISIBLE);
                         break;
                     case 3:
                         line2.setVisibility(View.GONE);
                         mapView.setVisibility(View.GONE);
-                        toolbarTitleTv.setText("날짜선택");
+                        toolbarTitleTv.setText("언제 방문하면 좋을까요?");
                         line3.setVisibility(View.VISIBLE);
                         break;
                     case 4:
                         line3.setVisibility(View.GONE);
-                        toolbarTitleTv.setText("제목&메모");
+                        toolbarTitleTv.setText("제목&메모를 입력해주세요!");
                         line4.setVisibility(View.VISIBLE);
                         nextBtn.setVisibility(View.INVISIBLE);
                         break;

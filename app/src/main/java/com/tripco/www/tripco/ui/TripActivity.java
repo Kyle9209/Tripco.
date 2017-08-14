@@ -58,8 +58,10 @@ public class TripActivity extends RootActivity {
 
     @Override
     protected void onDestroy() {
-        U.getInstance().getmGoogleApiClient().disconnect();
-        U.getInstance().setmGoogleApiClient(null);
+        if(U.getInstance().getmGoogleApiClient() != null) {
+            U.getInstance().getmGoogleApiClient().disconnect();
+            U.getInstance().setmGoogleApiClient(null);
+        }
         super.onDestroy();
     }
 
