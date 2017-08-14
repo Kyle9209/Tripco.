@@ -2,25 +2,32 @@ package com.tripco.www.tripco.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.Places;
+import com.tripco.www.tripco.PhotoTask;
 import com.tripco.www.tripco.R;
 import com.tripco.www.tripco.holder.FragmentViewHolder;
 import com.tripco.www.tripco.model.ScheduleModel;
 import com.tripco.www.tripco.ui.CandidateInfoActivity;
+import com.tripco.www.tripco.util.U;
 
 import java.util.ArrayList;
 
-/**
- * Created by kkmnb on 2017-08-08.
- */
-
-public class FragmentAdapter extends RecyclerView.Adapter<FragmentViewHolder> {
-    Context context;
-    ArrayList<ScheduleModel> scheduleModels;
+public class FragmentAdapter extends RecyclerView.Adapter<FragmentViewHolder>
+        implements GoogleApiClient.OnConnectionFailedListener {
+    private Context context;
+    private ArrayList<ScheduleModel> scheduleModels;
 
     public FragmentAdapter(Context context, ArrayList<ScheduleModel> scheduleModel) {
         this.context = context;
@@ -35,13 +42,67 @@ public class FragmentAdapter extends RecyclerView.Adapter<FragmentViewHolder> {
 
     @Override
     public void onBindViewHolder(FragmentViewHolder holder, int position) {
+        final ScheduleModel scheduleModel = scheduleModels.get(position);
+        if(scheduleModel.getItem_check() == 1) holder.check.isChecked();
+        // 위치명 확인 > 널이면 제목확인 > 널이면 제목없음
+        if(scheduleModel.getItem_placeid().equals("null")){
+            holder.loadingImgPb.setVisibility(View.GONE);
+            if(scheduleModel.getItem_title().equals("")) holder.title.setText("제목없음");
+            else holder.title.setText(scheduleModel.getItem_title());
+        } else {
+            // placeid로 위치명 가져오기
+            String placeId = scheduleModel.getItem_placeid();
+            GoogleApiClient mGoogleApiClient;
+            if(U.getInstance().getmGoogleApiClient() == null) {
+                mGoogleApiClient = new GoogleApiClient
+                        .Builder(context)
+                        .addApi(Places.GEO_DATA_API)
+                        .addApi(Places.PLACE_DETECTION_API)
+                        .enableAutoManage((FragmentActivity) context, this)
+                        .build();
+                U.getInstance().setmGoogleApiClient(mGoogleApiClient);
+            } else {
+                mGoogleApiClient = U.getInstance().getmGoogleApiClient();
+            }
+
+            Places.GeoDataApi.getPlaceById(mGoogleApiClient, placeId)
+                    .setResultCallback(places -> {
+                        if (places.getStatus().isSuccess() && places.getCount() > 0) {
+                            final Place myPlace = places.get(0);
+                            holder.title.setText(myPlace.getName());
+                            placePhotosTask(holder.image, holder.loadingImgPb, placeId);
+                        } else {
+                            U.getInstance().log("에러");
+                        }
+                        places.release();
+                    });
+        }
         holder.image.setOnClickListener(view -> {
-            context.startActivity((new Intent(context, CandidateInfoActivity.class)));
+            Intent intent = new Intent(context, CandidateInfoActivity.class);
+            intent.putExtra("scheduleModel", scheduleModel);
+            context.startActivity(intent);
         });
     }
 
     @Override
     public int getItemCount() {
         return scheduleModels ==null ? 10 : scheduleModels.size();
+    }
+
+    private void placePhotosTask(ImageView imageView, ProgressBar progressBar, String placeId) {
+        new PhotoTask(imageView.getWidth(), imageView.getHeight()) {
+            @Override
+            protected void onPostExecute(AttributedPhoto attributedPhoto) {
+                if (attributedPhoto != null) {
+                    progressBar.setVisibility(View.GONE);
+                    imageView.setImageBitmap(attributedPhoto.bitmap);
+                }
+            }
+        }.execute(placeId);
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
     }
 }

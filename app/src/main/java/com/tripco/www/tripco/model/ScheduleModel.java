@@ -1,24 +1,26 @@
 package com.tripco.www.tripco.model;
 
+import java.io.Serializable;
+
 /**
  * Created by kkmnb on 2017-08-08.
  */
 
-public class ScheduleModel {
+public class ScheduleModel implements Serializable {
     int trip_no;
     int schedule_no;
     String schedule_date;
     String item_url;
-    String cate_no;
+    int cate_no;
     String item_lat;
     String item_long;
-    String item_location;
+    String item_placeid;
     String item_title;
     String item_memo;
     int item_check;
     String item_time;
 
-    public ScheduleModel(int trip_no, int schedule_no, String schedule_date, String item_url, String cate_no, String item_lat, String item_long, String item_location, String item_title, String item_memo, int item_check, String item_time) {
+    public ScheduleModel(int trip_no, int schedule_no, String schedule_date, String item_url, int cate_no, String item_lat, String item_long, String item_placeid, String item_title, String item_memo, int item_check, String item_time) {
         this.trip_no = trip_no;
         this.schedule_no = schedule_no;
         this.schedule_date = schedule_date;
@@ -26,7 +28,7 @@ public class ScheduleModel {
         this.cate_no = cate_no;
         this.item_lat = item_lat;
         this.item_long = item_long;
-        this.item_location = item_location;
+        this.item_placeid = item_placeid;
         this.item_title = item_title;
         this.item_memo = item_memo;
         this.item_check = item_check;
@@ -65,11 +67,11 @@ public class ScheduleModel {
         this.item_url = item_url;
     }
 
-    public String getCate_no() {
+    public int getCate_no() {
         return cate_no;
     }
 
-    public void setCate_no(String cate_no) {
+    public void setCate_no(int cate_no) {
         this.cate_no = cate_no;
     }
 
@@ -89,12 +91,12 @@ public class ScheduleModel {
         this.item_long = item_long;
     }
 
-    public String getItem_location() {
-        return item_location;
+    public String getItem_placeid() {
+        return item_placeid;
     }
 
-    public void setItem_location(String item_location) {
-        this.item_location = item_location;
+    public void setItem_placeid(String item_placeid) {
+        this.item_placeid = item_placeid;
     }
 
     public String getItem_title() {

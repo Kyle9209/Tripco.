@@ -34,4 +34,8 @@
 
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="title_activity_test_maps">Map</string>
+
+    <string name="category0">관광</string>
+    <string name="category1">맛집</string>
+    <string name="category2">숙소</string>
 </resources>

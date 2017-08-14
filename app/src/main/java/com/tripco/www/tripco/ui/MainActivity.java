@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+
         if(!checkPlayService(this)) return;
         makeShortCut(this);
         getServerAddress();
@@ -69,9 +70,10 @@ public class MainActivity extends AppCompatActivity
         recViewInit();
     }
 
+
     @Override // 디비 클로즈
     protected void onDestroy() {
-        U.getInstance().getBus().unregister(this);
+        //U.getInstance().getBus().unregister(this);
         DBOpenHelper.dbOpenHelper.close();
         super.onDestroy();
     }

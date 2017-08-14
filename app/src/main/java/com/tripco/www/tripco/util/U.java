@@ -8,6 +8,7 @@ import android.support.v7.app.AlertDialog;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.squareup.otto.Bus;
 
 import java.text.SimpleDateFormat;
@@ -104,6 +105,35 @@ public class U {
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.KOREA);
     public SimpleDateFormat getDateFormat() {
         return dateFormat;
+    }
+
+    // 스피너의 날짜 추출
+    public String getDate(String str){
+        String[] itemDate = str.split("\\(");
+        return itemDate[1].substring(0, itemDate[1].length()-1);
+    }
+
+    // 관광, 맛집, 숙소
+    public String category0 = "관광";
+    public String category1 = "맛집";
+    public String category2 = "숙소";
+    public String getCategory0() {
+        return category0;
+    }
+    public String getCategory1() {
+        return category1;
+    }
+    public String getCategory2() {
+        return category2;
+    }
+
+    // GoogleApiClient 셋팅
+    public GoogleApiClient mGoogleApiClient = null;
+    public void setmGoogleApiClient(GoogleApiClient mGoogleApiClient) {
+        this.mGoogleApiClient = mGoogleApiClient;
+    }
+    public GoogleApiClient getmGoogleApiClient() {
+        return mGoogleApiClient;
     }
 }
 

@@ -63,10 +63,8 @@ import butterknife.Unbinder;
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 
-public class SearchingFragment extends Fragment
-        implements OnMapReadyCallback,
-        GoogleApiClient.OnConnectionFailedListener,
-        TripActivity.onKeyBackPressedListener {
+public class SearchingFragment extends Fragment implements OnMapReadyCallback,
+        GoogleApiClient.OnConnectionFailedListener, TripActivity.onKeyBackPressedListener {
     @BindView(R.id.toolbar_title_tv) TextView toolbarTitleTv;
     @BindView(R.id.toolbar_right_btn) Button toolbarRightBtn;
     @BindView(R.id.url_et) EditText urlEt;
@@ -84,16 +82,23 @@ public class SearchingFragment extends Fragment
     @BindView(R.id.memo_et) EditText memoEt;
     @BindView(R.id.map) MapView mapView;
     @BindView(R.id.rbs_rg) RadioGroup rbsGroup;
+    //@BindView(R.id.add_memo_btn) Button addMemoBtn;
     private Unbinder unbinder;
     private InputMethodManager inputMethodManager;
     private int index = 1;
+    //private int memoIdx = 0;
     private int tripNo;
     private String startDate, endDate;
     private GoogleMap mMap = null;
     private View view;
     private int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
     private LatLng latlng = null;
-    private String placeName = "";
+    private Double lat = null;
+    private Double lng = null;
+    private String placeId = null;
+    private String rbStr = U.getInstance().category0;
+    private String memo = null;
+    private boolean mapFlag = false;
 
     public SearchingFragment() {} // 생성자
 
@@ -178,7 +183,7 @@ public class SearchingFragment extends Fragment
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, 0);
         int n = 1;
         while (true){
-            adapter.add(n + "일차(" + U.getInstance().getDateFormat().format(calendar.getTime()) + ")");
+            adapter.add(n + "일차(" + U.getInstance().getDateFormat().format(calendar.getTime()).replace("-",".") + ")");
             n++;
             calendar.add(Calendar.DATE, 1);
             if(calendar.getTime().after(end)) break;
@@ -213,33 +218,56 @@ public class SearchingFragment extends Fragment
         }
     }
 
-    @OnClick({R.id.save_btn, R.id.detail_save_btn, R.id.toolbar_right_btn, R.id.search_address_btn})
+    @OnClick({R.id.short_save_btn, R.id.show_detail_btn,
+              R.id.toolbar_right_btn, R.id.google_places_btn/*, R.id.add_memo_btn*/})
     public void onClickBtn(View view) {
         switch (view.getId()) {
-            case R.id.save_btn: // 즉시저장
-                Toast.makeText(getActivity(), "후보지리스트에 추가되었습니다.", Toast.LENGTH_SHORT).show();
+            case R.id.short_save_btn: // 즉시저장
+                if(!TextUtils.isEmpty(urlEt.getText())) {
+                    insertSQLite();
+                } else {
+                    Toast.makeText(getContext(), "주소를 입력해주세요.", Toast.LENGTH_SHORT).show();
+                }
                 break;
-            case R.id.detail_save_btn: // 상세페이지 열기 / 초기화
-                frontLayout.setVisibility(View.VISIBLE);
-                index = 1;
-                toolbarTitleTv.setText("유형선택");
-                line1.setVisibility(View.VISIBLE);
-                nextBtn.setVisibility(View.VISIBLE);
-                previousBtn.setVisibility(View.INVISIBLE);
-                frontLayout.setClickable(true); // 뒷부분 터치이벤트 막기
+            case R.id.show_detail_btn: // 상세페이지 열기 / 초기화
+                if(!TextUtils.isEmpty(urlEt.getText())) {
+                    frontLayout.setVisibility(View.VISIBLE);
+                    index = 1;
+                    toolbarTitleTv.setText("유형선택");
+                    line1.setVisibility(View.VISIBLE);
+                    nextBtn.setVisibility(View.VISIBLE);
+                    previousBtn.setVisibility(View.INVISIBLE);
+                    frontLayout.setClickable(true); // 뒷부분 터치이벤트 막기
+                } else {
+                    Toast.makeText(getContext(), "주소를 입력해주세요.", Toast.LENGTH_SHORT).show();
+                }
                 break;
             case R.id.toolbar_right_btn: // 상세페이지 저장 / 알림창 / 열려있는 뷰 닫기
                 inputMethodManager.hideSoftInputFromWindow(urlEt.getWindowToken(), 0); // 키보드 내리기
                 U.getInstance().showAlertDialog(getContext(), "알림", "저장하시겠습니까?",
                         "예",
                         (dialogInterface, i) -> {
-                            saveDetail();
+                            if(rbsGroup.getCheckedRadioButtonId() > 0) {
+                                RadioButton rb = rbsGroup.findViewById(rbsGroup.getCheckedRadioButtonId());
+                                rbStr = rb.getText().toString();
+                            }
+                            if(latlng != null) {
+                                lat = latlng.latitude;
+                                lng = latlng.longitude;
+                            }
+                            memo = memoEt.getText().toString();
+                            /*for (int j = 1; j <= memoIdx; j++) {
+                                EditText et = view.findViewById(memoEt.getId()+j);
+                                memo += "/" + et.getText().toString();
+                                U.getInstance().log("메모추가");
+                            }*/
+                            insertSQLite();
                             dialogInterface.dismiss();
                         },
                         "아니오",
                         (dialogInterface, i) -> dialogInterface.dismiss());
                 break;
-            case R.id.search_address_btn: // 구글플레이스 검색창 열기
+            case R.id.google_places_btn: // 구글플레이스 검색창 열기
                 try {
                     Intent intent =
                             new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
@@ -251,44 +279,45 @@ public class SearchingFragment extends Fragment
                     // TODO: Handle the error.
                 }
                 break;
+/*            case R.id.add_memo_btn: // 메모추가
+                if(memoIdx < 4) {
+                    memoIdx++;
+                    EditText editText = new EditText(getContext());
+                    editText.setSingleLine();
+                    editText.setId(memoEt.getId()+memoIdx);
+                    editText.setHint("메모를 추가하세요.");
+                    line4.addView(editText);
+                    if(memoIdx == 4) addMemoBtn.setEnabled(false);
+                }
+                break;*/
         }
     }
 
-    private void saveDetail(){
-        RadioButton rb = rbsGroup.findViewById(rbsGroup.getCheckedRadioButtonId());
-        String[] itemDate = spinner.getSelectedItem().toString().split("\\(");
-        U.getInstance().log("url : " + urlEt.getText() +
-                "\n선택한라디오버튼 : " + rb.getText().toString() +
-                "\n위도경도 : " + latlng.latitude + "/" + latlng.longitude +
-                "\n위치명 : " + placeName +
-                "\n날짜 : " + itemDate[1].substring(0, itemDate[1].length()-1) +
-                "\n제목 : " + titleEt.getText() +
-                "\n메모 : " + memoEt.getText() +
-                "\ntrip_no : " + tripNo);
+    private void insertSQLite() {
         try {
             String sql = "insert into ScheduleList_Table(" +
-                    "trip_no, "+
-                    "schedule_date, "+
-                    " item_url, "+
-                    " cate_no, "+
-                    " item_lat, "+
-                    " item_long, "+
-                    " item_location, "+
-                    " item_title, "+
-                    " item_memo) "+
-                    "values(" +
+                    " trip_no, " +
+                    " schedule_date, " +
+                    " item_url, " +
+                    " cate_no, " +
+                    " item_lat, " +
+                    " item_long, " +
+                    " item_placeid, " +
+                    " item_title, " +
+                    " item_memo) " +
+                    " values(" +
                     "'" + tripNo + "', " +
-                    "'" + itemDate[1].substring(0, itemDate[1].length()-1) + "', " +
+                    "'" + U.getInstance().getDate(spinner.getSelectedItem().toString()).replace(".","-") + "', " +
                     "'" + urlEt.getText() + "', " +
-                    "'" + getIntCateNo(rb.getText().toString())+ "', " +
-                    "'" + latlng.latitude + "', " +
-                    "'" + latlng.longitude + "', " +
-                    "'" + placeName + "', " +
+                    "'" + getIntCateNo(rbStr) + "', " +
+                    "'" + lat + "', " +
+                    "'" + lng + "', " +
+                    "'" + placeId + "', " +
                     "'" + titleEt.getText() + "', " +
-                    "'" + memoEt.getText() + "');";
+                    "'" + memo + "');";
             DBOpenHelper.dbOpenHelper.getWritableDatabase().execSQL(sql);
 
-            DetailInit();
+            detailInit();
             Toast.makeText(getContext(), "후보지리스트에 추가되었습니다.", Toast.LENGTH_SHORT).show();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -296,22 +325,22 @@ public class SearchingFragment extends Fragment
     }
 
     private int getIntCateNo(String cateStr){
-        switch (cateStr){
-            case "관광":
-                return 0;
-            case "식사":
-                return 1;
-            case "숙박":
-                return 2;
-        }
+        if(cateStr.equals(U.getInstance().category0)) return 0;
+        if(cateStr.equals(U.getInstance().category1)) return 1;
+        if(cateStr.equals(U.getInstance().category2)) return 2;
         return -1;
     }
 
-    private void DetailInit(){
+    private void detailInit(){
         rbsGroup.clearCheck();
         titleEt.setText("");
         memoEt.setText("");
         spinner.setSelection(0);
+        latlng = null;
+        lat = null;
+        lng = null;
+        memo = null;
+        placeId = null;
         line1.setVisibility(View.GONE);
         line2.setVisibility(View.GONE);
         line3.setVisibility(View.GONE);
@@ -324,12 +353,13 @@ public class SearchingFragment extends Fragment
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
+                mapFlag = true;
                 Place place = PlaceAutocomplete.getPlace(getContext(), data);
+                placeId = place.getId();
                 latlng = place.getLatLng();
-                placeName = place.getName().toString();
-                titleEt.setText(placeName);
+                titleEt.setText(place.getName());
                 mMap.clear();
-                mMap.addMarker(new MarkerOptions().position(latlng).title(placeName))
+                mMap.addMarker(new MarkerOptions().position(latlng).title(place.getName().toString()))
                         .showInfoWindow();
                 CameraPosition ani = new CameraPosition.Builder()
                         .target(latlng)
@@ -358,9 +388,11 @@ public class SearchingFragment extends Fragment
                         line1.setVisibility(View.VISIBLE);
                         toolbarTitleTv.setText("유형선택");
                         line2.setVisibility(View.GONE);
+                        mapView.setVisibility(View.GONE);
                         previousBtn.setVisibility(View.INVISIBLE);
                         break;
                     case 2:
+                        if(mapFlag) mapView.setVisibility(View.VISIBLE);
                         line2.setVisibility(View.VISIBLE);
                         toolbarTitleTv.setText("위치검색");
                         line3.setVisibility(View.GONE);
@@ -368,6 +400,7 @@ public class SearchingFragment extends Fragment
                     case 3:
                         line3.setVisibility(View.VISIBLE);
                         toolbarTitleTv.setText("날짜선택");
+                        mapView.setVisibility(View.GONE);
                         line4.setVisibility(View.GONE);
                         break;
                 }
@@ -377,12 +410,14 @@ public class SearchingFragment extends Fragment
                 index++;
                 switch (index){
                     case 2:
+                        if(mapFlag) mapView.setVisibility(View.VISIBLE);
                         line1.setVisibility(View.GONE);
                         toolbarTitleTv.setText("위치검색");
                         line2.setVisibility(View.VISIBLE);
                         break;
                     case 3:
                         line2.setVisibility(View.GONE);
+                        mapView.setVisibility(View.GONE);
                         toolbarTitleTv.setText("날짜선택");
                         line3.setVisibility(View.VISIBLE);
                         break;

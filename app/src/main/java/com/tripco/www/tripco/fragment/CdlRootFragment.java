@@ -1,5 +1,6 @@
 package com.tripco.www.tripco.fragment;
 
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -10,9 +11,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.squareup.otto.Subscribe;
 import com.tripco.www.tripco.R;
 import com.tripco.www.tripco.adapter.FragmentAdapter;
+import com.tripco.www.tripco.db.DBOpenHelper;
+import com.tripco.www.tripco.model.FtoFModel;
 import com.tripco.www.tripco.model.ScheduleModel;
+import com.tripco.www.tripco.util.U;
 
 import java.util.ArrayList;
 
@@ -25,16 +30,29 @@ public class CdlRootFragment extends Fragment {
     @BindView(R.id.swipeContainer) SwipeRefreshLayout swipeContainer;
     private Unbinder unbinder;
     private View view;
-    ArrayList<ScheduleModel> scheduleModels;
+    private int tripNo;
+    private String scheduleDate;
+    private int cateNo;
 
     public CdlRootFragment() {}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        FtoFModel ftoFModel = (FtoFModel) getArguments().getSerializable("ftoFModel");
+        tripNo = ftoFModel.getTrip_no();
+        scheduleDate = ftoFModel.getSchedule_date();
+        cateNo = ftoFModel.getCate_no();
         view = inflater.inflate(R.layout.fragment_cdl_root, container, false);
         unbinder = ButterKnife.bind(this, view);
         swipeRefreshInit();
+        U.getInstance().getBus().register(this);
         return view;
+    }
+
+    @Subscribe
+    public void ottoBus(String str){
+        scheduleDate = str;
+        recViewInit();
     }
 
     public void swipeRefreshInit(){
@@ -53,18 +71,46 @@ public class CdlRootFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        recViewInit();
+    }
 
+    private void recViewInit(){
         recyclerView.setLayoutManager
                 (new GridLayoutManager(getContext(), 3, GridLayoutManager.VERTICAL, false));
-        scheduleModels = null;
-        FragmentAdapter adapter = new FragmentAdapter(getContext(), scheduleModels);
+        FragmentAdapter adapter = new FragmentAdapter(getContext(), setScheduleModel());
         recyclerView.setAdapter(adapter);
+    }
+
+    private ArrayList<ScheduleModel> setScheduleModel(){
+        ArrayList<ScheduleModel> list = new ArrayList<>();
+        String sql = "select * from ScheduleList_Table where trip_no=" +tripNo +
+                " and schedule_date= '" + scheduleDate + "' and cate_no = " +cateNo + ";";
+        Cursor csr = DBOpenHelper.dbOpenHelper.getWritableDatabase().rawQuery(sql, null);
+        while (csr.moveToNext()) {
+            list.add(new ScheduleModel(
+                    csr.getInt(0),
+                    csr.getInt(1),
+                    csr.getString(2),
+                    csr.getString(3),
+                    csr.getInt(4),
+                    csr.getString(5),
+                    csr.getString(6),
+                    csr.getString(7),
+                    csr.getString(8),
+                    csr.getString(9),
+                    csr.getInt(10),
+                    csr.getString(11)
+            ));
+        }
+        csr.close();
+        return list;
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+        U.getInstance().getBus().unregister(this);
         if(view != null){
             ViewGroup parent = (ViewGroup) view.getParent();
             if(parent != null){

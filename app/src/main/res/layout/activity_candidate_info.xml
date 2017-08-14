@@ -27,27 +27,46 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <ImageButton
-                    android:id="@+id/candidateImg"
+                <ImageView
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/ic_menu_gallery" />
+
+                <ImageView
+                    android:background="#00000000"
+                    android:id="@+id/place_img_iv"
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
                     android:layout_alignParentTop="true"
-                    app:srcCompat="@drawable/cat" />
+                    android:scaleType="centerCrop" />
 
                 <TextView
+                    android:padding="5dp"
+                    android:background="#99000000"
                     android:id="@+id/trip_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignBottom="@+id/candidateImg"
+                    android:layout_alignBottom="@+id/place_img_iv"
                     android:layout_margin="15dp"
                     android:text="여행일정 제목"
                     android:textColor="#fff"
                     android:textSize="30sp"
                     android:textStyle="bold" />
 
+                <ProgressBar
+                    android:id="@+id/loading_img_pb"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true" />
+
                 <CheckBox
+                    android:clickable="false"
+                    android:id="@+id/check_cb"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignBaseline="@+id/trip_title"
@@ -65,34 +84,59 @@
                 <LinearLayout
                     android:padding="15dp"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="80dp"
                     android:orientation="horizontal">
 
                     <TextView
                         android:gravity="center"
-                        android:layout_weight="1"
-                        android:layout_width="match_parent"
+                        android:layout_weight="0"
+                        android:layout_marginRight="15dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:text="정보유형"
                         android:textSize="20sp" />
 
-                    <ImageView
-                        android:id="@+id/category1"
-                        android:layout_width="60dp"
-                        android:layout_height="wrap_content"
-                        app:srcCompat="@android:drawable/btn_star_big_on" />
+                    <RadioGroup
+                        android:id="@+id/rbs_rg"
+                        android:orientation="horizontal"
+                        android:layout_weight="1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
 
-                    <ImageView
-                        android:id="@+id/cateogry2"
-                        android:layout_width="60dp"
-                        android:layout_height="wrap_content"
-                        app:srcCompat="@android:drawable/btn_star_big_off" />
+                        <RadioButton
+                            android:clickable="false"
+                            android:id="@+id/rb0"
+                            android:background="@drawable/hashtag"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:button="@null"
+                            android:gravity="center"
+                            android:text="@string/category0" />
 
-                    <ImageView
-                        android:id="@+id/cateogry3"
-                        android:layout_width="60dp"
-                        android:layout_height="wrap_content"
-                        app:srcCompat="@android:drawable/btn_star_big_off" />
+                        <RadioButton
+                            android:clickable="false"
+                            android:id="@+id/rb1"
+                            android:background="@drawable/hashtag"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:button="@null"
+                            android:gravity="center"
+                            android:text="@string/category1" />
+
+                        <RadioButton
+                            android:clickable="false"
+                            android:id="@+id/rb2"
+                            android:background="@drawable/hashtag"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:button="@null"
+                            android:gravity="center"
+                            android:text="@string/category2" />
+
+                    </RadioGroup>
 
                 </LinearLayout>
 
@@ -113,12 +157,12 @@
                         android:id="@+id/address"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="주소"
-                        android:textSize="20sp" />
+                        android:text="주소" />
 
                 </LinearLayout>
 
                 <TextView
+                    android:id="@+id/schedule_date_tv"
                     android:textSize="20sp"
                     android:padding="15dp"
                     android:text="1일차(09.01)"
@@ -138,17 +182,10 @@
                         android:text="메모" />
 
                     <TextView
-                        android:id="@+id/memo1"
+                        android:id="@+id/memo"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="-메모1"
-                        android:textSize="20sp" />
-
-                    <TextView
-                        android:id="@+id/memo2"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="-메모2"
+                        android:hint="-메모"
                         android:textSize="20sp" />
 
                 </LinearLayout>

@@ -1,35 +1,124 @@
 package com.tripco.www.tripco.ui;
+
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.PlacePhotoMetadataBuffer;
+import com.google.android.gms.location.places.PlacePhotoResult;
+import com.google.android.gms.location.places.Places;
 import com.tripco.www.tripco.R;
+import com.tripco.www.tripco.model.ScheduleModel;
 import com.tripco.www.tripco.util.U;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class CandidateInfoActivity extends AppCompatActivity {
+public class CandidateInfoActivity extends AppCompatActivity
+        implements GoogleApiClient.OnConnectionFailedListener {
     @BindView(R.id.toolbar_title_tv) TextView toolbarTitleTv;
     @BindView(R.id.toolbar_right_btn) Button toolbarRightBtn;
+    @BindView(R.id.place_img_iv) ImageView placeImgIv;
+    @BindView(R.id.trip_title) TextView tripTitle;
+    @BindView(R.id.check_cb) CheckBox checkCb;
+    @BindView(R.id.rbs_rg) RadioGroup rbsGroup;
+    @BindView(R.id.rb0) RadioButton rb0;
+    @BindView(R.id.rb1) RadioButton rb1;
+    @BindView(R.id.rb2) RadioButton rb2;
     @BindView(R.id.location_name) TextView locationName;
     @BindView(R.id.address) TextView address;
-    @BindView(R.id.memo1) TextView memo;
+    @BindView(R.id.schedule_date_tv) TextView scheduleDateTv;
+    @BindView(R.id.memo) TextView memo;
+    @BindView(R.id.loading_img_pb) ProgressBar loadingImgPb;
+    private ScheduleModel scheduleModel;
+    private GoogleApiClient mGoogleApiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_candidate_info);
         ButterKnife.bind(this);
+        scheduleModel = (ScheduleModel) getIntent().getSerializableExtra("scheduleModel");
         toolbarInit();
+
+        if(!scheduleModel.getItem_placeid().equals("null")) getPlaceData();
+        else loadingImgPb.setVisibility(View.GONE);
+
+        tripTitle.setText(scheduleModel.getItem_title());
+        if(scheduleModel.getItem_check() == 1) checkCb.isChecked();
+        if(scheduleModel.getCate_no() == 0) rb0.setChecked(true);
+        if(scheduleModel.getCate_no() == 1) rb1.setChecked(true);
+        if(scheduleModel.getCate_no() == 2) rb2.setChecked(true);
+        scheduleDateTv.setText(scheduleModel.getSchedule_date());
+        memo.setText(scheduleModel.getItem_memo());
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     private void toolbarInit(){
-        toolbarTitleTv.setText("위치명");
+        toolbarTitleTv.setText(scheduleModel.getItem_title());
         toolbarRightBtn.setText("수정");
+    }
+
+    private void getPlaceData(){
+        mGoogleApiClient = new GoogleApiClient
+                .Builder(this)
+                .addApi(Places.GEO_DATA_API)
+                .addApi(Places.PLACE_DETECTION_API)
+                .enableAutoManage(this, this)
+                .build();
+
+        Places.GeoDataApi.getPlaceById(mGoogleApiClient, scheduleModel.getItem_placeid())
+                .setResultCallback(places -> {
+                    if (places.getStatus().isSuccess() && places.getCount() > 0) {
+                        final Place myPlace = places.get(0);
+                        locationName.setText(myPlace.getName());
+                        address.setText(myPlace.getAddress());
+                        placePhotosAsync();
+                    } else {
+                        U.getInstance().log("에러에러에러에러");
+                    }
+                    places.release();
+                });
+    }
+
+    // 사진받기위한 콜백메소드
+    private ResultCallback<PlacePhotoResult> mDisplayPhotoResultCallback = placePhotoResult -> {
+        if (!placePhotoResult.getStatus().isSuccess()) return;
+        loadingImgPb.setVisibility(View.GONE);
+        placeImgIv.setImageBitmap(placePhotoResult.getBitmap());
+    };
+
+    // 구글에서 사진을 비동기로 가져옴
+    private void placePhotosAsync() {
+        Places.GeoDataApi.getPlacePhotos(mGoogleApiClient, scheduleModel.getItem_placeid())
+                .setResultCallback(photos -> {
+                    if (!photos.getStatus().isSuccess()) return;
+                    PlacePhotoMetadataBuffer photoMetadataBuffer = photos.getPhotoMetadata();
+                    if (photoMetadataBuffer.getCount() > 0) {
+                        photoMetadataBuffer.get(0)
+                                .getScaledPhoto(mGoogleApiClient, placeImgIv.getWidth(), placeImgIv.getHeight())
+                                .setResultCallback(mDisplayPhotoResultCallback);
+                    }
+                    photoMetadataBuffer.release();
+                });
     }
 
     @OnClick(R.id.toolbar_right_btn)
@@ -63,5 +152,10 @@ public class CandidateInfoActivity extends AppCompatActivity {
             String result_memo = data.getStringExtra("resultSetting_memo");
             memo.setText(result_memo);
         }
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
     }
 }

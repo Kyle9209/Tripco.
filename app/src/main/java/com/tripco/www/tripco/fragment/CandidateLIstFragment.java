@@ -24,6 +24,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.rey.material.widget.Spinner;
 import com.tripco.www.tripco.R;
 import com.tripco.www.tripco.model.AtoFModel;
+import com.tripco.www.tripco.model.FtoFModel;
 import com.tripco.www.tripco.ui.TripActivity;
 import com.tripco.www.tripco.util.U;
 
@@ -84,7 +85,7 @@ public class CandidateLIstFragment extends Fragment
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), R.layout.custom_spinner_item, 0);
         int n = 1;
         while (true){
-            adapter.add(n + "일차(" + U.getInstance().getDateFormat().format(calendar.getTime()) + ")");
+            adapter.add(n + "일차(" + U.getInstance().getDateFormat().format(calendar.getTime()).replace("-",".") + ")");
             n++;
             calendar.add(Calendar.DATE, 1);
             if(calendar.getTime().after(end)) break;
@@ -92,6 +93,11 @@ public class CandidateLIstFragment extends Fragment
         adapter.notifyDataSetChanged();
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
+
+        spinner.setOnItemSelectedListener((parent, view1, position, id) -> {
+            String str = U.getInstance().getDate(parent.getSelectedItem().toString());
+            U.getInstance().getBus().post(str.replace(".","-"));
+        });
     }
 
     @OnClick(R.id.change_view_btn) // 리스트 <-> 지도 전환 버튼
@@ -116,17 +122,15 @@ public class CandidateLIstFragment extends Fragment
 
         @Override
         public Fragment getItem(int position) {
-            /*switch (position){
+            switch (position){
                 case 0:
-                    return new CdlRootFragment();
+                    return setFragment(new CdlRootFragment(), 0);
                 case 1:
-                    return new CdlRootFragment();
+                    return setFragment(new CdlRootFragment(), 1);
                 case 2:
-                    return new CdlRootFragment();
-                case 3:
-                    return new CdlRootFragment();
-            }*/
-            return new CdlRootFragment();
+                    return setFragment(new CdlRootFragment(), 2);
+            }
+            return null;
         }
 
         @Override
@@ -138,14 +142,22 @@ public class CandidateLIstFragment extends Fragment
         public CharSequence getPageTitle(int position) {
             switch (position) {
                 case 0:
-                    return "관광";
+                    return U.getInstance().category0;
                 case 1:
-                    return "식사";
+                    return U.getInstance().category1;
                 case 2:
-                    return "숙박";
+                    return U.getInstance().category2;
             }
             return null;
         }
+    }
+
+    private Fragment setFragment(Fragment fragment, int cateNo){
+        Bundle bundle = new Bundle(1);
+        bundle.putSerializable("ftoFModel",
+                new FtoFModel(tripNo, U.getInstance().getDate(spinner.getSelectedItem().toString()).replace(".","-"), cateNo));
+        fragment.setArguments(bundle);
+        return fragment;
     }
 
     // 백키눌렀을때 메인으로

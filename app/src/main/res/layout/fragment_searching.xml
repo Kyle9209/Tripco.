@@ -49,7 +49,7 @@
                 android:background="@android:drawable/ic_menu_search" />
 
             <Button
-                android:id="@+id/save_btn"
+                android:id="@+id/short_save_btn"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_gravity="center"
@@ -57,7 +57,7 @@
                 android:background="@android:drawable/ic_menu_save" />
 
             <Button
-                android:id="@+id/detail_save_btn"
+                android:id="@+id/show_detail_btn"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_gravity="center"
@@ -125,7 +125,7 @@
                         android:layout_weight="1"
                         android:button="@null"
                         android:gravity="center"
-                        android:text="관광" />
+                        android:text="@string/category0" />
 
                     <RadioButton
                         android:background="@drawable/hashtag"
@@ -134,7 +134,7 @@
                         android:layout_weight="1"
                         android:button="@null"
                         android:gravity="center"
-                        android:text="식사" />
+                        android:text="@string/category1" />
 
                     <RadioButton
                         android:background="@drawable/hashtag"
@@ -143,7 +143,7 @@
                         android:layout_weight="1"
                         android:button="@null"
                         android:gravity="center"
-                        android:text="숙박" />
+                        android:text="@string/category2" />
 
                 </RadioGroup>
 
@@ -171,7 +171,7 @@
                         android:layout_margin="1dp">
 
                         <Button
-                            android:id="@+id/search_address_btn"
+                            android:id="@+id/google_places_btn"
                             style="@style/Widget.AppCompat.Button.Borderless"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -231,11 +231,27 @@
                     android:layout_height="wrap_content"
                     android:hint="제목" />
 
-                <EditText
-                    android:id="@+id/memo_et"
+                <ScrollView
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="메모" />
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:layout_weight="1"
+                        android:id="@+id/memo_et"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="메모" />
+
+                    <!--<Button
+                        android:id="@+id/add_memo_btn"
+                        android:layout_gravity="center"
+                        android:background="#dadada"
+                        android:text="+"
+                        android:layout_weight="0"
+                        android:layout_width="35dp"
+                        android:layout_height="35dp" />-->
+
+                </ScrollView>
 
             </LinearLayout>
 

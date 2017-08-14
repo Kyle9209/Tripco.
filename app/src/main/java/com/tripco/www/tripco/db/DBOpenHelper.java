@@ -45,7 +45,7 @@ public class DBOpenHelper extends SQLiteOpenHelper {
         sb.append(" cate_no INTEGER, ");
         sb.append(" item_lat TEXT, ");
         sb.append(" item_long TEXT, ");
-        sb.append(" item_location TEXT, ");
+        sb.append(" item_placeid TEXT, ");
         sb.append(" item_title TEXT, ");
         sb.append(" item_memo TEXT, ");
         sb.append(" item_check INTEGER DEFAULT 0, ");

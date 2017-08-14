@@ -56,6 +56,13 @@ public class TripActivity extends RootActivity {
         navigation.setSelectedItemId(R.id.candidate_list); // 초기 화면 -> 후보지리스트
     }
 
+    @Override
+    protected void onDestroy() {
+        U.getInstance().getmGoogleApiClient().disconnect();
+        U.getInstance().setmGoogleApiClient(null);
+        super.onDestroy();
+    }
+
     private void setFragment(Fragment fragment){
         Bundle bundle = new Bundle(1);
         bundle.putSerializable("atoFModel", atoFModel);

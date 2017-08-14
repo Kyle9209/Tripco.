@@ -14,7 +14,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,12 +37,10 @@ public class MakeTripActivity extends AppCompatActivity {
     @BindView(R.id.toolbar_title_tv) TextView toolbarTitleTv;
     @BindView(R.id.toolbar_right_btn) Button toolbarRightBtn;
     @BindView(R.id.title_et) EditText titleEt;
+    @BindView(R.id.clear_title_btn) Button clearTitleBtn;
     @BindView(R.id.title_cnt_tv) TextView titleCntTv;
-    @BindView(R.id.title_check) ImageView titleCheck;
     @BindView(R.id.calendar_btn) Button calendarBtn;
     @BindView(R.id.calendar_btn_line) LinearLayout calendarBtnLine;
-    @BindView(R.id.calendar_check) ImageView calendarCheck;
-    @BindView(R.id.who_check) ImageView whoCheck;
     @BindView(R.id.hashtag_cb1) CheckBox hashtagCb1;
     @BindView(R.id.hashtag_cb2) CheckBox hashtagCb2;
     @BindView(R.id.hashtag_cb3) CheckBox hashtagCb3;
@@ -89,11 +86,9 @@ public class MakeTripActivity extends AppCompatActivity {
             toolbarTitleTv.setText("여행 수정");
             trip_no = sTripModel.getTrip_no();
             titleEt.setText(sTripModel.getTrip_title());
-            titleCheck.setVisibility(View.VISIBLE);
             startDate = sTripModel.getStart_date();
             endDate = sTripModel.getEnd_date();
             calendarBtn.setText(startDate + " ~ " + endDate);
-            calendarCheck.setVisibility(View.VISIBLE);
             if (!sTripModel.getPartner_id().equals(ALONE)) {
                 // 혼자가 아니라면 친구도 셋팅
             }
@@ -120,7 +115,7 @@ public class MakeTripActivity extends AppCompatActivity {
         toolbarRightBtn.setText("완료");
     }
 
-    @OnClick({R.id.calendar_btn, R.id.who_btn, R.id.toolbar_right_btn})
+    @OnClick({R.id.calendar_btn, R.id.who_btn, R.id.toolbar_right_btn, R.id.clear_title_btn})
     public void onClickBtn(View view) {
         switch (view.getId()) {
             case R.id.calendar_btn:
@@ -157,6 +152,9 @@ public class MakeTripActivity extends AppCompatActivity {
                     }
                 }
                 break;
+            case R.id.clear_title_btn:
+                titleEt.setText("");
+                break;
         }
     }
 
@@ -177,7 +175,7 @@ public class MakeTripActivity extends AppCompatActivity {
 
     private void insertSQLite() {
         try {
-            String sql = "insert into ScheduleList_Table(" +
+            String sql = "insert into Trip_Table(" +
                     "trip_title, " +
                     "start_date, " +
                     "end_date, " +
@@ -205,7 +203,7 @@ public class MakeTripActivity extends AppCompatActivity {
             check = false;
         }
 
-        if (calendarCheck.getVisibility() == View.INVISIBLE) {
+        if (calendarBtn.getText().equals("언제?*")) {
             Toast.makeText(this, "날짜를 선택해주세요.", Toast.LENGTH_SHORT).show();
             calendarBtnLine.setBackgroundColor(Color.RED);
             check = false;
@@ -229,9 +227,9 @@ public class MakeTripActivity extends AppCompatActivity {
                 if (editable.toString().length() <= MAX_TITLE_CNT)
                     titleCntTv.setText(editable.toString().length() + "/" + MAX_TITLE_CNT);
                 if (TextUtils.isEmpty(titleEt.getText()))
-                    titleCheck.setVisibility(View.INVISIBLE);
+                    clearTitleBtn.setVisibility(View.INVISIBLE);
                 else
-                    titleCheck.setVisibility(View.VISIBLE);
+                    clearTitleBtn.setVisibility(View.VISIBLE);
             }
         });
     }
@@ -294,7 +292,6 @@ public class MakeTripActivity extends AppCompatActivity {
                 startDate = start.getText().toString();
                 endDate = end.getText().toString();
                 calendarBtn.setText(startDate + " ~ " + endDate);
-                calendarCheck.setVisibility(View.VISIBLE);
             }
         });
     }
@@ -333,7 +330,6 @@ public class MakeTripActivity extends AppCompatActivity {
 
         // 완료버튼
         toolbarRightBtn.setOnClickListener(view -> {
-            if (loginFlag) whoCheck.setVisibility(View.VISIBLE);
             bottomSheetDialog.dismiss();
         });
     }
