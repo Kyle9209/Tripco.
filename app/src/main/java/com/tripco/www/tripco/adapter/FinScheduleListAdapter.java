@@ -1,7 +1,10 @@
 package com.tripco.www.tripco.adapter;
 
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.database.SQLException;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
@@ -10,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -17,9 +21,10 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.Places;
 import com.tripco.www.tripco.PhotoTask;
 import com.tripco.www.tripco.R;
+import com.tripco.www.tripco.db.DBOpenHelper;
 import com.tripco.www.tripco.holder.ScheduleListViewHolder;
 import com.tripco.www.tripco.model.ScheduleModel;
-import com.tripco.www.tripco.ui.CandidateInfoActivity;
+import com.tripco.www.tripco.ui.ScheduleInfoActivity;
 import com.tripco.www.tripco.util.U;
 
 import java.util.ArrayList;
@@ -44,17 +49,20 @@ public class FinScheduleListAdapter extends RecyclerView.Adapter<ScheduleListVie
     public void onBindViewHolder(ScheduleListViewHolder holder, int position) {
         // 데이터 셋팅
         final ScheduleModel scheduleModel = scheduleModels.get(position);
+        // 체크확인
         if(scheduleModel.getItem_check() == 1) holder.check.isChecked();
-        // 위치명 확인 > 널이면 제목확인 > 널이면 제목없음
+        // placeId 확인  > 널이면 title 확인 > ""이면 제목없음
         if(scheduleModel.getItem_placeid().equals("null")){
             holder.loadingImgPb.setVisibility(View.GONE);
             if(scheduleModel.getItem_title().equals("")) holder.title.setText("제목없음");
             else holder.title.setText(scheduleModel.getItem_title());
         } else {
-            // placeid로 위치명 가져오기
+            // placeid로 위치명, 사진 가져오기
             String placeId = scheduleModel.getItem_placeid();
             GoogleApiClient mGoogleApiClient;
+            // ApiClient 확인
             if(U.getInstance().getmGoogleApiClient() == null) {
+                // 최초 1번
                 mGoogleApiClient = new GoogleApiClient
                         .Builder(context)
                         .addApi(Places.GEO_DATA_API)
@@ -62,15 +70,16 @@ public class FinScheduleListAdapter extends RecyclerView.Adapter<ScheduleListVie
                         .enableAutoManage((FragmentActivity) context, this)
                         .build();
                 U.getInstance().setmGoogleApiClient(mGoogleApiClient);
-            } else {
+            } else { // 이후엔 U에서 가져옴
                 mGoogleApiClient = U.getInstance().getmGoogleApiClient();
             }
-
             Places.GeoDataApi.getPlaceById(mGoogleApiClient, placeId)
                     .setResultCallback(places -> {
                         if (places.getStatus().isSuccess() && places.getCount() > 0) {
                             final Place myPlace = places.get(0);
+                            // 위치명
                             holder.title.setText(myPlace.getName());
+                            // 비동기로 사진가져오기
                             placePhotosTask(holder.image, holder.loadingImgPb, placeId);
                         } else {
                             U.getInstance().log("에러");
@@ -78,11 +87,75 @@ public class FinScheduleListAdapter extends RecyclerView.Adapter<ScheduleListVie
                         places.release();
                     });
         }
+        // 이미지 클릭하면 정보페이지로
         holder.image.setOnClickListener(view -> {
-            Intent intent = new Intent(context, CandidateInfoActivity.class);
+            Intent intent = new Intent(context, ScheduleInfoActivity.class);
             intent.putExtra("scheduleModel", scheduleModel);
             context.startActivity(intent);
         });
+        // url로 웹브라우저창 띄우기
+        holder.openUrlBtn.setOnClickListener(view -> {
+            try {
+                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(scheduleModel.getItem_url())));
+            } catch (Exception e) {
+                Toast.makeText(context, "잘못된 URL페이지이거나 이동할 URL페이지가 없습니다.", Toast.LENGTH_SHORT).show();
+                e.printStackTrace();
+            }
+        });
+        // 체크풀면 최종일정에서 삭제
+        holder.check.setOnCheckedChangeListener((compoundButton, b) -> {
+            if(!b) {
+                updateSQLite(scheduleModel.getTrip_no(),
+                        scheduleModel.getSchedule_no(),
+                        0,
+                        "최종일정에서 삭제되었습니다.");
+                U.getInstance().getBus().post("DELETE_CHECK");
+            }
+        });
+        // 시간 가져오기
+        if(scheduleModel.getItem_time() == null) holder.timeTv.setText("00:00");
+        else holder.timeTv.setText(scheduleModel.getItem_time());
+        // 시간 클릭하면 시계뜸
+        holder.timeTv.setOnClickListener(view ->
+                new TimePickerDialog(context, (timePicker, i, i1) -> {
+                    String hour = null;
+                    String minute = null;
+                    if(i<10) hour = "0" + i;
+                    else hour = "" + i;
+                    if(i1<10) minute = "0" + i1;
+                    else minute = "" + i1;
+                    holder.timeTv.setText(hour + ":" + minute);
+                    updateSQLite(scheduleModel.getTrip_no(),
+                            scheduleModel.getSchedule_no(),
+                            holder.timeTv.getText().toString(),
+                            "적용되었습니다."
+                    );
+                }, 0, 0, false).show()
+        );
+    }
+
+    private void updateSQLite(int trip_no, int s_no, int check, String str) {
+        try {
+            String sql = "update ScheduleList_Table set" +
+                    " item_check = '" + check + "'" +
+                    " where trip_no = " + trip_no + " and schedule_no = " + s_no + " ;";
+            DBOpenHelper.dbOpenHelper.getWritableDatabase().execSQL(sql);
+            Toast.makeText(context, str, Toast.LENGTH_SHORT).show();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void updateSQLite(int trip_no, int s_no, String time, String str) {
+        try {
+            String sql = "update ScheduleList_Table set" +
+                    " item_time = '" + time + "'" +
+                    " where trip_no = " + trip_no + " and schedule_no = " + s_no + " ;";
+            DBOpenHelper.dbOpenHelper.getWritableDatabase().execSQL(sql);
+            Toast.makeText(context, str, Toast.LENGTH_SHORT).show();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -94,10 +167,8 @@ public class FinScheduleListAdapter extends RecyclerView.Adapter<ScheduleListVie
         new PhotoTask(imageView.getWidth(), imageView.getHeight()) {
             @Override
             protected void onPostExecute(AttributedPhoto attributedPhoto) {
-                if (attributedPhoto != null) {
-                    progressBar.setVisibility(View.GONE);
-                    imageView.setImageBitmap(attributedPhoto.bitmap);
-                }
+                progressBar.setVisibility(View.GONE);
+                if (attributedPhoto != null) imageView.setImageBitmap(attributedPhoto.bitmap);
             }
         }.execute(placeId);
     }

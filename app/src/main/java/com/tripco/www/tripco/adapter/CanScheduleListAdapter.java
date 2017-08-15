@@ -23,7 +23,7 @@ import com.tripco.www.tripco.R;
 import com.tripco.www.tripco.db.DBOpenHelper;
 import com.tripco.www.tripco.holder.ScheduleListViewHolder;
 import com.tripco.www.tripco.model.ScheduleModel;
-import com.tripco.www.tripco.ui.CandidateInfoActivity;
+import com.tripco.www.tripco.ui.ScheduleInfoActivity;
 import com.tripco.www.tripco.util.U;
 
 import java.util.ArrayList;
@@ -32,10 +32,12 @@ public class CanScheduleListAdapter extends RecyclerView.Adapter<ScheduleListVie
         implements GoogleApiClient.OnConnectionFailedListener {
     private Context context;
     private ArrayList<ScheduleModel> scheduleModels;
+    private String n;
 
-    public CanScheduleListAdapter(Context context, ArrayList<ScheduleModel> scheduleModel) {
+    public CanScheduleListAdapter(Context context, ArrayList<ScheduleModel> scheduleModel, String n) {
         this.context = context;
         this.scheduleModels = scheduleModel;
+        this.n = n;
     }
 
     @Override
@@ -81,11 +83,14 @@ public class CanScheduleListAdapter extends RecyclerView.Adapter<ScheduleListVie
                         places.release();
                     });
         }
+        // 이미지 클릭하면 정보페이지로
         holder.image.setOnClickListener(view -> {
-            Intent intent = new Intent(context, CandidateInfoActivity.class);
+            Intent intent = new Intent(context, ScheduleInfoActivity.class);
             intent.putExtra("scheduleModel", scheduleModel);
+            intent.putExtra("n", n);
             context.startActivity(intent);
         });
+        // url로 웹브라우저창 띄우기
         holder.openUrlBtn.setOnClickListener(view -> {
             try {
                 context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(scheduleModel.getItem_url())));
@@ -94,6 +99,7 @@ public class CanScheduleListAdapter extends RecyclerView.Adapter<ScheduleListVie
                 e.printStackTrace();
             }
         });
+        // 체크버튼
         if(scheduleModel.getItem_check() == 1) holder.check.setChecked(true);
         holder.check.setOnCheckedChangeListener((ompoundButton, b) -> {
             if(b) {
@@ -131,10 +137,8 @@ public class CanScheduleListAdapter extends RecyclerView.Adapter<ScheduleListVie
         new PhotoTask(imageView.getWidth(), imageView.getHeight()) {
             @Override
             protected void onPostExecute(AttributedPhoto attributedPhoto) {
-                if (attributedPhoto != null) {
-                    progressBar.setVisibility(View.GONE);
-                    imageView.setImageBitmap(attributedPhoto.bitmap);
-                }
+                progressBar.setVisibility(View.GONE);
+                if (attributedPhoto != null) imageView.setImageBitmap(attributedPhoto.bitmap);
             }
         }.execute(placeId);
     }

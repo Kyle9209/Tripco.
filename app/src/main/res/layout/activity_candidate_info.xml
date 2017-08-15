@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.tripco.www.tripco.ui.CandidateInfoActivity">
+    tools:context="com.tripco.www.tripco.ui.ScheduleInfoActivity">
 
     <include
         android:layout_height="wrap_content"

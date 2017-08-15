@@ -128,12 +128,18 @@ public class U {
     }
 
     // GoogleApiClient 셋팅
-    public GoogleApiClient mGoogleApiClient = null;
+    private GoogleApiClient mGoogleApiClient = null;
     public void setmGoogleApiClient(GoogleApiClient mGoogleApiClient) {
         this.mGoogleApiClient = mGoogleApiClient;
     }
     public GoogleApiClient getmGoogleApiClient() {
         return mGoogleApiClient;
+    }
+
+    // 구글플레이스 코드
+    private int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
+    public int getPLACE_AUTOCOMPLETE_REQUEST_CODE() {
+        return PLACE_AUTOCOMPLETE_REQUEST_CODE;
     }
 }
 

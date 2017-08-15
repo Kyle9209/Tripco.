@@ -21,6 +21,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.rey.material.widget.Spinner;
+import com.squareup.otto.Subscribe;
 import com.tripco.www.tripco.R;
 import com.tripco.www.tripco.adapter.FinScheduleListAdapter;
 import com.tripco.www.tripco.db.DBOpenHelper;
@@ -63,11 +64,23 @@ public class FinalScheduleFragment extends Fragment
         endDate = atoFModel.getEnd_date();
         view = inflater.inflate(R.layout.fragment_final_schedule, container, false);
         unbinder = ButterKnife.bind(this, view);
+        U.getInstance().getBus().register(this);
         spinnerInit();
         scheduleDate = U.getInstance().getDate(spinner.getSelectedItem().toString()).replace(".","-");
         recViewInit();
         swipeRefreshInit();
         return view;
+    }
+
+    @Subscribe
+    public void ottoBus(String str){
+        if(str.equals("DELETE_CHECK")) recViewInit();
+    }
+
+    @Override
+    public void onDestroy() {
+        U.getInstance().getBus().unregister(this);
+        super.onDestroy();
     }
 
     private void recViewInit(){
@@ -109,7 +122,7 @@ public class FinalScheduleFragment extends Fragment
     private ArrayList<ScheduleModel> setScheduleModel(){
         ArrayList<ScheduleModel> list = new ArrayList<>();
         String sql = "select * from ScheduleList_Table where trip_no=" +tripNo +
-                " and schedule_date= '" + scheduleDate + "' and item_check = 1;";
+                " and schedule_date= '" + scheduleDate + "' and item_check = 1 order by item_time;";
         Cursor csr = DBOpenHelper.dbOpenHelper.getWritableDatabase().rawQuery(sql, null);
         while (csr.moveToNext()) {
             list.add(new ScheduleModel(

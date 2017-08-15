@@ -33,6 +33,7 @@ public class LoginActivity extends AppCompatActivity {
     @BindView(R.id.toolbar_right_btn) Button toolbarRightBtn;
     @BindView(R.id.email) EditText mEmailView;
     @BindView(R.id.password) EditText mPasswordView;
+    private InputMethodManager imm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +41,9 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
         toolbarInit();
+
+        imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
 
         mPasswordView.setImeOptions(EditorInfo.IME_ACTION_DONE);
         mPasswordView.setOnEditorActionListener((v, actionId, event) -> {
@@ -63,8 +67,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void attemptLogin() {
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-
         mEmailView.setError(null);
         mPasswordView.setError(null);
 

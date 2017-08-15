@@ -38,22 +38,27 @@
         </RelativeLayout>
 
         <LinearLayout
+            android:orientation="horizontal"
             android:layout_weight="0"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <TextView
+                android:gravity="center|left"
+                android:maxLines="1"
+                android:ellipsize="end"
                 android:id="@+id/title_tv"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:text="위치명"
                 android:textColor="#000" />
 
             <Button
+                android:layout_weight="0"
                 android:id="@+id/open_url_btn"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
                 android:background="@drawable/ic_menu_slideshow" />
 
         </LinearLayout>
@@ -67,6 +72,20 @@
         android:layout_alignParentEnd="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+
+    <!-- 이 셀에선 안보여야하는 시간 -->
+    <TextView
+        android:visibility="gone"
+        android:layout_margin="10dp"
+        android:layout_gravity="center"
+        android:id="@+id/time_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="0"
+        android:gravity="center"
+        android:padding="5dp"
+        android:text="00:00"
+        android:textSize="20sp" />
 
 </RelativeLayout>
 

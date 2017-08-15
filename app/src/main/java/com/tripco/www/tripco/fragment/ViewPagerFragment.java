@@ -2,6 +2,7 @@ package com.tripco.www.tripco.fragment;
 
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -33,7 +34,7 @@ public class ViewPagerFragment extends Fragment {
     private int tripNo;
     private String scheduleDate;
     private int cateNo;
-
+    String n;
     public ViewPagerFragment() {}
 
     @Override
@@ -42,7 +43,8 @@ public class ViewPagerFragment extends Fragment {
         tripNo = ftoFModel.getTrip_no();
         scheduleDate = ftoFModel.getSchedule_date();
         cateNo = ftoFModel.getCate_no();
-        view = inflater.inflate(R.layout.fragment_cdl_root, container, false);
+        n = getArguments().getString("n");
+        view = inflater.inflate(R.layout.fragment_view_pager, container, false);
         unbinder = ButterKnife.bind(this, view);
         swipeRefreshInit();
         U.getInstance().getBus().register(this);
@@ -63,8 +65,12 @@ public class ViewPagerFragment extends Fragment {
                 android.R.color.holo_red_light
         );
         swipeContainer.setOnRefreshListener(() -> {
-            recyclerView.getAdapter().notifyDataSetChanged();
-            swipeContainer.setRefreshing(false);
+            swipeContainer.setRefreshing(true);
+            new Handler().postDelayed(() -> {
+                recViewInit();
+                swipeContainer.setRefreshing(false);
+            }, 3000);
+            //recyclerView.getAdapter().notifyDataSetChanged();
         });
     }
 
@@ -77,7 +83,8 @@ public class ViewPagerFragment extends Fragment {
     private void recViewInit(){
         recyclerView.setLayoutManager
                 (new GridLayoutManager(getContext(), 3, GridLayoutManager.VERTICAL, false));
-        CanScheduleListAdapter adapter = new CanScheduleListAdapter(getContext(), setScheduleModel());
+        CanScheduleListAdapter adapter =
+                new CanScheduleListAdapter(getContext(), setScheduleModel(), n);
         recyclerView.setAdapter(adapter);
     }
 

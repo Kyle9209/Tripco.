@@ -74,7 +74,7 @@
             android:name=".ui.AlarmActivity"
             android:label="알림" />
         <activity
-            android:name=".ui.CandidateInfoActivity"
+            android:name=".ui.ScheduleInfoActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ui.ModifyCandidateInfoActivity"

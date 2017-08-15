@@ -7,6 +7,7 @@
     android:orientation="vertical"
     tools:context="com.tripco.www.tripco.fragment.FinalScheduleFragment">
 
+    <!-- 상단툴바 -->
     <LinearLayout
         android:gravity="center"
         android:padding="5dp"
@@ -24,8 +25,6 @@
             android:layout_weight="1"
             app:spn_arrowAnimClockwise="true"
             app:spn_arrowSwitchMode="true"
-            app:spn_label="날짜선택"
-            app:spn_labelEnable="true"
             app:spn_arrowColor="#fff"
             app:spn_dividerColor="#fff"
             app:spn_labelTextColor="#fff"/>
@@ -40,25 +39,33 @@
 
     </LinearLayout>
 
-    <!-- googleMap -->
-    <com.google.android.gms.maps.MapView
-        android:id="@+id/map"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone" />
-
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/swipeContainer"
+    <!-- 바디 -->
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recycler_view"
-        tools:listitem="@layout/cell_final_list_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        <!-- 리스트 -->
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/swipeContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-    </android.support.v4.widget.SwipeRefreshLayout>
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycler_view"
+                tools:listitem="@layout/cell_final_list_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </android.support.v4.widget.SwipeRefreshLayout>
+
+        <!-- googleMap -->
+        <com.google.android.gms.maps.MapView
+            android:id="@+id/map"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
+
+    </RelativeLayout>
 
 </LinearLayout>

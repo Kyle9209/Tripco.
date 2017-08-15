@@ -24,11 +24,8 @@
             android:layout_weight="1"
             app:spn_arrowAnimClockwise="true"
             app:spn_arrowSwitchMode="true"
-            app:spn_label="날짜선택"
-            app:spn_labelEnable="true"
             app:spn_arrowColor="#fff"
-            app:spn_dividerColor="#fff"
-            app:spn_labelTextColor="#fff"/>
+            app:spn_dividerColor="#fff" />
 
         <Button
             android:id="@+id/search_btn"

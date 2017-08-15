@@ -7,9 +7,9 @@
         android:title="@string/searching" />
 
     <item
-        android:id="@+id/candidate_list"
+        android:id="@+id/candidate"
         android:icon="@drawable/ic_dashboard_black_24dp"
-        android:title="@string/candidate_list" />
+        android:title="@string/candidate" />
 
     <item
         android:id="@+id/final_schedule"

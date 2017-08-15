@@ -67,28 +67,29 @@
 
             </RelativeLayout>
 
-            <RelativeLayout
+            <LinearLayout
                 android:layout_weight="1"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
                 <TextView
+                    android:textSize="20sp"
+                    android:layout_weight="1"
+                    android:textColor="#000"
                     android:padding="5dp"
                     android:id="@+id/title_tv"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:text="위치명" />
 
                 <CheckBox
+                    android:layout_weight="0"
                     android:id="@+id/Check_cb"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
                     android:checked="true" />
 
-            </RelativeLayout>
+            </LinearLayout>
 
         </LinearLayout>
 

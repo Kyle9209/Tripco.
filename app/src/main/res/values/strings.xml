@@ -7,7 +7,7 @@
     <string name="join">회원가입</string>
     <string name="complete">완료</string>
     <string name="searching">탐색</string>
-    <string name="candidate_list">후보지리스트</string>
+    <string name="candidate">후보지</string>
     <string name="final_schedule">최종일정</string>
     <string name="category0">관광</string>
     <string name="category1">맛집</string>
@@ -16,4 +16,5 @@
     <string name="error_invalid_password">비밀번호가 짧습니다. 6자리이상</string>
     <string name="error_incorrect_password">비밀번호가 틀렸습니다.</string>
     <string name="error_field_required">메일주소를 입력해주세요.</string>
+    <string name="add_candidate">후보지에 추가되었습니다.</string>
 </resources>

@@ -70,7 +70,6 @@ public class MainActivity extends AppCompatActivity
         recViewInit();
     }
 
-
     @Override // 디비 클로즈
     protected void onDestroy() {
         //U.getInstance().getBus().unregister(this);

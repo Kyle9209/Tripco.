@@ -55,6 +55,7 @@ import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 
+import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -83,6 +84,7 @@ public class SearchingFragment extends Fragment implements OnMapReadyCallback,
     @BindView(R.id.map) MapView mapView;
     @BindView(R.id.rbs_rg) RadioGroup rbsGroup;
     @BindView(R.id.google_places_btn) Button googlePlacesbtn;
+    @BindString(R.string.add_candidate) String addCandidate;
     //@BindView(R.id.add_memo_btn) Button addMemoBtn;
     private Unbinder unbinder;
     private InputMethodManager inputMethodManager;
@@ -92,7 +94,6 @@ public class SearchingFragment extends Fragment implements OnMapReadyCallback,
     private String startDate, endDate;
     private GoogleMap mMap = null;
     private View view;
-    private int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
     private LatLng latlng = null;
     private Double lat = null;
     private Double lng = null;
@@ -264,7 +265,7 @@ public class SearchingFragment extends Fragment implements OnMapReadyCallback,
                     Intent intent =
                             new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
                                     .build(getActivity());
-                    startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
+                    startActivityForResult(intent, U.getInstance().getPLACE_AUTOCOMPLETE_REQUEST_CODE());
                 } catch (GooglePlayServicesRepairableException e) {
                     // TODO: Handle the error.
                 } catch (GooglePlayServicesNotAvailableException e) {
@@ -286,9 +287,9 @@ public class SearchingFragment extends Fragment implements OnMapReadyCallback,
     }
 
     public void showDialog(){
-        U.getInstance().showAlertDialog(getContext(), "알림", "URL을 입력한 뒤 이용해주세요." +
+        U.getInstance().showAlertDialog(getContext(), "알림", "URL을 입력한 뒤 이용해주세요. " +
                         "URL없이 저장은 후보지 > 위치검색을 통해 가능합니다.",
-                "URL입력", (dialogInterface, i) -> {
+                "URL 입력", (dialogInterface, i) -> {
                     urlEt.requestFocus();
                     inputMethodManager.toggleSoftInput(InputMethodManager.SHOW_FORCED,
                             InputMethodManager.HIDE_IMPLICIT_ONLY);
@@ -296,6 +297,7 @@ public class SearchingFragment extends Fragment implements OnMapReadyCallback,
                 },
                 "위치 검색", (dialogInterface, i) -> {
                     //위치검색으로 이동
+                    U.getInstance().getBus().post("CANDIDATE_SEARCHING");
                     dialogInterface.dismiss();
                 });
     }
@@ -325,7 +327,11 @@ public class SearchingFragment extends Fragment implements OnMapReadyCallback,
             DBOpenHelper.dbOpenHelper.getWritableDatabase().execSQL(sql);
 
             detailInit();
-            Toast.makeText(getContext(), "후보지리스트에 추가되었습니다.", Toast.LENGTH_SHORT).show();
+
+            U.getInstance().showAlertDialog(getContext(), "알림", addCandidate + "\n후보지로 이동하시겠습니까?",
+                    "예", (dialogInterface, i) -> U.getInstance().getBus().post("CANDIDATE"),
+                    "아니오", (dialogInterface, i) -> dialogInterface.dismiss()
+            );
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -358,7 +364,7 @@ public class SearchingFragment extends Fragment implements OnMapReadyCallback,
 
     @Override // 구글 플레이스에서 검색한 데이터 받아서 처리
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
+        if (requestCode == U.getInstance().getPLACE_AUTOCOMPLETE_REQUEST_CODE()) {
             if (resultCode == RESULT_OK) {
                 mapFlag = true;
                 Place place = PlaceAutocomplete.getPlace(getContext(), data);

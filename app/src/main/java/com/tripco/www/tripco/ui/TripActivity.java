@@ -5,6 +5,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 
+import com.squareup.otto.Subscribe;
 import com.tripco.www.tripco.R;
 import com.tripco.www.tripco.RootActivity;
 import com.tripco.www.tripco.fragment.CandidateLIstFragment;
@@ -32,7 +33,7 @@ public class TripActivity extends RootActivity {
                 }
                 // flag = false 일 때 탐색창 유지
                 break;
-            case R.id.candidate_list:
+            case R.id.candidate:
                 setFragment(new CandidateLIstFragment());
                 flag = true;
                 //showDialog(new CandidateLIstFragment());
@@ -53,7 +54,20 @@ public class TripActivity extends RootActivity {
         ButterKnife.bind(this);
         atoFModel = (AtoFModel) getIntent().getSerializableExtra("atoFModel");
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-        navigation.setSelectedItemId(R.id.candidate_list); // 초기 화면 -> 후보지리스트
+        navigation.setSelectedItemId(R.id.candidate); // 초기 화면 -> 후보지리스트
+        U.getInstance().getBus().register(this);
+    }
+
+    @Subscribe
+    public void ottoBus(String str){
+        ft = getSupportFragmentManager().beginTransaction();
+        flag = true;
+
+        if(str.equals("CANDIDATE_SEARCHING")) {
+            navigation.getMenu().findItem(R.id.candidate).setChecked(true);
+            setFragment(new CandidateLIstFragment(), 1);
+        }
+        else if(str.equals("CANDIDATE")) setFragment(new CandidateLIstFragment());
     }
 
     @Override
@@ -62,7 +76,17 @@ public class TripActivity extends RootActivity {
             U.getInstance().getmGoogleApiClient().disconnect();
             U.getInstance().setmGoogleApiClient(null);
         }
+        U.getInstance().getBus().unregister(this);
         super.onDestroy();
+    }
+
+    private void setFragment(Fragment fragment, int i){
+        Bundle bundle = new Bundle(2);
+        bundle.putSerializable("atoFModel", atoFModel);
+        bundle.putInt("i", i);
+        fragment.setArguments(bundle);
+        ft.replace(R.id.content, fragment).commit();
+        navigation.getMenu().findItem(R.id.candidate).setChecked(true);
     }
 
     private void setFragment(Fragment fragment){

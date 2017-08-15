@@ -2,6 +2,7 @@ package com.tripco.www.tripco.fragment;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.SQLException;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
@@ -30,6 +31,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.rey.material.widget.Spinner;
 import com.tripco.www.tripco.R;
+import com.tripco.www.tripco.db.DBOpenHelper;
 import com.tripco.www.tripco.model.AtoFModel;
 import com.tripco.www.tripco.model.FtoFModel;
 import com.tripco.www.tripco.ui.TripActivity;
@@ -39,6 +41,7 @@ import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 
+import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -54,12 +57,12 @@ public class CandidateLIstFragment extends Fragment
     @BindView(R.id.days_spin) Spinner spinner;
     @BindView(R.id.map) MapView mapView;
     @BindView(R.id.change_view_btn) Button changeViewBtn;
+    @BindString(R.string.add_candidate) String addCandidate;
     private GoogleMap mMap = null;
     private Unbinder unbinder;
     private View view;
     private int tripNo;
     private String startDate, endDate;
-    private int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
 
     public CandidateLIstFragment() {}
 
@@ -69,6 +72,7 @@ public class CandidateLIstFragment extends Fragment
         tripNo = atoFModel.getTrip_no();
         startDate = atoFModel.getStart_date();
         endDate = atoFModel.getEnd_date();
+        if(getArguments().getInt("i", 0) == 1) onGooglePlaces();
         view = inflater.inflate(R.layout.fragment_candidate_list, container, false);
         unbinder = ButterKnife.bind(this, view);
         uiInit();
@@ -128,32 +132,71 @@ public class CandidateLIstFragment extends Fragment
                 }
                 break;
             case R.id.search_btn: // googleplace 호출
-                try {
-                    Intent intent =
-                            new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
-                                    .build(getActivity());
-                    startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
-                } catch (GooglePlayServicesRepairableException e) {
-                    // TODO: Handle the error.
-                } catch (GooglePlayServicesNotAvailableException e) {
-                    // TODO: Handle the error.
-                }
+                onGooglePlaces();
                 break;
+        }
+    }
+
+    private void onGooglePlaces(){
+        try {
+            Intent intent =
+                    new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
+                            .build(getActivity());
+            startActivityForResult(intent, U.getInstance().getPLACE_AUTOCOMPLETE_REQUEST_CODE());
+        } catch (GooglePlayServicesRepairableException e) {
+            // TODO: Handle the error.
+        } catch (GooglePlayServicesNotAvailableException e) {
+            // TODO: Handle the error.
         }
     }
 
     @Override // 구글 플레이스에서 검색한 데이터 받아서 처리
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
+        if (requestCode == U.getInstance().getPLACE_AUTOCOMPLETE_REQUEST_CODE()) {
             if (resultCode == RESULT_OK) {
                 Place place = PlaceAutocomplete.getPlace(getContext(), data);
-                Toast.makeText(getContext(), place.getName() + "선택", Toast.LENGTH_SHORT).show();
+                Double lat = place.getLatLng().latitude;
+                Double lng = place.getLatLng().longitude;
+                String placeId = place.getId();
+                String placeName = place.getName().toString();
+                insertSQLite(lat, lng, placeId, placeName);
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                 Status status = PlaceAutocomplete.getStatus(getContext(), data);
                 U.getInstance().log("RESULT_ERROR 상태 : " + status.getStatusMessage());
             } else if (resultCode == RESULT_CANCELED) {
                 U.getInstance().log("RESULT_CANCELED 상태");
             }
+        }
+    }
+
+    private void insertSQLite(Double lat, Double lng, String placeId, String placeName) {
+        try {
+            String sql = "insert into ScheduleList_Table(" +
+                    " trip_no, " +
+                    " schedule_date, " +
+                    " item_url, " +
+                    " cate_no, " +
+                    " item_lat, " +
+                    " item_long, " +
+                    " item_placeid, " +
+                    " item_title, " +
+                    " item_memo) " +
+                    " values(" +
+                    "'" + tripNo + "', " +
+                    "'" + U.getInstance().getDate(spinner.getSelectedItem().toString()).replace(".","-") + "', " +
+                    "'', " + // item_url == ""
+                    "0, " +  // cate_no == 0
+                    "'" + lat + "', " +
+                    "'" + lng + "', " +
+                    "'" + placeId + "', " +
+                    "'" + placeName + "', " +
+                    "'');"; // memo == ""
+            DBOpenHelper.dbOpenHelper.getWritableDatabase().execSQL(sql);
+            Toast.makeText(getContext(), addCandidate, Toast.LENGTH_SHORT).show();
+            String str = U.getInstance().getDate(spinner.getSelectedItem().toString()).replace(".","-");
+            U.getInstance().getBus().post(str);
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
@@ -195,9 +238,9 @@ public class CandidateLIstFragment extends Fragment
     }
 
     private Fragment setFragment(Fragment fragment, int cateNo){
-        Bundle bundle = new Bundle(1);
-        bundle.putSerializable("ftoFModel",
-                new FtoFModel(tripNo, U.getInstance().getDate(spinner.getSelectedItem().toString()).replace(".","-"), cateNo));
+        Bundle bundle = new Bundle(2);
+        bundle.putSerializable("ftoFModel", new FtoFModel(tripNo, U.getInstance().getDate(spinner.getSelectedItem().toString()).replace(".","-"), cateNo));
+        bundle.putString("n", (spinner.getSelectedItemPosition()+1)+"");
         fragment.setArguments(bundle);
         return fragment;
     }
