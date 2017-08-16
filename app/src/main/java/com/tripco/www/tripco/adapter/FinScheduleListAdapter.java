@@ -128,7 +128,7 @@ public class FinScheduleListAdapter extends RecyclerView.Adapter<ScheduleListVie
                     updateSQLite(scheduleModel.getTrip_no(),
                             scheduleModel.getSchedule_no(),
                             holder.timeTv.getText().toString(),
-                            "적용되었습니다."
+                            "시간이 변경되었습니다."
                     );
                 }, 0, 0, false).show()
         );

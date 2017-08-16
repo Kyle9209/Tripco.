@@ -34,16 +34,20 @@ public class ViewPagerFragment extends Fragment {
     private int tripNo;
     private String scheduleDate;
     private int cateNo;
-    String n;
+    String n = "1";
     public ViewPagerFragment() {}
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         FtoFModel ftoFModel = (FtoFModel) getArguments().getSerializable("ftoFModel");
         tripNo = ftoFModel.getTrip_no();
         scheduleDate = ftoFModel.getSchedule_date();
         cateNo = ftoFModel.getCate_no();
-        n = getArguments().getString("n");
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_view_pager, container, false);
         unbinder = ButterKnife.bind(this, view);
         swipeRefreshInit();
@@ -53,7 +57,8 @@ public class ViewPagerFragment extends Fragment {
 
     @Subscribe
     public void ottoBus(String str){
-        scheduleDate = str;
+        n = str.split("일")[0];
+        scheduleDate = U.getInstance().getDate(str.replace(".","-"));
         recViewInit();
     }
 

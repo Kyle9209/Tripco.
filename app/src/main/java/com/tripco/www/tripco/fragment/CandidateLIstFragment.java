@@ -110,8 +110,7 @@ public class CandidateLIstFragment extends Fragment
         spinner.setAdapter(adapter);
 
         spinner.setOnItemSelectedListener((parent, view1, position, id) -> {
-            String str = U.getInstance().getDate(parent.getSelectedItem().toString());
-            U.getInstance().getBus().post(str.replace(".","-"));
+            U.getInstance().getBus().post(parent.getSelectedItem().toString());
         });
     }
 
@@ -238,9 +237,8 @@ public class CandidateLIstFragment extends Fragment
     }
 
     private Fragment setFragment(Fragment fragment, int cateNo){
-        Bundle bundle = new Bundle(2);
+        Bundle bundle = new Bundle(1);
         bundle.putSerializable("ftoFModel", new FtoFModel(tripNo, U.getInstance().getDate(spinner.getSelectedItem().toString()).replace(".","-"), cateNo));
-        bundle.putString("n", (spinner.getSelectedItemPosition()+1)+"");
         fragment.setArguments(bundle);
         return fragment;
     }
