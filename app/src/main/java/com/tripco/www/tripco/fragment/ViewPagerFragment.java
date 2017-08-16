@@ -16,7 +16,6 @@ import com.squareup.otto.Subscribe;
 import com.tripco.www.tripco.R;
 import com.tripco.www.tripco.adapter.CanScheduleListAdapter;
 import com.tripco.www.tripco.db.DBOpenHelper;
-import com.tripco.www.tripco.model.FtoFModel;
 import com.tripco.www.tripco.model.ScheduleModel;
 import com.tripco.www.tripco.util.U;
 
@@ -32,17 +31,15 @@ public class ViewPagerFragment extends Fragment {
     private Unbinder unbinder;
     private View view;
     private int tripNo;
-    private String scheduleDate;
+    private String selectDate;
     private int cateNo;
     String n = "1";
     public ViewPagerFragment() {}
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        FtoFModel ftoFModel = (FtoFModel) getArguments().getSerializable("ftoFModel");
-        tripNo = ftoFModel.getTrip_no();
-        scheduleDate = ftoFModel.getSchedule_date();
-        cateNo = ftoFModel.getCate_no();
+        cateNo = getArguments().getInt("cateNo");
+        tripNo = U.getInstance().getTripNo();
         super.onCreate(savedInstanceState);
     }
 
@@ -50,15 +47,23 @@ public class ViewPagerFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_view_pager, container, false);
         unbinder = ButterKnife.bind(this, view);
-        swipeRefreshInit();
         U.getInstance().getBus().register(this);
+        selectDate = U.getInstance().getSelectDate();
+        swipeRefreshInit();
         return view;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        recViewInit();
     }
 
     @Subscribe
     public void ottoBus(String str){
-        n = str.split("일")[0];
-        scheduleDate = U.getInstance().getDate(str.replace(".","-"));
+        if(str.equals(U.getInstance().getSelectDate())){
+            selectDate = U.getInstance().getSelectDate();
+        }
         recViewInit();
     }
 
@@ -79,12 +84,6 @@ public class ViewPagerFragment extends Fragment {
         });
     }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        recViewInit();
-    }
-
     private void recViewInit(){
         recyclerView.setLayoutManager
                 (new GridLayoutManager(getContext(), 3, GridLayoutManager.VERTICAL, false));
@@ -95,8 +94,8 @@ public class ViewPagerFragment extends Fragment {
 
     private ArrayList<ScheduleModel> setScheduleModel(){
         ArrayList<ScheduleModel> list = new ArrayList<>();
-        String sql = "select * from ScheduleList_Table where trip_no=" +tripNo +
-                " and schedule_date= '" + scheduleDate + "' and cate_no = " +cateNo + ";";
+        String sql = "select * from ScheduleList_Table where trip_no=" + tripNo +
+                " and schedule_date= '" + selectDate + "' and cate_no = " + cateNo + ";";
         Cursor csr = DBOpenHelper.dbOpenHelper.getWritableDatabase().rawQuery(sql, null);
         while (csr.moveToNext()) {
             list.add(new ScheduleModel(

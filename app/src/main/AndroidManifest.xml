@@ -77,7 +77,7 @@
             android:name=".ui.ScheduleInfoActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".ui.ModifyCandidateInfoActivity"
+            android:name=".ui.ModifyScheduleActivity"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <!-- 저장 경로에 대한 설정 -->

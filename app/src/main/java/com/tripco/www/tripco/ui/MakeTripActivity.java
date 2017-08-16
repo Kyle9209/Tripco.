@@ -287,7 +287,14 @@ public class MakeTripActivity extends AppCompatActivity {
 
         calendar.setSelectedDate(new Date(System.currentTimeMillis())); // 현재날짜로 선택 초기화
         calendar.setOnDateChangedListener((widget, date, selected) -> {
-            String selectedDate = date.getYear() + "-" + (date.getMonth() + 1) + "-" + date.getDay();
+            String month;
+            if(date.getMonth()<10) month = "0" + (date.getMonth() + 1);
+            else month = "" + (date.getMonth() + 1);
+            String day;
+            if(date.getDay()<10) day = "0" + date.getDay();
+            else day = "" + date.getDay();
+
+            String selectedDate = date.getYear() + "-" + month + "-" + day;
 
             if (!dateSelectFlag) {
                 text.setText("여행종료일을 설정하세요.");

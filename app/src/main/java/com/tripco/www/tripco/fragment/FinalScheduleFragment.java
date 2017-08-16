@@ -25,7 +25,6 @@ import com.squareup.otto.Subscribe;
 import com.tripco.www.tripco.R;
 import com.tripco.www.tripco.adapter.FinScheduleListAdapter;
 import com.tripco.www.tripco.db.DBOpenHelper;
-import com.tripco.www.tripco.model.AtoFModel;
 import com.tripco.www.tripco.model.ScheduleModel;
 import com.tripco.www.tripco.ui.TripActivity;
 import com.tripco.www.tripco.util.U;
@@ -53,15 +52,15 @@ public class FinalScheduleFragment extends Fragment
     private int tripNo;
     private String startDate, endDate;
     private String scheduleDate;
+    private String n = "1";
 
     public FinalScheduleFragment() {}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        AtoFModel atoFModel = (AtoFModel) getArguments().getSerializable("atoFModel");
-        tripNo = atoFModel.getTrip_no();
-        startDate = atoFModel.getStart_date();
-        endDate = atoFModel.getEnd_date();
+        tripNo = U.getInstance().getTripNo();
+        startDate = U.getInstance().getStartDate();
+        endDate = U.getInstance().getEndDate();
         view = inflater.inflate(R.layout.fragment_final_schedule, container, false);
         unbinder = ButterKnife.bind(this, view);
         U.getInstance().getBus().register(this);
@@ -86,7 +85,7 @@ public class FinalScheduleFragment extends Fragment
     private void recViewInit(){
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         ArrayList<ScheduleModel> scheduleModels = setScheduleModel();
-        FinScheduleListAdapter adapter = new FinScheduleListAdapter(getContext(), scheduleModels);
+        FinScheduleListAdapter adapter = new FinScheduleListAdapter(getContext(), scheduleModels, n);
         recyclerView.setAdapter(adapter);
     }
 
@@ -115,9 +114,12 @@ public class FinalScheduleFragment extends Fragment
 
         spinner.setOnItemSelectedListener((parent, view1, position, id) -> {
             scheduleDate = U.getInstance().getDate(parent.getSelectedItem().toString()).replace(".","-");
+            setN(parent.getSelectedItemPosition() + 1);
             recViewInit();
         });
     }
+
+    private void setN(int i){ n = i + ""; }
 
     private ArrayList<ScheduleModel> setScheduleModel(){
         ArrayList<ScheduleModel> list = new ArrayList<>();

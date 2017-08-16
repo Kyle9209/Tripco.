@@ -47,7 +47,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.rey.material.widget.Spinner;
 import com.tripco.www.tripco.R;
 import com.tripco.www.tripco.db.DBOpenHelper;
-import com.tripco.www.tripco.model.AtoFModel;
 import com.tripco.www.tripco.ui.TripActivity;
 import com.tripco.www.tripco.util.U;
 
@@ -107,10 +106,9 @@ public class SearchingFragment extends Fragment implements OnMapReadyCallback,
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        AtoFModel atoFModel = (AtoFModel) getArguments().getSerializable("atoFModel");
-        tripNo = atoFModel.getTrip_no();
-        startDate = atoFModel.getStart_date();
-        endDate = atoFModel.getEnd_date();
+        tripNo = U.getInstance().getTripNo();
+        startDate = U.getInstance().getStartDate();
+        endDate = U.getInstance().getEndDate();
         view = inflater.inflate(R.layout.fragment_searching, container, false);
         unbinder = ButterKnife.bind(this, view);
         inputMethodManager = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);

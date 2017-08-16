@@ -1,6 +1,7 @@
 package com.tripco.www.tripco.ui;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -23,6 +24,7 @@ import com.google.android.gms.location.places.PlacePhotoMetadataBuffer;
 import com.google.android.gms.location.places.PlacePhotoResult;
 import com.google.android.gms.location.places.Places;
 import com.tripco.www.tripco.R;
+import com.tripco.www.tripco.db.DBOpenHelper;
 import com.tripco.www.tripco.model.ScheduleModel;
 import com.tripco.www.tripco.util.U;
 
@@ -41,41 +43,48 @@ public class ScheduleInfoActivity extends AppCompatActivity
     @BindView(R.id.rb0) RadioButton rb0;
     @BindView(R.id.rb1) RadioButton rb1;
     @BindView(R.id.rb2) RadioButton rb2;
-    @BindView(R.id.location_name) TextView locationName;
-    @BindView(R.id.address) TextView address;
+    @BindView(R.id.place_name_tv) TextView locationName;
+    @BindView(R.id.place_address_tv) TextView address;
     @BindView(R.id.schedule_date_tv) TextView scheduleDateTv;
     @BindView(R.id.memo) TextView memo;
     @BindView(R.id.loading_img_pb) ProgressBar loadingImgPb;
     @BindView(R.id.open_url_tv) TextView openUrlTv;
+    @BindView(R.id.time_tv) TextView timeTv;
     private ScheduleModel scheduleModel;
     private GoogleApiClient mGoogleApiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_candidate_info);
+        setContentView(R.layout.activity_schedule_info);
         ButterKnife.bind(this);
         scheduleModel = (ScheduleModel) getIntent().getSerializableExtra("scheduleModel");
+        getScheduleData();
         toolbarInit();
-
-        if(!scheduleModel.getItem_placeid().equals("null")) getPlaceData();
-        else loadingImgPb.setVisibility(View.GONE);
-
-        if(scheduleModel.getItem_title().equals("")) tripTitle.setVisibility(View.GONE);
-        else tripTitle.setText(scheduleModel.getItem_title());
-
-        if(scheduleModel.getItem_check() == 1) checkCb.isChecked();
-        if(scheduleModel.getCate_no() == 0) rb0.setChecked(true);
-        if(scheduleModel.getCate_no() == 1) rb1.setChecked(true);
-        if(scheduleModel.getCate_no() == 2) rb2.setChecked(true);
-        scheduleDateTv.setText(getIntent().getStringExtra("n") + "일차(" + scheduleModel.getSchedule_date().replace("-",".") + ")");
-        memo.setText(scheduleModel.getItem_memo());
-        openUrlTv.setText(scheduleModel.getItem_url());
+        uiInit();
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    private void getScheduleData(){
+        String sql = "select * from ScheduleList_Table where trip_no=" + scheduleModel.getTrip_no() +
+                " and schedule_no="+ scheduleModel.getSchedule_no()+";";
+        Cursor csr = DBOpenHelper.dbOpenHelper.getWritableDatabase().rawQuery(sql, null);
+        while (csr.moveToNext()) {
+            scheduleModel = new ScheduleModel(
+                    csr.getInt(0),
+                    csr.getInt(1),
+                    csr.getString(2),
+                    csr.getString(3),
+                    csr.getInt(4),
+                    csr.getString(5),
+                    csr.getString(6),
+                    csr.getString(7),
+                    csr.getString(8),
+                    csr.getString(9),
+                    csr.getInt(10),
+                    csr.getString(11)
+            );
+        }
+        csr.close();
     }
 
     private void toolbarInit(){
@@ -83,13 +92,42 @@ public class ScheduleInfoActivity extends AppCompatActivity
         toolbarRightBtn.setText("수정");
     }
 
+    private void uiInit(){
+        // placeId가 있으면 이미지, 위치명, 주소 입력 없으면 로딩끝
+        if(!scheduleModel.getItem_placeid().equals("null")) getPlaceData();
+        else loadingImgPb.setVisibility(View.GONE);
+        // 제목없으면 타이틀 없애기
+        if(scheduleModel.getItem_title().equals("")) tripTitle.setVisibility(View.GONE);
+        else tripTitle.setText(scheduleModel.getItem_title());
+        // 유형체크
+        if(scheduleModel.getItem_check() == 1) checkCb.isChecked();
+        if(scheduleModel.getCate_no() == 0) rb0.setChecked(true);
+        if(scheduleModel.getCate_no() == 1) rb1.setChecked(true);
+        if(scheduleModel.getCate_no() == 2) rb2.setChecked(true);
+        // 날짜입력
+        scheduleDateTv.setText(getIntent().getStringExtra("n") + "일차(" + scheduleModel.getSchedule_date().replace("-",".") + ")");
+        // 메모입력
+        memo.setText(scheduleModel.getItem_memo());
+        // url입력
+        openUrlTv.setText(scheduleModel.getItem_url());
+        // 최종일정에서 들어오면 시간보이기
+        if(getIntent().getBooleanExtra("fin", false)){
+            if(scheduleModel.getItem_time() != null) timeTv.setText(scheduleModel.getItem_time());
+            timeTv.setVisibility(View.VISIBLE);
+        }
+        // 체크확인
+        if(scheduleModel.getItem_check() == 1) checkCb.setChecked(true);
+    }
+
     private void getPlaceData(){
-        mGoogleApiClient = new GoogleApiClient
-                .Builder(this)
-                .addApi(Places.GEO_DATA_API)
-                .addApi(Places.PLACE_DETECTION_API)
-                .enableAutoManage(this, this)
-                .build();
+        if(mGoogleApiClient == null) {
+            mGoogleApiClient = new GoogleApiClient
+                    .Builder(this)
+                    .addApi(Places.GEO_DATA_API)
+                    .addApi(Places.PLACE_DETECTION_API)
+                    .enableAutoManage(this, this)
+                    .build();
+        }
 
         Places.GeoDataApi.getPlaceById(mGoogleApiClient, scheduleModel.getItem_placeid())
                 .setResultCallback(places -> {
@@ -103,6 +141,43 @@ public class ScheduleInfoActivity extends AppCompatActivity
                     }
                     places.release();
                 });
+    }
+
+    @OnClick({R.id.toolbar_right_btn, R.id.open_url_line, R.id.delete_btn})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.toolbar_right_btn: //수정페이지로
+                Intent intent = new Intent(ScheduleInfoActivity.this, ModifyScheduleActivity.class);
+                intent.putExtra("scheduleModel", scheduleModel);
+                startActivityForResult(intent, 2);
+                break;
+            case R.id.open_url_line:
+                try {
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(openUrlTv.getText().toString())));
+                } catch (Exception e) {
+                    Toast.makeText(this, "잘못된 URL페이지이거나 이동할 URL페이지가 없습니다.", Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                }
+                break;
+            case R.id.delete_btn:
+                U.getInstance().showAlertDialog(this, "주의!", "해당 정보를 삭제하시겠습니까?",
+                        "예", (dialogInterface, i) -> {
+                            dialogInterface.dismiss();
+                            finish();
+                        },
+                        "아니오", (dialogInterface, i) -> dialogInterface.dismiss());
+                break;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == 2 && data != null){
+            getScheduleData();
+            toolbarInit();
+            uiInit();
+        }
     }
 
     // 구글에서 사진을 비동기로 가져옴
@@ -119,50 +194,6 @@ public class ScheduleInfoActivity extends AppCompatActivity
                     photoMetadataBuffer.release();
                 });
     }
-
-    @OnClick({R.id.toolbar_right_btn, R.id.open_url_line, R.id.delete_btn})
-    public void onViewClicked(View view) {
-        switch (view.getId()) {
-            case R.id.toolbar_right_btn:
-                //수정페이지에서 완료 후 값을 받아오기 위해서
-                Intent intent = new Intent(ScheduleInfoActivity.this, ModifyCandidateInfoActivity.class);
-                //기존의 값을 전달
-                intent.putExtra("locationName", locationName.getText().toString());
-                intent.putExtra("memo1", memo.getText().toString());
-                startActivityForResult(intent, 2); //값을 가져오기로 위해서
-                break;
-            case R.id.open_url_line:
-                try {
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(openUrlTv.getText().toString())));
-                } catch (Exception e) {
-                    Toast.makeText(this, "잘못된 URL페이지이거나 이동할 URL페이지가 없습니다.", Toast.LENGTH_SHORT).show();
-                    e.printStackTrace();
-                }
-                break;
-            case R.id.delete_btn:
-                U.getInstance().showAlertDialog(this, "주의!", "해당 정보를 삭제하시겠습니까?",
-                        "예", (dialogInterface, i) -> {
-                            dialogInterface.dismiss();
-                        },
-                        "아니오", (dialogInterface, i) -> {
-                            dialogInterface.dismiss();
-                        });
-                break;
-        }
-    }
-
-    //수정 페이지에서 받아온 결과 값으로 바꾸기
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (resultCode == 2 && data != null) {
-            String result_location = data.getStringExtra("resultSetting_location");
-            locationName.setText(result_location);
-            String result_memo = data.getStringExtra("resultSetting_memo");
-            memo.setText(result_memo);
-        }
-    }
-
     // 사진받기위한 콜백메소드
     private ResultCallback<PlacePhotoResult> mDisplayPhotoResultCallback = placePhotoResult -> {
         if (!placePhotoResult.getStatus().isSuccess()) return;

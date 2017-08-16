@@ -11,7 +11,6 @@ import com.tripco.www.tripco.RootActivity;
 import com.tripco.www.tripco.fragment.CandidateLIstFragment;
 import com.tripco.www.tripco.fragment.FinalScheduleFragment;
 import com.tripco.www.tripco.fragment.SearchingFragment;
-import com.tripco.www.tripco.model.AtoFModel;
 import com.tripco.www.tripco.util.U;
 
 import butterknife.BindView;
@@ -21,25 +20,24 @@ public class TripActivity extends RootActivity {
     @BindView(R.id.navigation) BottomNavigationView navigation;
     private FragmentTransaction ft;
     private boolean flag = true; // 탐색창 유지 플래그
-    private AtoFModel atoFModel;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener = item -> {
         ft = getSupportFragmentManager().beginTransaction();
         switch (item.getItemId()) {
             case R.id.searching:
                 if (flag) { // flag = true 일 때 탐색창 초기화
-                    setFragment(new SearchingFragment());
+                    ft.replace(R.id.content, new SearchingFragment()).commit();
                     flag = false;
                 }
                 // flag = false 일 때 탐색창 유지
                 break;
             case R.id.candidate:
-                setFragment(new CandidateLIstFragment());
+                ft.replace(R.id.content, new CandidateLIstFragment()).commit();
                 flag = true;
                 //showDialog(new CandidateLIstFragment());
                 break;
             case R.id.final_schedule:
-                setFragment(new FinalScheduleFragment());
+                ft.replace(R.id.content, new FinalScheduleFragment()).commit();
                 flag = true;
                 //showDialog(new FinalScheduleFragment());
                 break;
@@ -52,7 +50,6 @@ public class TripActivity extends RootActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trip);
         ButterKnife.bind(this);
-        atoFModel = (AtoFModel) getIntent().getSerializableExtra("atoFModel");
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         navigation.setSelectedItemId(R.id.candidate); // 초기 화면 -> 후보지리스트
         U.getInstance().getBus().register(this);
@@ -60,14 +57,22 @@ public class TripActivity extends RootActivity {
 
     @Subscribe
     public void ottoBus(String str){
-        ft = getSupportFragmentManager().beginTransaction();
-        flag = true;
-
         if(str.equals("CANDIDATE_SEARCHING")) {
+            ft = getSupportFragmentManager().beginTransaction();
+            flag = true;
+            Fragment fragment =new CandidateLIstFragment();
+            Bundle bundle = new Bundle(1);
+            bundle.putInt("i", 1);
+            fragment.setArguments(bundle);
+            ft.replace(R.id.content, fragment).commit();
             navigation.getMenu().findItem(R.id.candidate).setChecked(true);
-            setFragment(new CandidateLIstFragment(), 1);
         }
-        else if(str.equals("CANDIDATE")) setFragment(new CandidateLIstFragment());
+        else if(str.equals("CANDIDATE")) {
+            ft = getSupportFragmentManager().beginTransaction();
+            flag = true;
+            ft.replace(R.id.content, new CandidateLIstFragment()).commit();
+            navigation.getMenu().findItem(R.id.candidate).setChecked(true);
+        }
     }
 
     @Override
@@ -78,22 +83,6 @@ public class TripActivity extends RootActivity {
         }
         U.getInstance().getBus().unregister(this);
         super.onDestroy();
-    }
-
-    private void setFragment(Fragment fragment, int i){
-        Bundle bundle = new Bundle(2);
-        bundle.putSerializable("atoFModel", atoFModel);
-        bundle.putInt("i", i);
-        fragment.setArguments(bundle);
-        ft.replace(R.id.content, fragment).commit();
-        navigation.getMenu().findItem(R.id.candidate).setChecked(true);
-    }
-
-    private void setFragment(Fragment fragment){
-        Bundle bundle = new Bundle(1);
-        bundle.putSerializable("atoFModel", atoFModel);
-        fragment.setArguments(bundle);
-        ft.replace(R.id.content, fragment).commit();
     }
 
     private void showDialog(Fragment fragment) {

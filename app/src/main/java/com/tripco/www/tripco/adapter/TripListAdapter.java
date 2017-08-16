@@ -9,10 +9,10 @@ import android.view.ViewGroup;
 
 import com.tripco.www.tripco.R;
 import com.tripco.www.tripco.holder.TripListViewHolder;
-import com.tripco.www.tripco.model.AtoFModel;
 import com.tripco.www.tripco.model.TripModel;
 import com.tripco.www.tripco.ui.MakeTripActivity;
 import com.tripco.www.tripco.ui.TripActivity;
+import com.tripco.www.tripco.util.U;
 
 import java.util.ArrayList;
 
@@ -42,10 +42,10 @@ public class TripListAdapter extends RecyclerView.Adapter<TripListViewHolder> {
         holder.tag.setText(tripModel.getHashtag());
 
         holder.itemView.setOnClickListener(view -> { // 짧게누르면 후보지리스트로
-            Intent intent = new Intent(context, TripActivity.class);
-            AtoFModel atoFModel = new AtoFModel(tripModel.getTrip_no(), tripModel.getStart_date(), tripModel.getEnd_date());
-            intent.putExtra("atoFModel", atoFModel);
-            context.startActivity(intent);
+            U.getInstance().setTripNo(tripModel.getTrip_no());
+            U.getInstance().setStartDate(tripModel.getStart_date());
+            U.getInstance().setEndDate(tripModel.getEnd_date());
+            context.startActivity(new Intent(context, TripActivity.class));
         });
 
         holder.update.setOnClickListener(view -> { // 수정버튼 클릭

@@ -33,10 +33,12 @@ public class FinScheduleListAdapter extends RecyclerView.Adapter<ScheduleListVie
         implements GoogleApiClient.OnConnectionFailedListener {
     Context context;
     private ArrayList<ScheduleModel> scheduleModels;
+    private String n;
 
-    public FinScheduleListAdapter(Context context, ArrayList<ScheduleModel> scheduleModels) {
+    public FinScheduleListAdapter(Context context, ArrayList<ScheduleModel> scheduleModels, String n) {
         this.context = context;
         this.scheduleModels = scheduleModels;
+        this.n = n;
     }
 
     @Override
@@ -91,6 +93,8 @@ public class FinScheduleListAdapter extends RecyclerView.Adapter<ScheduleListVie
         holder.image.setOnClickListener(view -> {
             Intent intent = new Intent(context, ScheduleInfoActivity.class);
             intent.putExtra("scheduleModel", scheduleModel);
+            intent.putExtra("n", n);
+            intent.putExtra("fin", true);
             context.startActivity(intent);
         });
         // url로 웹브라우저창 띄우기

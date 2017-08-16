@@ -32,8 +32,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.rey.material.widget.Spinner;
 import com.tripco.www.tripco.R;
 import com.tripco.www.tripco.db.DBOpenHelper;
-import com.tripco.www.tripco.model.AtoFModel;
-import com.tripco.www.tripco.model.FtoFModel;
 import com.tripco.www.tripco.ui.TripActivity;
 import com.tripco.www.tripco.util.U;
 
@@ -68,11 +66,11 @@ public class CandidateLIstFragment extends Fragment
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        AtoFModel atoFModel = (AtoFModel) getArguments().getSerializable("atoFModel");
-        tripNo = atoFModel.getTrip_no();
-        startDate = atoFModel.getStart_date();
-        endDate = atoFModel.getEnd_date();
-        if(getArguments().getInt("i", 0) == 1) onGooglePlaces();
+        tripNo = U.getInstance().getTripNo();
+        startDate = U.getInstance().getStartDate();
+        endDate = U.getInstance().getEndDate();
+        U.getInstance().setSelectDate(startDate);
+        if(getArguments() != null && getArguments().getInt("i", 0) == 1) onGooglePlaces();
         view = inflater.inflate(R.layout.fragment_candidate_list, container, false);
         unbinder = ButterKnife.bind(this, view);
         uiInit();
@@ -110,7 +108,9 @@ public class CandidateLIstFragment extends Fragment
         spinner.setAdapter(adapter);
 
         spinner.setOnItemSelectedListener((parent, view1, position, id) -> {
-            U.getInstance().getBus().post(parent.getSelectedItem().toString());
+            String selectDate = U.getInstance().getDate(parent.getSelectedItem().toString()).replace(".","-");
+            U.getInstance().setSelectDate(selectDate);
+            U.getInstance().getBus().post(selectDate);
         });
     }
 
@@ -192,8 +192,7 @@ public class CandidateLIstFragment extends Fragment
                     "'');"; // memo == ""
             DBOpenHelper.dbOpenHelper.getWritableDatabase().execSQL(sql);
             Toast.makeText(getContext(), addCandidate, Toast.LENGTH_SHORT).show();
-            String str = U.getInstance().getDate(spinner.getSelectedItem().toString()).replace(".","-");
-            U.getInstance().getBus().post(str);
+            U.getInstance().getBus().post("");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -238,7 +237,7 @@ public class CandidateLIstFragment extends Fragment
 
     private Fragment setFragment(Fragment fragment, int cateNo){
         Bundle bundle = new Bundle(1);
-        bundle.putSerializable("ftoFModel", new FtoFModel(tripNo, U.getInstance().getDate(spinner.getSelectedItem().toString()).replace(".","-"), cateNo));
+        bundle.putInt("cateNo", cateNo);
         fragment.setArguments(bundle);
         return fragment;
     }

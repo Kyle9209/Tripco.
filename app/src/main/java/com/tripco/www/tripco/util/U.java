@@ -141,5 +141,35 @@ public class U {
     public int getPLACE_AUTOCOMPLETE_REQUEST_CODE() {
         return PLACE_AUTOCOMPLETE_REQUEST_CODE;
     }
+
+    // 메인 리스트 하나 클릭했을 때 계속 가지고 있어야하는 값
+    private int tripNo;
+    private String startDate;
+    private String endDate;
+    private String selectDate;
+    public int getTripNo() {
+        return tripNo;
+    }
+    public void setTripNo(int tripNo) {
+        this.tripNo = tripNo;
+    }
+    public String getStartDate() {
+        return startDate;
+    }
+    public void setStartDate(String startDate) {
+        this.startDate = startDate;
+    }
+    public String getEndDate() {
+        return endDate;
+    }
+    public void setEndDate(String endDate) {
+        this.endDate = endDate;
+    }
+    public String getSelectDate() {
+        return selectDate;
+    }
+    public void setSelectDate(String selectDate) {
+        this.selectDate = selectDate;
+    }
 }
 

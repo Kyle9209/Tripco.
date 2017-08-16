@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context="com.tripco.www.tripco.ui.ScheduleInfoActivity">
+    tools:context="com.tripco.www.tripco.ui.ScheduleInfoActivity"
+    android:orientation="vertical">
 
     <include
         android:layout_height="wrap_content"
@@ -13,8 +13,6 @@
         layout="@layout/custom_toolbar_layout"/>
 
     <ScrollView
-        android:layout_weight="1"
-        android:id="@+id/scrollView01"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -25,6 +23,8 @@
 
             <!-- 이미지 영역 -->
             <RelativeLayout
+                android:focusable="true"
+                android:focusableInTouchMode="true"
                 android:layout_width="match_parent"
                 android:layout_height="200dp">
 
@@ -47,7 +47,6 @@
 
                 <CheckBox
                     android:layout_margin="10dp"
-                    android:clickable="false"
                     android:id="@+id/check_cb"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -55,7 +54,7 @@
                     android:layout_alignParentRight="true"
                     android:layout_alignParentEnd="true" />
 
-                <TextView
+                <EditText
                     android:paddingRight="5dp"
                     android:paddingLeft="5dp"
                     android:layout_centerHorizontal="true"
@@ -67,8 +66,7 @@
                     android:text="여행제목"
                     android:textColor="#fff"
                     android:textSize="30sp"
-                    android:textStyle="bold"
-                    android:layout_alignBottom="@+id/loading_img_pb" />
+                    android:textStyle="bold" />
 
                 <LinearLayout
                     android:paddingLeft="5dp"
@@ -142,7 +140,6 @@
                         android:layout_height="match_parent">
 
                         <RadioButton
-                            android:clickable="false"
                             android:id="@+id/rb0"
                             android:background="@drawable/hashtag"
                             android:layout_width="0dp"
@@ -153,7 +150,6 @@
                             android:text="@string/category0" />
 
                         <RadioButton
-                            android:clickable="false"
                             android:id="@+id/rb1"
                             android:background="@drawable/hashtag"
                             android:layout_width="0dp"
@@ -164,7 +160,6 @@
                             android:text="@string/category1" />
 
                         <RadioButton
-                            android:clickable="false"
                             android:id="@+id/rb2"
                             android:background="@drawable/hashtag"
                             android:layout_width="0dp"
@@ -179,32 +174,43 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/place_info_line"
                     android:padding="15dp"
                     android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
                     <TextView
-                        android:id="@+id/location_name"
+                        android:id="@+id/place_name_tv"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="위치명"
                         android:textSize="20sp" />
 
                     <TextView
-                        android:id="@+id/address"
+                        android:id="@+id/place_address_tv"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="주소" />
 
                 </LinearLayout>
 
+                <com.rey.material.widget.Spinner
+                    android:padding="15dp"
+                    android:id="@+id/days_spin"
+                    style="@style/Material.Widget.Spinner.Light"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:spn_arrowAnimClockwise="true"
+                    app:spn_arrowSwitchMode="true" />
+
                 <TextView
-                    android:id="@+id/schedule_date_tv"
+                    android:visibility="gone"
+                    android:id="@+id/time_tv"
                     android:textSize="20sp"
                     android:padding="15dp"
-                    android:text="1일차(09.01)"
-                    android:layout_width="wrap_content"
+                    android:text="00:00"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 
                 <LinearLayout
@@ -219,7 +225,7 @@
                         android:textSize="20sp"
                         android:text="메모" />
 
-                    <TextView
+                    <EditText
                         android:id="@+id/memo"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -232,15 +238,5 @@
         </LinearLayout>
 
     </ScrollView>
-
-    <Button
-        android:id="@+id/delete_btn"
-        style="@style/Widget.AppCompat.Button.Borderless"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="right"
-        android:layout_marginRight="15dp"
-        android:layout_weight="0"
-        android:text="삭제" />
 
 </LinearLayout>
