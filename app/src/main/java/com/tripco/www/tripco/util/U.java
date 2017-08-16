@@ -147,6 +147,7 @@ public class U {
     private String startDate;
     private String endDate;
     private String selectDate;
+    private String spinnerDate;
     public int getTripNo() {
         return tripNo;
     }
@@ -170,6 +171,12 @@ public class U {
     }
     public void setSelectDate(String selectDate) {
         this.selectDate = selectDate;
+    }
+    public String getSpinnerDate() {
+        return spinnerDate;
+    }
+    public void setSpinnerDate(String spinnerDate) {
+        this.spinnerDate = spinnerDate;
     }
 }
 

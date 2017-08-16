@@ -107,10 +107,12 @@ public class CandidateLIstFragment extends Fragment
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
 
+        U.getInstance().setSpinnerDate(spinner.getSelectedItem().toString());
         spinner.setOnItemSelectedListener((parent, view1, position, id) -> {
             String selectDate = U.getInstance().getDate(parent.getSelectedItem().toString()).replace(".","-");
             U.getInstance().setSelectDate(selectDate);
             U.getInstance().getBus().post(selectDate);
+            U.getInstance().setSpinnerDate(parent.getSelectedItem().toString());
         });
     }
 

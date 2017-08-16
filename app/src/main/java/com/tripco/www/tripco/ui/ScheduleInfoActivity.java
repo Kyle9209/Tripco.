@@ -2,6 +2,7 @@ package com.tripco.www.tripco.ui;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -105,7 +106,7 @@ public class ScheduleInfoActivity extends AppCompatActivity
         if(scheduleModel.getCate_no() == 1) rb1.setChecked(true);
         if(scheduleModel.getCate_no() == 2) rb2.setChecked(true);
         // 날짜입력
-        scheduleDateTv.setText(getIntent().getStringExtra("n") + "일차(" + scheduleModel.getSchedule_date().replace("-",".") + ")");
+        scheduleDateTv.setText(U.getInstance().getSpinnerDate());
         // 메모입력
         memo.setText(scheduleModel.getItem_memo());
         // url입력
@@ -137,7 +138,7 @@ public class ScheduleInfoActivity extends AppCompatActivity
                         address.setText(myPlace.getAddress());
                         placePhotosAsync();
                     } else {
-                        U.getInstance().log("에러에러에러에러");
+                        U.getInstance().log("에러");
                     }
                     places.release();
                 });
@@ -149,6 +150,7 @@ public class ScheduleInfoActivity extends AppCompatActivity
             case R.id.toolbar_right_btn: //수정페이지로
                 Intent intent = new Intent(ScheduleInfoActivity.this, ModifyScheduleActivity.class);
                 intent.putExtra("scheduleModel", scheduleModel);
+                if(getIntent().getBooleanExtra("fin", false)) intent.putExtra("fin", true);
                 startActivityForResult(intent, 2);
                 break;
             case R.id.open_url_line:
@@ -163,6 +165,18 @@ public class ScheduleInfoActivity extends AppCompatActivity
                 U.getInstance().showAlertDialog(this, "주의!", "해당 정보를 삭제하시겠습니까?",
                         "예", (dialogInterface, i) -> {
                             dialogInterface.dismiss();
+                            try {
+                                DBOpenHelper.dbOpenHelper.getWritableDatabase().execSQL(
+                                        "delete from ScheduleList_Table " +
+                                                "where trip_no="+scheduleModel.getTrip_no()+" and " +
+                                                "schedule_no="+scheduleModel.getSchedule_no()
+                                );
+                                U.getInstance().getBus().post("DELETE_CHECK");
+                                Toast.makeText(this, "삭제되었습니다.", Toast.LENGTH_SHORT).show();
+                            } catch (SQLException e) {
+                                e.printStackTrace();
+                                Toast.makeText(this, "DB Error", Toast.LENGTH_SHORT).show();
+                            }
                             finish();
                         },
                         "아니오", (dialogInterface, i) -> dialogInterface.dismiss());
@@ -177,6 +191,7 @@ public class ScheduleInfoActivity extends AppCompatActivity
             getScheduleData();
             toolbarInit();
             uiInit();
+            scheduleDateTv.setText(data.getStringExtra("selectDate"));
         }
     }
 

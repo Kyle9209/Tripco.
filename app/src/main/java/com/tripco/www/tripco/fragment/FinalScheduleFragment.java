@@ -3,6 +3,7 @@ package com.tripco.www.tripco.fragment;
 import android.app.Activity;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -73,6 +74,7 @@ public class FinalScheduleFragment extends Fragment
 
     @Subscribe
     public void ottoBus(String str){
+        if(str.equals("ChangeSelectDate")) recViewInit();
         if(str.equals("DELETE_CHECK")) recViewInit();
     }
 
@@ -112,7 +114,9 @@ public class FinalScheduleFragment extends Fragment
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
 
+        U.getInstance().setSpinnerDate(spinner.getSelectedItem().toString());
         spinner.setOnItemSelectedListener((parent, view1, position, id) -> {
+            U.getInstance().setSpinnerDate(parent.getSelectedItem().toString());
             scheduleDate = U.getInstance().getDate(parent.getSelectedItem().toString()).replace(".","-");
             setN(parent.getSelectedItemPosition() + 1);
             recViewInit();
@@ -154,8 +158,12 @@ public class FinalScheduleFragment extends Fragment
                 android.R.color.holo_red_light
         );
         swipeContainer.setOnRefreshListener(() -> {
-            recyclerView.getAdapter().notifyDataSetChanged();
-            swipeContainer.setRefreshing(false);
+            swipeContainer.setRefreshing(true);
+            new Handler().postDelayed(() -> {
+                recViewInit();
+                swipeContainer.setRefreshing(false);
+            }, 3000);
+            //recyclerView.getAdapter().notifyDataSetChanged();
         });
     }
 

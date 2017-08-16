@@ -1,5 +1,6 @@
 package com.tripco.www.tripco.ui;
 
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.database.SQLException;
 import android.os.Bundle;
@@ -106,6 +107,16 @@ public class ModifyScheduleActivity extends AppCompatActivity implements GoogleA
         if(getIntent().getBooleanExtra("fin", false)){
             if(scheduleModel.getItem_time() != null) timeTv.setText(scheduleModel.getItem_time());
             timeTv.setVisibility(View.VISIBLE);
+            timeTv.setOnClickListener(view ->
+                    new TimePickerDialog(this, (timePicker, i, i1) -> {
+                        String hour = null;
+                        String minute = null;
+                        if (i < 10) hour = "0" + i;
+                        else hour = "" + i;
+                        if (i1 < 10) minute = "0" + i1;
+                        else minute = "" + i1;
+                        timeTv.setText(hour + ":" + minute);
+                    }, 0, 0, false).show());
         }
         // 체크확인
         if(scheduleModel.getItem_check() == 1) checkCb.setChecked(true);
@@ -115,10 +126,16 @@ public class ModifyScheduleActivity extends AppCompatActivity implements GoogleA
     public void onViewClicked(View view) {
         switch (view.getId()){
             case R.id.toolbar_right_btn:
-                updateSQLite(scheduleModel.getTrip_no(), scheduleModel.getSchedule_no(), "저장되었습니다.");
-                U.getInstance().getBus().post("ChangeSelectDate");
-                this.setResult(2, new Intent());
-                finish();
+                U.getInstance().showAlertDialog(this, "알림", "변경된 내용을 저장하시겠습니까?",
+                        "예", (dialogInterface, i) -> {
+                            updateSQLite(scheduleModel.getTrip_no(), scheduleModel.getSchedule_no(), "저장되었습니다.");
+                            U.getInstance().getBus().post("ChangeSelectDate");
+                            Intent intent = new Intent();
+                            intent.putExtra("selectDate", spinner.getSelectedItem().toString());
+                            setResult(2, intent);
+                            finish();
+                        },
+                        "아니오", (dialogInterface, i) -> dialogInterface.dismiss());
                 break;
             case R.id.place_info_line:
                 onGooglePlaces();
@@ -212,13 +229,10 @@ public class ModifyScheduleActivity extends AppCompatActivity implements GoogleA
         adapter.notifyDataSetChanged();
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
-
-        spinner.setOnItemSelectedListener((parent, view1, position, id) -> {
-
-        });
+        spinner.setSelection(Integer.parseInt(U.getInstance().getSpinnerDate().split("일")[0])-1);
     }
 
-    private void getPlaceData(){
+    private void getPlaceData() {
         if(mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient
                     .Builder(this)
@@ -248,6 +262,7 @@ public class ModifyScheduleActivity extends AppCompatActivity implements GoogleA
     private void placePhotosAsync() {
         Places.GeoDataApi.getPlacePhotos(mGoogleApiClient, placeId)
                 .setResultCallback(photos -> {
+                    placeImgIv.setVisibility(View.INVISIBLE);
                     if (!photos.getStatus().isSuccess()) return;
                     PlacePhotoMetadataBuffer photoMetadataBuffer = photos.getPhotoMetadata();
                     if (photoMetadataBuffer.getCount() > 0) {
@@ -262,6 +277,10 @@ public class ModifyScheduleActivity extends AppCompatActivity implements GoogleA
     private ResultCallback<PlacePhotoResult> mDisplayPhotoResultCallback = placePhotoResult -> {
         if (!placePhotoResult.getStatus().isSuccess()) return;
         loadingImgPb.setVisibility(View.GONE);
+        placeImgIv.setVisibility(View.VISIBLE);
+        U.getInstance().log(placePhotoResult.getBitmap().toString());
+        U.getInstance().log(placePhotoResult.toString());
+        U.getInstance().log(placePhotoResult.getStatus().toString());
         placeImgIv.setImageBitmap(placePhotoResult.getBitmap());
     };
     @Override
