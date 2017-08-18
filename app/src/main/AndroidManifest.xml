@@ -40,7 +40,7 @@
         tools:replace="android:icon">
         <activity
             android:name=".ui.MainActivity"
-            android:label="@string/title_activity_main"
+            android:label="나의 여행"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -52,15 +52,13 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ui.LoginActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:label="로그인" />
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ui.JoinActivity"
-            android:label="@string/join" />
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ui.TripActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ui.MyPageActivity"
             android:label="마이페이지" />

@@ -29,19 +29,21 @@
             android:paddingRight="10dp"
             android:paddingLeft="10dp"
             tools:listitem="@layout/cell_trip_list_layout"
-            android:id="@+id/recylerview"
+            android:id="@+id/recyclerview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 
     </RelativeLayout>
 
     <com.rey.material.widget.FloatingActionButton
+        style="@style/Material.Widget.FloatingActionButton"
+        android:background="?android:attr/selectableItemBackground"
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        app:fab_backgroundColor="@color/colorPrimary"
-        app:fab_iconSrc="@drawable/addplus" />
+        app:fab_iconSize="48dp"
+        app:fab_iconSrc="@drawable/floating_btn"/>
 
 </android.support.design.widget.CoordinatorLayout>

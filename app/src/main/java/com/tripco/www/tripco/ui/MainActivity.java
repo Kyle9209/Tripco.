@@ -40,10 +40,11 @@ import butterknife.ButterKnife;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     @BindView(R.id.toolbar) Toolbar toolbar;
-    @BindView(R.id.fab) FloatingActionButton fab;
+    @BindView(R.id.fab)
+    FloatingActionButton fab;
     @BindView(R.id.nav_view) NavigationView navigationView;
     @BindView(R.id.drawer_layout) DrawerLayout drawer;
-    @BindView(R.id.recylerview) RecyclerView recyclerView;
+    @BindView(R.id.recyclerview) RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -171,7 +172,7 @@ public class MainActivity extends AppCompatActivity
             // Handle the camera action
             startActivity(new Intent(this, MyPageActivity.class));
             drawer.setFocusable(false);
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.nav_alarm) {
             startActivity(new Intent(this, AlarmActivity.class));
         }
 

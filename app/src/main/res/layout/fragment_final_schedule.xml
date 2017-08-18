@@ -16,26 +16,26 @@
         android:background="?attr/colorPrimary">
 
         <com.rey.material.widget.Spinner
+            android:layout_margin="5dp"
+            android:layout_weight="1"
             android:id="@+id/days_spin"
             style="@style/Material.Widget.Spinner.Light"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="5dp"
-            android:layout_marginLeft="5dp"
-            android:layout_weight="1"
             app:spn_arrowAnimClockwise="true"
             app:spn_arrowSwitchMode="true"
             app:spn_arrowColor="#fff"
-            app:spn_dividerColor="#fff"
-            app:spn_labelTextColor="#fff"/>
+            app:spn_dividerColor="#fff" />
 
-        <Button
-            android:id="@+id/change_view_btn"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_margin="5dp"
+        <ImageButton
+            android:padding="5dp"
+            android:scaleType="fitCenter"
             android:layout_weight="0"
-            android:background="@android:drawable/ic_dialog_map" />
+            android:id="@+id/change_view_btn"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:src="@drawable/map_icon" />
 
     </LinearLayout>
 
@@ -51,7 +51,7 @@
             android:layout_height="match_parent">
 
             <android.support.v7.widget.RecyclerView
-                android:id="@+id/recycler_view"
+                android:id="@+id/recyclerview"
                 tools:listitem="@layout/cell_final_list_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />

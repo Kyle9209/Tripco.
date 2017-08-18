@@ -15,6 +15,7 @@
     <string name="error_invalid_email">메일형식이 맞지않습니다.</string>
     <string name="error_invalid_password">비밀번호가 짧습니다. 6자리이상</string>
     <string name="error_incorrect_password">비밀번호가 틀렸습니다.</string>
-    <string name="error_field_required">메일주소를 입력해주세요.</string>
+    <string name="error_field_required">잘못입력하셨습니다.</string>
     <string name="add_candidate">후보지에 추가되었습니다.</string>
+    <string name="update">수정</string>
 </resources>

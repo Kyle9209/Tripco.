@@ -22,7 +22,7 @@ import butterknife.ButterKnife;
 
 public class AlarmActivity extends AppCompatActivity {
 
-    @BindView(R.id.recycler_view)
+    @BindView(R.id.recyclerview)
     RecyclerView recyclerView;
 
     @Override

@@ -13,7 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
+import android.widget.ImageButton;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -44,8 +44,8 @@ public class FinalScheduleFragment extends Fragment
         implements OnMapReadyCallback, TripActivity.onKeyBackPressedListener  {
     @BindView(R.id.days_spin) Spinner spinner;
     @BindView(R.id.map) MapView mapView;
-    @BindView(R.id.change_view_btn) Button changeViewBtn;
-    @BindView(R.id.recycler_view) RecyclerView recyclerView;
+    @BindView(R.id.change_view_btn) ImageButton changeViewBtn;
+    @BindView(R.id.recyclerview) RecyclerView recyclerView;
     @BindView(R.id.swipeContainer) SwipeRefreshLayout swipeContainer;
     private GoogleMap mMap = null;
     private Unbinder unbinder;
@@ -170,10 +170,10 @@ public class FinalScheduleFragment extends Fragment
     @OnClick(R.id.change_view_btn) // 리스트 <-> 지도 전환 버튼
     public void onClickBtn(){
         if(mapView.getVisibility() == View.GONE) {
-            changeViewBtn.setBackgroundResource(android.R.drawable.ic_dialog_dialer);
+            changeViewBtn.setImageResource(R.drawable.list_icon);
             mapView.setVisibility(View.VISIBLE);
         } else {
-            changeViewBtn.setBackgroundResource(android.R.drawable.ic_dialog_map);
+            changeViewBtn.setImageResource(R.drawable.map_icon);
             mapView.setVisibility(View.GONE);
         }
     }

@@ -3,8 +3,10 @@ package com.tripco.www.tripco.ui;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.AutoCompleteTextView;
+import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -26,18 +28,27 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class JoinActivity extends RootActivity {
-    @BindView(R.id.join_email) AutoCompleteTextView joinEmail;
+    @BindView(R.id.toolbar_title_tv) TextView toolbarTitleTv;
+    @BindView(R.id.toolbar_right_btn) Button toolbarRightBtn;
+    @BindView(R.id.join_email) EditText joinEmail;
     @BindView(R.id.join_password) EditText joinPassword;
     @BindView(R.id.confirm_password) EditText confirmPassword;
+    @BindView(R.id.check_cb) CheckBox checkBox;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_join);
         ButterKnife.bind(this);
+        toolbarInit();
     }
 
-    @OnClick(R.id.email_join_in_button)
+    private void toolbarInit(){
+        toolbarTitleTv.setText("회원가입");
+        toolbarRightBtn.setText("완료");
+    }
+
+    @OnClick(R.id.toolbar_right_btn)
     public void onClickEmailJoinInButton(){
         attemptJoin();
     }
@@ -97,6 +108,11 @@ public class JoinActivity extends RootActivity {
         if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
             joinPassword.setError(getString(R.string.error_invalid_password));
             focusView = joinPassword;
+            cancel = true;
+        }
+
+        if(!checkBox.isChecked()){
+            Toast.makeText(this, "이용약관에 체크해주세요.", Toast.LENGTH_SHORT).show();
             cancel = true;
         }
 
