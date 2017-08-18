@@ -18,6 +18,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -40,17 +42,22 @@ import butterknife.ButterKnife;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     @BindView(R.id.toolbar) Toolbar toolbar;
-    @BindView(R.id.fab)
-    FloatingActionButton fab;
+    @BindView(R.id.fab) FloatingActionButton fab;
     @BindView(R.id.nav_view) NavigationView navigationView;
     @BindView(R.id.drawer_layout) DrawerLayout drawer;
     @BindView(R.id.recyclerview) RecyclerView recyclerView;
+    Button loginBtn, joinBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+
+        loginBtn = navigationView.getHeaderView(0).findViewById(R.id.login_btn);
+        joinBtn = navigationView.getHeaderView(0).findViewById(R.id.join_btn);
+
+        loginCheck();
 
         if(!checkPlayService(this)) return;
         makeShortCut(this);
@@ -60,8 +67,19 @@ public class MainActivity extends AppCompatActivity
         U.getInstance().getBus().register(this);
     }
 
+    private void loginCheck(){
+        if(U.getInstance().getBoolean("login")){
+            loginBtn.setText("로그아웃");
+            joinBtn.setText("프로필");
+        } else {
+            loginBtn.setText("로그인");
+            joinBtn.setText("회원가입");
+        }
+    }
+
     @Subscribe
     public void ottoBus(String BUS_NAME){
+        if(BUS_NAME.equals("loginSuccess")) loginCheck();
         if(BUS_NAME.equals("MAIN")) recViewInit();
     }
 
@@ -223,10 +241,20 @@ public class MainActivity extends AppCompatActivity
     public void onClickBtn(View view) {
         switch (view.getId()) {
             case R.id.login_btn:
-                startActivity(new Intent(getBaseContext(), LoginActivity.class));
+                if(U.getInstance().getBoolean("login")){
+                    U.getInstance().setBoolean("login", false);
+                    loginCheck();
+                    Toast.makeText(this, "로그아웃", Toast.LENGTH_SHORT).show();
+                } else {
+                    startActivity(new Intent(this, LoginActivity.class));
+                }
                 break;
             case R.id.join_btn:
-                startActivity(new Intent(getBaseContext(), JoinActivity.class));
+                if(U.getInstance().getBoolean("login")){
+                    startActivity(new Intent(this, MyPageActivity.class));
+                } else {
+                    startActivity(new Intent(this, JoinActivity.class));
+                }
                 break;
         }
     }

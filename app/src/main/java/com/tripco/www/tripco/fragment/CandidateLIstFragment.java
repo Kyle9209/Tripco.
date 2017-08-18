@@ -236,6 +236,7 @@ public class CandidateLIstFragment extends Fragment
                 String placeId = place.getId();
                 String placeName = place.getName().toString();
                 insertSQLite(lat, lng, placeId, placeName);
+                onMapMarker();
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                 Status status = PlaceAutocomplete.getStatus(getContext(), data);
                 U.getInstance().log("RESULT_ERROR 상태 : " + status.getStatusMessage());

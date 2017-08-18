@@ -9,10 +9,6 @@ import com.google.android.gms.location.places.PlacePhotoMetadataResult;
 import com.google.android.gms.location.places.Places;
 import com.tripco.www.tripco.util.U;
 
-/**
- * Created by kkmnb on 2017-08-14.
- */
-
 abstract public class PhotoTask extends AsyncTask<String, Void, PhotoTask.AttributedPhoto> {
     private int mHeight;
     private int mWidth;
@@ -30,33 +26,40 @@ abstract public class PhotoTask extends AsyncTask<String, Void, PhotoTask.Attrib
         final String placeId = params[0];
         AttributedPhoto attributedPhoto = null;
 
-        PlacePhotoMetadataResult result = Places.GeoDataApi
-                .getPlacePhotos(U.getInstance().getmGoogleApiClient(), placeId).await();
+        try {
+            PlacePhotoMetadataResult result = Places.GeoDataApi
+                    .getPlacePhotos(U.getInstance().getmGoogleApiClient(), placeId).await();
 
-        if (result.getStatus().isSuccess()) {
-            PlacePhotoMetadataBuffer photoMetadataBuffer = result.getPhotoMetadata();
-            if (photoMetadataBuffer.getCount() > 0 && !isCancelled()) {
-                // Get the first bitmap and its attributions.
-                PlacePhotoMetadata photo = photoMetadataBuffer.get(0);
-                CharSequence attribution = photo.getAttributions();
-                // Load a scaled bitmap for this photo.
-                Bitmap image = photo
-                        .getScaledPhoto(U.getInstance().getmGoogleApiClient(), mWidth, mHeight)
-                        .await()
-                        .getBitmap();
+            if (result.getStatus().isSuccess()) {
+                PlacePhotoMetadataBuffer photoMetadataBuffer = result.getPhotoMetadata();
+                if (photoMetadataBuffer.getCount() > 0 && !isCancelled()) {
+                    // Get the first bitmap and its attributions.
+                    PlacePhotoMetadata photo = photoMetadataBuffer.get(0);
+                    CharSequence attribution = photo.getAttributions();
+                    // Load a scaled bitmap for this photo.
+                    Bitmap image = photo
+                            .getScaledPhoto(U.getInstance().getmGoogleApiClient(), mWidth, mHeight)
+                            .await()
+                            .getBitmap();
 
-                attributedPhoto = new AttributedPhoto(attribution, image);
+                    attributedPhoto = new AttributedPhoto(attribution, image);
+                }
+                // Release the PlacePhotoMetadataBuffer.
+                photoMetadataBuffer.release();
             }
-            // Release the PlacePhotoMetadataBuffer.
-            photoMetadataBuffer.release();
+        } catch (Exception e) {
+            e.printStackTrace();
+            if(U.getInstance().getmGoogleApiClient() != null) {
+                U.getInstance().getmGoogleApiClient().disconnect();
+                U.getInstance().setmGoogleApiClient(null);
+            }
+            return null;
         }
         return attributedPhoto;
     }
 
     protected class AttributedPhoto {
-
         final CharSequence attribution;
-
         public final Bitmap bitmap;
 
         AttributedPhoto(CharSequence attribution, Bitmap bitmap) {

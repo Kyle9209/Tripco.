@@ -10,14 +10,12 @@ import com.tripco.www.tripco.R;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-/**
- * Created by kkmnb on 2017-08-17.
- */
 
 public class MarkerListViewHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.title_tv) public TextView titleTv;
     @BindView(R.id.address_tv) public TextView addressTv;
     @BindView(R.id.check_cb) public CheckBox checkCb;
+    @BindView(R.id.index_tv) public TextView indexTv;
 
     public MarkerListViewHolder(View itemView) {
         super(itemView);

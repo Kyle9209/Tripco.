@@ -1,19 +1,21 @@
 package com.tripco.www.tripco.adapter;
 
 import android.content.Context;
+import android.database.SQLException;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.Places;
 import com.tripco.www.tripco.R;
+import com.tripco.www.tripco.db.DBOpenHelper;
 import com.tripco.www.tripco.holder.MarkerListViewHolder;
 import com.tripco.www.tripco.model.ScheduleModel;
 import com.tripco.www.tripco.util.U;
@@ -23,7 +25,7 @@ import java.util.ArrayList;
 public class MarkerListAdapter extends RecyclerView.Adapter<MarkerListViewHolder> implements GoogleApiClient.OnConnectionFailedListener {
     private ArrayList<ScheduleModel> scheduleModels;
     Context context = U.getInstance().getContext();
-
+    int n = 1;
     public MarkerListAdapter(ArrayList<ScheduleModel> scheduleModel){
         this.scheduleModels = scheduleModel;
     }
@@ -37,13 +39,20 @@ public class MarkerListAdapter extends RecyclerView.Adapter<MarkerListViewHolder
     @Override
     public void onBindViewHolder(MarkerListViewHolder holder, int position) {
         final ScheduleModel scheduleModel = scheduleModels.get(position);
+        holder.indexTv.setText(""+(n++));
         // 체크박스 상태 찍어주고 최종 < - > 후보지
         if(scheduleModel.getItem_check() == 1) holder.checkCb.setChecked(true);
-        holder.checkCb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                // 체크되면 최종일정
-                // 체크풀리면 후보지
+        holder.checkCb.setOnCheckedChangeListener((compoundButton, b) -> {
+            if(b) {
+                updateSQLite(scheduleModel.getTrip_no(),
+                        scheduleModel.getSchedule_no(),
+                        1,
+                        "최종일정에 추가되었습니다.");
+            } else {
+                updateSQLite(scheduleModel.getTrip_no(),
+                        scheduleModel.getSchedule_no(),
+                        0,
+                        "최종일정에서 삭제되었습니다.");
             }
         });
         // 유형체크해서 이미지 변경
@@ -74,14 +83,26 @@ public class MarkerListAdapter extends RecyclerView.Adapter<MarkerListViewHolder
                             final Place myPlace = places.get(0);
                             // 위치명
                             holder.titleTv.setText(myPlace.getName());
+                            holder.addressTv.setText(myPlace.getAddress());
                         } else {
                             U.getInstance().log("에러");
                         }
                         places.release();
                     });
         }
-        // 마커풍선에 위치명 입력
         // 주소 입력
+    }
+
+    private void updateSQLite(int trip_no, int s_no, int check, String str) {
+        try {
+            String sql = "update ScheduleList_Table set" +
+                    " item_check = '" + check + "'" +
+                    " where trip_no = " + trip_no + " and schedule_no = " + s_no + " ;";
+            DBOpenHelper.dbOpenHelper.getWritableDatabase().execSQL(sql);
+            Toast.makeText(context, str, Toast.LENGTH_SHORT).show();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

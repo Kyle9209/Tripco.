@@ -9,39 +9,39 @@
 
     <!-- 사진 & 닉네임 & 이메일 -->
     <LinearLayout
-        android:layout_marginTop="61dp"
-        android:gravity="center"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="61dp"
+        android:gravity="center">
 
         <!-- 사진 -->
         <de.hdodenhof.circleimageview.CircleImageView
-            android:layout_weight="0"
-            android:src="@drawable/default_profile"
             android:id="@+id/imageView"
             android:layout_width="80dp"
-            android:layout_height="80dp" />
+            android:layout_height="80dp"
+            android:layout_weight="0"
+            android:src="@drawable/default_profile" />
 
         <!-- 닉네임 & 이메일 -->
         <LinearLayout
-            android:visibility="gone"
-            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="gone">
 
             <TextView
-                android:gravity="center"
-                android:layout_weight="1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
                 android:text="닉네임" />
 
             <TextView
-                android:gravity="center"
-                android:layout_weight="1"
                 android:id="@+id/textView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
                 android:text="android.studio@android.com" />
 
         </LinearLayout>
@@ -50,34 +50,33 @@
 
     <!-- 로그인 로그아웃 회원가입 마이페이지 -->
     <LinearLayout
-        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
         <!-- 로그인 <-> 로그아웃 -->
         <Button
-            style="button"
-            android:textSize="17sp"
-            android:textStyle="bold"
-            android:layout_weight="1"
-            android:onClick="onClickBtn"
             android:id="@+id/login_btn"
-            android:background="?android:attr/selectableItemBackground"
-            android:text="@string/login"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?android:attr/selectableItemBackground"
+            android:onClick="onClickBtn"
+            android:text="@string/login"
+            android:textSize="17sp"
+            android:textStyle="bold" />
 
         <!-- 회원가입 <-> 마이페이지 -->
         <Button
-            android:textSize="17sp"
-            android:textStyle="bold"
-            android:background="?android:attr/selectableItemBackground"
-            android:layout_weight="1"
-            android:onClick="onClickBtn"
             android:id="@+id/join_btn"
-            android:text="@string/join"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?android:attr/selectableItemBackground"
+            android:onClick="onClickBtn"
+            android:text="@string/join"
+            android:textSize="17sp"
+            android:textStyle="bold" />
 
     </LinearLayout>
 

@@ -84,7 +84,7 @@
 
                 <CheckBox
                     android:layout_weight="0"
-                    android:id="@+id/Check_cb"
+                    android:id="@+id/check_cb"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:checked="true" />

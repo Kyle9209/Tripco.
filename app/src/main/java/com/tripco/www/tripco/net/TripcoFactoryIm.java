@@ -1,24 +1,19 @@
 package com.tripco.www.tripco.net;
 
+import com.tripco.www.tripco.model.MemberModel;
+import com.tripco.www.tripco.model.ResponseModel;
+
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.POST;
 
 public interface TripcoFactoryIm {
-    // 로그인
+    //로그인
     @POST("/login")
-    Call<Res_ResultCode> login(@Body Req_Login req);
+    Call<ResponseModel<MemberModel>> login(@Body MemberModel req);
 
     // 회원가입
     @POST("/join")
-    Call<Res_ResultCode> join(@Body Req_Join req);
-
-    /*// 로그인
-    @POST("/login")
-    Call<RequestModel> login2(@Body Req_Login req);
-
-    // 회원가입
-    @POST("/join")
-    Call<RequestModel<MemberModel>> join2(@Body Req_Join req);*/
+    Call<ResponseModel<MemberModel>> join(@Body MemberModel req);
 }
 

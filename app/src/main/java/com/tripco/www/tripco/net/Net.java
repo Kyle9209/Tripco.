@@ -7,11 +7,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class Net {
     private static Net ourInstance = new Net();
-
     public static Net getInstance() {
         return ourInstance;
     }
-
     private Net() {}
 
     // retrofit 통신 객체
@@ -24,6 +22,8 @@ public class Net {
         return retrofit;
     }
 
+
+    // 팩토리 설정
     private TripcoFactoryIm apiIm;
 
     public TripcoFactoryIm getApiIm() {

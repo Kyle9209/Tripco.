@@ -10,6 +10,7 @@ import android.util.Log;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.squareup.otto.Bus;
+import com.tripco.www.tripco.model.MemberModel;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
@@ -177,6 +178,15 @@ public class U {
     }
     public void setSpinnerDate(String spinnerDate) {
         this.spinnerDate = spinnerDate;
+    }
+
+    // 멤버정보 갖고있기
+    private MemberModel memberModel;
+    public MemberModel getMemberModel() {
+        return memberModel;
+    }
+    public void setMemberModel(MemberModel memberModel) {
+        this.memberModel = memberModel;
     }
 }
 
