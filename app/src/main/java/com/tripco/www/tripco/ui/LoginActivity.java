@@ -52,8 +52,11 @@ public class LoginActivity extends RootActivity {
 
     @Subscribe
     public void ottoBus(String str){
-        stopPD();
-        if(str.equals("loginSuccess")) this.finish();
+        if(str.equals("loginSuccess")){
+            stopPD();
+            this.finish();
+        }
+        if(str.equals("loginFailed")) stopPD();
     }
 
     private void toolbarInit(){
@@ -101,7 +104,7 @@ public class LoginActivity extends RootActivity {
 
     private void connectServer(String email, String password){
         showPD();
-        NetProcess.getInstance().netLoginJoin(
+        NetProcess.getInstance().netLoginJoinSimple(
                 new MemberModel(
                         email,
                         password
@@ -114,7 +117,7 @@ public class LoginActivity extends RootActivity {
     }
 
     private boolean isPasswordValid(String password) {
-        return password.length() > 4;
+        return password.length() >= 8;
     }
 }
 

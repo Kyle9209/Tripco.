@@ -21,6 +21,7 @@ android:padding="5dp">
             android:textSize="20sp" />
 
         <Button
+            android:textSize="18sp"
             android:id="@+id/toolbar_right_btn"
             style="@style/Widget.AppCompat.Button.ButtonBar.AlertDialog"
             android:layout_width="wrap_content"
@@ -30,8 +31,7 @@ android:padding="5dp">
             android:layout_centerVertical="true"
             android:background="?android:attr/selectableItemBackground"
             android:text="button"
-            android:textColor="#fff"
-            android:textStyle="bold" />
+            android:textColor="#fff" />
 
     </RelativeLayout>
 

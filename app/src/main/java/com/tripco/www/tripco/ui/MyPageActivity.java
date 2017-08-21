@@ -7,6 +7,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatDrawableManager;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.miguelbcr.ui.rx_paparazzo2.RxPaparazzo;
@@ -26,14 +27,26 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 public class MyPageActivity extends AppCompatActivity {
+    @BindView(R.id.toolbar_title_tv) TextView toolbarTitleTv;
+    @BindView(R.id.toolbar_right_btn) Button toolbarRightBtn;
     @BindView(R.id.profile_civ) CircleImageView profile;
     @BindView(R.id.nickName_tv) TextView nickNameTv;
+    @BindView(R.id.email_tv) TextView emailTv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_page);
         ButterKnife.bind(this);
+        toolbarInit();
+
+        nickNameTv.setText(U.getInstance().getMemberModel().getUser_nick());
+        emailTv.setText(U.getInstance().getMemberModel().getUser_id());
+    }
+
+    private void toolbarInit(){
+        toolbarTitleTv.setText("프로필");
+        toolbarRightBtn.setVisibility(View.INVISIBLE);
     }
 
     @OnClick(R.id.profile_civ)
@@ -51,13 +64,6 @@ public class MyPageActivity extends AppCompatActivity {
                 });
     }
 
-    //닉네임 변경 페이지로 이동
-    public void onClickNickname(View v) {
-        Intent intent = new Intent(MyPageActivity.this, NicknameActivity.class);
-        intent.putExtra("nickName", nickNameTv.getText().toString());
-        startActivityForResult(intent, 2); //값을 가져오기로 위해서
-    }
-
     //닉네임 값 받아오기
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -70,10 +76,19 @@ public class MyPageActivity extends AppCompatActivity {
         }
     }
 
-    //비밀번호 변경 페이지로 이동
-    public void onClickPW(View v) {
-        Intent intent = new Intent(MyPageActivity.this, ModifyPwdActivity.class);
-        startActivity(intent);
+    public void onClickView(View view) {
+        Intent intent;
+        switch (view.getId()){
+            case R.id.change_pwd_line:
+                intent = new Intent(MyPageActivity.this, ModifyPwdActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.change_nick_line:
+                intent = new Intent(MyPageActivity.this, ModifyNickActivity.class);
+                intent.putExtra("nickName", nickNameTv.getText().toString());
+                startActivityForResult(intent, 2); //값을 가져오기로 위해서
+                break;
+        }
     }
 
     // 마이페이지 사진 설정============================================================================

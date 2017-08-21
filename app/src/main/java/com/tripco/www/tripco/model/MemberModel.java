@@ -1,28 +1,29 @@
 package com.tripco.www.tripco.model;
 
 public class MemberModel {
-    int user_no;
-    String user_id;
-    String user_pw;
-    String user_token;
-    String user_uuid;
-    String user_nick;
-    String user_image;
-    int user_yn;
+    private int user_no;
+    private String user_id;
+    private String user_pw;
+    private String user_nick;
+    private String user_token;
+    private String user_uuid;
+    private String user_image;
+    private int user_yn;
 
-    // 회원의 전체 데이터 그릇
-    public MemberModel(int user_no, String user_id, String user_pw, String user_token, String user_uuid, String user_nick, String user_image, int user_yn) {
+
+    // 회원의 전체 데이터 받는 그릇
+    public MemberModel(int user_no, String user_id, String user_pw, String user_nick, String user_token, String user_uuid, String user_image, int user_yn) {
         this.user_no = user_no;
         this.user_id = user_id;
         this.user_pw = user_pw;
+        this.user_nick = user_nick;
         this.user_token = user_token;
         this.user_uuid = user_uuid;
-        this.user_nick = user_nick;
         this.user_image = user_image;
         this.user_yn = user_yn;
     }
 
-    // 회원가입할 때 주는 그릇
+    // 회원가입할 때 보내는 그릇
     public MemberModel(String user_id, String user_pw, String user_token, String user_uuid, String user_nick) {
         this.user_id = user_id;
         this.user_pw = user_pw;
@@ -31,12 +32,25 @@ public class MemberModel {
         this.user_nick = user_nick;
     }
 
-    // 로그인 할 때 주는 그릇
+    // 로그인 할 때 보내는 그릇
     public MemberModel(String user_id, String user_pw) {
         this.user_id = user_id;
         this.user_pw = user_pw;
     }
 
+    // 회원정보 가져올때 보내는 그릇
+    public MemberModel(String user_id) {
+        this.user_id = user_id;
+    }
+
+    // 닉네임 변경할때 보내는 그릇
+    public MemberModel(String user_id, String user_nick ,String user_pw) {
+        this.user_id = user_id;
+        this.user_nick = user_nick;
+        this.user_pw = user_pw;
+    }
+
+    // Getter&Setter ===============================================================================
     public int getUser_no() {
         return user_no;
     }

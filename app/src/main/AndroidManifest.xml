@@ -61,9 +61,9 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ui.MyPageActivity"
-            android:label="마이페이지" />
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".ui.NicknameActivity"
+            android:name=".ui.ModifyNickActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ui.ModifyPwdActivity"

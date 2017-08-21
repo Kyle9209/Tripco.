@@ -180,8 +180,8 @@ public class U {
         this.spinnerDate = spinnerDate;
     }
 
-    // 멤버정보 갖고있기
-    private MemberModel memberModel;
+    // 메인에서 로그인되어있으면 1번 가져와서 앱을 끌때까지 계속 가지고있는 회원정보
+    public MemberModel memberModel;
     public MemberModel getMemberModel() {
         return memberModel;
     }

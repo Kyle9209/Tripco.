@@ -49,7 +49,7 @@
                 android:id="@+id/join_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="영문/숫자 조합 6자 이상"
+                android:hint="@string/valid_password"
                 android:inputType="textPassword"
                 android:maxLines="1"
                 android:singleLine="true" />
@@ -66,7 +66,7 @@
                 android:id="@+id/confirm_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="영문/숫자 조합 6자 이상"
+                android:hint="@string/valid_password"
                 android:inputType="textPassword"
                 android:maxLines="1"
                 android:singleLine="true" />

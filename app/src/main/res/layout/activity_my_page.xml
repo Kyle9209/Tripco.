@@ -6,61 +6,108 @@
     android:orientation="vertical"
     tools:context="com.tripco.www.tripco.ui.MyPageActivity">
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/profile_civ"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/default_my_page_profile"
-        android:layout_marginTop="40dp"
-        android:layout_marginBottom="40dp"
-        android:layout_gravity="center" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
+    <include
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp"
-            android:layout_weight="1"
-            android:id="@+id/nickName_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="닉네임"
-            android:textSize="20sp" />
-
-        <Button
-            android:layout_weight="0"
-            android:id="@+id/update_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="onClickNickname"
-            android:text="수정" />
-
-    </LinearLayout>
-
-    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="15dp"
-        android:orientation="horizontal">
+        layout="@layout/custom_toolbar_layout"/>
 
-        <TextView
-            android:id="@+id/EmailValue"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="email@gmail.com"
-            android:textSize="20sp" />
-
-    </LinearLayout>
-
-    <Button
-        android:id="@+id/change_pwd_btn"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="onClickPW"
-        android:text="비밀번호 변경" />
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <!-- 프로필 사진 -->
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:layout_marginTop="50dp"
+                android:layout_marginBottom="50dp"
+                android:id="@+id/profile_civ"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/default_my_page_profile"
+                android:layout_gravity="center" />
+
+            <!-- 닉네임 -->
+            <LinearLayout
+                android:id="@+id/change_nick_line"
+                android:onClick="onClickView"
+                android:background="?android:attr/selectableItemBackground"
+                android:layout_width="match_parent"
+                android:layout_height="64dp">
+
+                <TextView
+                    android:layout_weight="1"
+                    android:textStyle="bold"
+                    android:textColor="#000"
+                    android:textSize="18sp"
+                    android:paddingLeft="30dp"
+                    android:gravity="center_vertical"
+                    android:id="@+id/nickName_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="닉네임" />
+
+                <ImageView
+                    android:layout_marginRight="15dp"
+                    android:src="@drawable/right_next_btn"
+                    android:layout_weight="0"
+                    android:layout_width="35dp"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <!-- 이메일 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="64dp">
+
+                <TextView
+                    android:textStyle="bold"
+                    android:textColor="#000"
+                    android:textSize="18sp"
+                    android:paddingLeft="30dp"
+                    android:gravity="center_vertical"
+                    android:id="@+id/email_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="이메일*" />
+
+            </LinearLayout>
+
+            <!-- 비밀번호 변경 -->
+            <LinearLayout
+                android:id="@+id/change_pwd_line"
+                android:onClick="onClickView"
+                android:background="?android:attr/selectableItemBackground"
+                android:layout_width="match_parent"
+                android:layout_height="64dp">
+
+                <TextView
+                    android:layout_weight="1"
+                    android:textStyle="bold"
+                    android:textColor="#000"
+                    android:textSize="18sp"
+                    android:paddingLeft="30dp"
+                    android:gravity="center_vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="비밀번호 변경" />
+
+                <ImageView
+                    android:layout_marginRight="15dp"
+                    android:src="@drawable/right_next_btn"
+                    android:layout_weight="0"
+                    android:layout_width="35dp"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
 
 </LinearLayout>

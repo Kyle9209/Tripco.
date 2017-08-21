@@ -19,6 +19,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -30,7 +32,9 @@ import com.tripco.www.tripco.BuildConfig;
 import com.tripco.www.tripco.R;
 import com.tripco.www.tripco.adapter.TripListAdapter;
 import com.tripco.www.tripco.db.DBOpenHelper;
+import com.tripco.www.tripco.model.MemberModel;
 import com.tripco.www.tripco.model.TripModel;
+import com.tripco.www.tripco.net.NetProcess;
 import com.tripco.www.tripco.util.U;
 
 import java.util.ArrayList;
@@ -46,6 +50,8 @@ public class MainActivity extends AppCompatActivity
     @BindView(R.id.drawer_layout) DrawerLayout drawer;
     @BindView(R.id.recyclerview) RecyclerView recyclerView;
     Button loginBtn, joinBtn;
+    LinearLayout userInfo;
+    TextView userEmailTv, userNickTv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,8 +61,9 @@ public class MainActivity extends AppCompatActivity
 
         loginBtn = navigationView.getHeaderView(0).findViewById(R.id.login_btn);
         joinBtn = navigationView.getHeaderView(0).findViewById(R.id.join_btn);
-
-        loginCheck();
+        userInfo = navigationView.getHeaderView(0).findViewById(R.id.user_info_line);
+        userEmailTv = navigationView.getHeaderView(0).findViewById(R.id.user_email_tv);
+        userNickTv = navigationView.getHeaderView(0).findViewById(R.id.user_nick_tv);
 
         if(!checkPlayService(this)) return;
         makeShortCut(this);
@@ -64,22 +71,34 @@ public class MainActivity extends AppCompatActivity
         uiInit();
         DBOpenHelper.getInstance();
         U.getInstance().getBus().register(this);
+        loginCheck();
     }
 
     private void loginCheck(){
         if(U.getInstance().getBoolean("login")){
+            NetProcess.getInstance().netLoginJoinSimple(new MemberModel(U.getInstance().getString("email")), "simple");
+            userInfo.setVisibility(View.VISIBLE);
             loginBtn.setText("로그아웃");
             joinBtn.setText("프로필");
         } else {
+            userInfo.setVisibility(View.GONE);
             loginBtn.setText("로그인");
             joinBtn.setText("회원가입");
         }
     }
 
     @Subscribe
-    public void ottoBus(String BUS_NAME){
+    public void ottoBus(String BUS_NAME) {
         if(BUS_NAME.equals("loginSuccess")) loginCheck();
         if(BUS_NAME.equals("MAIN")) recViewInit();
+        if(BUS_NAME.equals("getUserInfo")) {
+            U.getInstance().log(U.getInstance().getMemberModel().toString());
+            userEmailTv.setText(U.getInstance().getMemberModel().getUser_id());
+            userNickTv.setText(U.getInstance().getMemberModel().getUser_nick());
+        }
+        if(BUS_NAME.equals("nickChange")){
+            userNickTv.setText(U.getInstance().getMemberModel().getUser_nick());
+        }
     }
 
     @Override // 리사이클러뷰 초기화
@@ -90,7 +109,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override // 디비 클로즈
     protected void onDestroy() {
-        //U.getInstance().getBus().unregister(this);
+        U.getInstance().getBus().unregister(this);
         DBOpenHelper.dbOpenHelper.close();
         super.onDestroy();
     }

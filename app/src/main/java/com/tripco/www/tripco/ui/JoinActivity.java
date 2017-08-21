@@ -40,8 +40,11 @@ public class JoinActivity extends RootActivity {
 
     @Subscribe
     public void ottoBus(String str){
-        stopPD();
-        if(str.equals("loginSuccess")) this.finish();
+        if(str.equals("loginSuccess")){
+            stopPD();
+            this.finish();
+        }
+        if(str.equals("loginFailed")) stopPD();
     }
 
     @Override
@@ -85,21 +88,21 @@ public class JoinActivity extends RootActivity {
 
         //비밀번호 칸이 비었으면 알림
         if (TextUtils.isEmpty(password)) {
-            joinPassword.setError(getString(R.string.error_field_required));
+            joinPassword.setError(getString(R.string.error_invalid_password));
             focusView = joinPassword;
             cancel = true;
         }
 
         //비밀번호 확인칸이 비었으면 알림
         if (TextUtils.isEmpty(confirmPwd)) {
-            confirmPassword.setError(getString(R.string.error_field_required));
+            confirmPassword.setError(getString(R.string.error_invalid_password));
             focusView = confirmPassword;
             cancel = true;
         }
 
         // 비밀번호 확인이 일치하는지 체크
         if (!TextUtils.isEmpty(confirmPwd) && !isConfirmPassword(confirmPwd, password)) {
-            confirmPassword.setError("비밀번호가 다릅니다.");
+            confirmPassword.setError(getString(R.string.error_incorrect_password));
             focusView = confirmPassword;
             cancel = true;
         }
@@ -134,7 +137,7 @@ public class JoinActivity extends RootActivity {
 
     private void connectServer(String email, String password){
         showPD();
-        NetProcess.getInstance().netLoginJoin(
+        NetProcess.getInstance().netLoginJoinSimple(
                 new MemberModel(
                         email,
                         password,
@@ -150,7 +153,7 @@ public class JoinActivity extends RootActivity {
     }
 
     private boolean isPasswordValid(String password) {
-        return password.length() > 4;
+        return password.length() >= 8;
     }
 
     private boolean isConfirmPassword(String confirmPwd, String password) {

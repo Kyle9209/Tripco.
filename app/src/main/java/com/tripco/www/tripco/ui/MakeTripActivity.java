@@ -343,7 +343,7 @@ public class MakeTripActivity extends AppCompatActivity {
         bottomSheetDialog.findViewById(R.id.find_btn).setOnClickListener(view -> {
             EditText find_et = bottomSheetDialog.findViewById(R.id.find_et);
             if (TextUtils.isEmpty(find_et.getText().toString())) {
-                find_et.setError(getString(R.string.error_field_required));
+                find_et.setError("입력해주세요.");
                 find_et.requestFocus();
             } else {
                 if (loginFlag) {

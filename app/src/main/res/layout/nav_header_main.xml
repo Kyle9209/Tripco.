@@ -24,25 +24,29 @@
 
         <!-- 닉네임 & 이메일 -->
         <LinearLayout
+            android:id="@+id/user_info_line"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:visibility="gone">
+            android:visibility="visible">
 
             <TextView
+                android:textColor="#fff"
+                android:id="@+id/user_nick_tv"
+                android:textStyle="bold"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center"
-                android:text="닉네임" />
+                android:gravity="center" />
 
             <TextView
-                android:id="@+id/textView"
+                android:textColor="#fff"
+                android:textStyle="bold"
+                android:id="@+id/user_email_tv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center"
-                android:text="android.studio@android.com" />
+                android:gravity="center" />
 
         </LinearLayout>
 
