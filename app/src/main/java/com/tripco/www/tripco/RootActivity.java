@@ -22,7 +22,7 @@ public class RootActivity extends AppCompatActivity {
         if(progressDialog == null){
             progressDialog = new ProgressDialog(this);
             progressDialog.setCancelable(false);
-            progressDialog.setMessage("Loading...");
+            progressDialog.setMessage("잠시만 기다려주세요.");
         }
         progressDialog.show();
     }

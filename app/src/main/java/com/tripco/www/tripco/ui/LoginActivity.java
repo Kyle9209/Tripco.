@@ -1,17 +1,16 @@
 package com.tripco.www.tripco.ui;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import com.squareup.otto.Subscribe;
 import com.tripco.www.tripco.R;
+import com.tripco.www.tripco.RootActivity;
 import com.tripco.www.tripco.model.MemberModel;
 import com.tripco.www.tripco.net.NetProcess;
 import com.tripco.www.tripco.util.U;
@@ -20,12 +19,11 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends RootActivity {
     @BindView(R.id.toolbar_title_tv) TextView toolbarTitleTv;
     @BindView(R.id.toolbar_right_btn) Button toolbarRightBtn;
     @BindView(R.id.email) EditText mEmailView;
     @BindView(R.id.password) EditText mPasswordView;
-    private InputMethodManager imm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +52,7 @@ public class LoginActivity extends AppCompatActivity {
 
     @Subscribe
     public void ottoBus(String str){
+        stopPD();
         if(str.equals("loginSuccess")) this.finish();
     }
 
@@ -84,7 +83,7 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         if (TextUtils.isEmpty(email)) {
-            mEmailView.setError(getString(R.string.error_field_required));
+            mEmailView.setError(getString(R.string.please_email));
             focusView = mEmailView;
             cancel = true;
         } else if (!isEmailValid(email)) {
@@ -95,13 +94,13 @@ public class LoginActivity extends AppCompatActivity {
 
         if (cancel) {
             focusView.requestFocus();
-            imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
         } else { // 서버로
             connectServer(email, password);
         }
     }
 
     private void connectServer(String email, String password){
+        showPD();
         NetProcess.getInstance().netLoginJoin(
                 new MemberModel(
                         email,

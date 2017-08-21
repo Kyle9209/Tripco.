@@ -11,71 +11,82 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <TextView
-        android:layout_marginTop="104dp"
-        android:layout_marginBottom="97dp"
-        android:textStyle="bold"
-        android:textSize="30sp"
-        android:textColor="@color/colorPrimary"
-        android:gravity="center"
-        android:text="Tripco."
+    <ScrollView
+        android:paddingRight="16dp"
+        android:paddingLeft="16dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="match_parent">
 
-    <!-- 메일주소 -->
-    <EditText
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:textCursorDrawable="@color/colorPrimary"
-        android:textColor="#000"
-        android:layout_marginBottom="8dp"
-        android:padding="10dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:id="@+id/email"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/edittext_background"
-        android:hint="이메일"
-        android:inputType="textEmailAddress"
-        android:maxLines="1" />
-
-    <!-- 비밀번호 -->
-    <EditText
-        android:textCursorDrawable="@color/colorPrimary"
-        android:layout_marginBottom="20dp"
-        android:textColor="#000"
-        android:padding="10dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:id="@+id/password"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/edittext_background"
-        android:hint="비밀번호"
-        android:inputType="textPassword"
-        android:maxLines="1" />
-
-    <!-- 비밀번호찾기 -->
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-
-        <TextView
-            android:layout_weight="1"
-            android:id="@+id/find_pwd_tv"
-            android:textColor="@color/editTextColor"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="비밀번호를 잊으셨나요?" />
-
-        <ImageView
-            android:layout_weight="1"
-            android:src="@drawable/underline"
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content">
 
-    </LinearLayout>
+            <!-- 타이틀 -->
+            <TextView
+                android:layout_marginTop="104dp"
+                android:layout_marginBottom="97dp"
+                android:textStyle="bold"
+                android:textSize="30sp"
+                android:textColor="@color/colorPrimary"
+                android:gravity="center"
+                android:text="Tripco."
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <!-- 메일주소 -->
+            <EditText
+                android:textCursorDrawable="@color/colorPrimary"
+                android:textColor="#000"
+                android:layout_marginBottom="8dp"
+                android:padding="10dp"
+                android:id="@+id/email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/edittext_background"
+                android:hint="이메일"
+                android:inputType="textEmailAddress"
+                android:maxLines="1" />
+
+            <!-- 비밀번호 -->
+            <EditText
+                android:textCursorDrawable="@color/colorPrimary"
+                android:layout_marginBottom="20dp"
+                android:textColor="#000"
+                android:padding="10dp"
+                android:id="@+id/password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/edittext_background"
+                android:hint="비밀번호"
+                android:inputType="textPassword"
+                android:maxLines="1" />
+
+            <!-- 비밀번호찾기 -->
+            <LinearLayout
+                android:layout_gravity="center"
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_weight="1"
+                    android:id="@+id/find_pwd_tv"
+                    android:textColor="@color/editTextColor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="비밀번호를 잊으셨나요?" />
+
+                <ImageView
+                    android:layout_weight="1"
+                    android:src="@drawable/underline"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
 
 </LinearLayout>

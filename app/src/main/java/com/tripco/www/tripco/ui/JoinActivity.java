@@ -40,6 +40,7 @@ public class JoinActivity extends RootActivity {
 
     @Subscribe
     public void ottoBus(String str){
+        stopPD();
         if(str.equals("loginSuccess")) this.finish();
     }
 
@@ -73,7 +74,7 @@ public class JoinActivity extends RootActivity {
 
         // 이메일 확인
         if (TextUtils.isEmpty(email)) {
-            joinEmail.setError(getString(R.string.error_field_required));
+            joinEmail.setError(getString(R.string.please_email));
             focusView = joinEmail;
             cancel = true;
         } else if (!isEmailValid(email)) {
@@ -123,13 +124,16 @@ public class JoinActivity extends RootActivity {
         }
 
         if (cancel) { // 하나라도 걸리면 다시
-            focusView.requestFocus();
+            if(focusView != null) {
+                focusView.requestFocus();
+            }
         } else { // 모두 통과하면 서버로
             connectServer(email, password);
         }
     }
 
     private void connectServer(String email, String password){
+        showPD();
         NetProcess.getInstance().netLoginJoin(
                 new MemberModel(
                         email,

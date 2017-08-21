@@ -19,7 +19,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -186,11 +185,7 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-            startActivity(new Intent(this, MyPageActivity.class));
-            drawer.setFocusable(false);
-        } else if (id == R.id.nav_alarm) {
+        if (id == R.id.nav_alarm) {
             startActivity(new Intent(this, AlarmActivity.class));
         }
 
@@ -242,9 +237,13 @@ public class MainActivity extends AppCompatActivity
         switch (view.getId()) {
             case R.id.login_btn:
                 if(U.getInstance().getBoolean("login")){
-                    U.getInstance().setBoolean("login", false);
-                    loginCheck();
-                    Toast.makeText(this, "로그아웃", Toast.LENGTH_SHORT).show();
+                    U.getInstance().showAlertDialog(this, "알림", "로그아웃 하시겠습니까?",
+                            "예", (dialogInterface, i) -> {
+                                U.getInstance().setBoolean("login", false);
+                                loginCheck();
+                                dialogInterface.dismiss();
+                            },
+                            "아니오", (dialogInterface, i) -> dialogInterface.dismiss());
                 } else {
                     startActivity(new Intent(this, LoginActivity.class));
                 }

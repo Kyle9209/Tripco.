@@ -42,7 +42,7 @@ public class NetProcess {
                                         response.body().getResult().getUser_yn()
                                 )
                         );
-                        Toast.makeText(U.getInstance().getContext(), "어서오세요~", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(U.getInstance().getContext(), response.body().getResult().getUser_nick() + "님\n환영합니다.", Toast.LENGTH_SHORT).show();
                         U.getInstance().setBoolean("login", true);
                         U.getInstance().getBus().post("loginSuccess");
                     } else if (response.body().getCode() == 0) { // 실패 -> 실패메세지 출력
@@ -51,12 +51,14 @@ public class NetProcess {
                 } else {
                     // 실패처리
                     Toast.makeText(U.getInstance().getContext(), "실패-1", Toast.LENGTH_SHORT).show();
+                    U.getInstance().getBus().post("loginFailed");
                 }
             }
             @Override
             public void onFailure(Call<ResponseModel<MemberModel>> call, Throwable t) {
                 //실패처리
                 Toast.makeText(U.getInstance().getContext(), "실패-2", Toast.LENGTH_SHORT).show();
+                U.getInstance().getBus().post("loginFailed");
             }
         });
     }
