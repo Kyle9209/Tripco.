@@ -4,6 +4,7 @@ import android.widget.Toast;
 
 import com.tripco.www.tripco.model.MemberModel;
 import com.tripco.www.tripco.model.ResponseModel;
+import com.tripco.www.tripco.model.TripModel;
 import com.tripco.www.tripco.util.U;
 
 import retrofit2.Call;
@@ -126,6 +127,66 @@ public class NetProcess {
             public void onFailure(Call<ResponseModel> call, Throwable t) {
                 Toast.makeText(U.getInstance().getContext(), "서버통신 실패-2", Toast.LENGTH_SHORT).show();
                 U.getInstance().getBus().post("pwdFailed");
+            }
+        });
+    }
+
+    public void netPartner(MemberModel req){
+        Call<ResponseModel<MemberModel>> res = Net.getInstance().getApiIm().simple(req);
+        res.enqueue(new Callback<ResponseModel<MemberModel>>() {
+            @Override
+            public void onResponse(Call<ResponseModel<MemberModel>> call, Response<ResponseModel<MemberModel>> response) {
+                if(response.isSuccessful()){
+                    if(response.body().getCode() == 1){
+                        U.getInstance().setPartnerModel(new MemberModel(
+                                0,
+                                response.body().getResult().getUser_id(),
+                                null,
+                                response.body().getResult().getUser_nick(),
+                                null,
+                                null,
+                                response.body().getResult().getUser_image(),
+                                0));
+                        U.getInstance().getBus().post("findPartnerSuccess");
+                    } else {
+                        Toast.makeText(U.getInstance().getContext(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                        U.getInstance().getBus().post("findPartnerFailed");
+                    }
+                } else {
+                    Toast.makeText(U.getInstance().getContext(), "서버통신 실패-1", Toast.LENGTH_SHORT).show();
+                    U.getInstance().getBus().post("findPartnerFailed");
+                }
+            }
+            @Override
+            public void onFailure(Call<ResponseModel<MemberModel>> call, Throwable t) {
+                Toast.makeText(U.getInstance().getContext(), "서버통신 실패-2", Toast.LENGTH_SHORT).show();
+                U.getInstance().getBus().post("findPartnerFailed");
+            }
+        });
+    }
+
+    public void netMakeTrip(TripModel req){
+        Call<ResponseModel> res = Net.getInstance().getApiIm().create_trip(req);
+        res.enqueue(new Callback<ResponseModel>() {
+            @Override
+            public void onResponse(Call<ResponseModel> call, Response<ResponseModel> response) {
+                if(response.isSuccessful()){
+                    if(response.body().getCode() == 1){
+                        Toast.makeText(U.getInstance().getContext(), "여행이 생성되었습니다.", Toast.LENGTH_SHORT).show();
+                        U.getInstance().getBus().post("makeTripSuccess");
+                    } else {
+                        Toast.makeText(U.getInstance().getContext(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                        U.getInstance().getBus().post("makeTripFailed");
+                    }
+                } else {
+                    Toast.makeText(U.getInstance().getContext(), "서버통신 실패-1", Toast.LENGTH_SHORT).show();
+                    U.getInstance().getBus().post("makeTripFailed");
+                }
+            }
+            @Override
+            public void onFailure(Call<ResponseModel> call, Throwable t) {
+                Toast.makeText(U.getInstance().getContext(), "서버통신 실패-2", Toast.LENGTH_SHORT).show();
+                U.getInstance().getBus().post("makeTripFailed");
             }
         });
     }

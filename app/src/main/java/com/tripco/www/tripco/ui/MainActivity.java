@@ -233,20 +233,23 @@ public class MainActivity extends AppCompatActivity
     // 리스트 데이터 셋팅
     public ArrayList<TripModel> ArrayListTripModel(){
         ArrayList<TripModel> list = new ArrayList<>();
-        Cursor csr = DBOpenHelper.dbOpenHelper.getWritableDatabase().rawQuery("select * from Trip_Table;", null);
+        if(U.getInstance().getBoolean("login")) {
 
-        while (csr.moveToNext()){
-            list.add(new TripModel(
-                    csr.getInt(0),
-                    csr.getString(1),
-                    csr.getString(2),
-                    csr.getString(3),
-                    csr.getString(4),
-                    csr.getString(5),
-                    csr.getString(6)
-            ));
+        } else {
+            Cursor csr = DBOpenHelper.dbOpenHelper.getWritableDatabase().rawQuery("select * from Trip_Table;", null);
+            while (csr.moveToNext()) {
+                list.add(new TripModel(
+                        csr.getInt(0),
+                        csr.getString(1),
+                        csr.getString(2),
+                        csr.getString(3),
+                        csr.getString(4),
+                        csr.getString(5),
+                        csr.getString(6)
+                ));
+            }
+            csr.close();
         }
-        csr.close();
 
         return list;
     }

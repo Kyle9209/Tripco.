@@ -188,5 +188,14 @@ public class U {
     public void setMemberModel(MemberModel memberModel) {
         this.memberModel = memberModel;
     }
+
+    // 검색한 파트너정보
+    public MemberModel partnerModel;
+    public MemberModel getPartnerModel() {
+        return partnerModel;
+    }
+    public void setPartnerModel(MemberModel partnerModel) {
+        this.partnerModel = partnerModel;
+    }
 }
 

@@ -14,143 +14,196 @@
         layout="@layout/custom_toolbar_layout"/>
 
     <LinearLayout
-        android:layout_weight="1"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp">
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp">
 
         <!-- 제목 -->
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:focusable="true"
-            android:focusableInTouchMode="true">
-
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <EditText
-                    android:id="@+id/title_et"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:hint="여행 제목*"
-                    android:inputType="text"
-                    android:maxLength="10"
-                    android:maxLines="1"
-                    android:textColor="#000"
-                    android:textCursorDrawable="@null"
-                    android:textSize="23sp" />
-
-            </android.support.design.widget.TextInputLayout>
-
-            <Button
-                android:visibility="invisible"
-                android:id="@+id/clear_title_btn"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:layout_gravity="center"
-                android:background="@drawable/places_ic_clear" />
-
-        </RelativeLayout>
-
-        <!-- 제목 글자수 -->
-        <TextView
-            android:id="@+id/title_cnt_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:text="0/10" />
-
-        <!-- 달력 -->
-        <RelativeLayout
+        <LinearLayout
+            android:layout_marginTop="16dp"
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <LinearLayout
-                android:id="@+id/calendar_btn_line"
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:padding="2dp">
+                android:focusable="true"
+                android:focusableInTouchMode="true">
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:id="@+id/title_et"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:hint="여행제목*"
+                        android:inputType="text"
+                        android:maxLength="10"
+                        android:maxLines="1"
+                        android:textColor="#000"
+                        android:textCursorDrawable="@null"
+                        android:textSize="18sp" />
+
+                </android.support.design.widget.TextInputLayout>
 
                 <Button
-                    android:id="@+id/calendar_btn"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="#fff"
-                    android:gravity="center|left"
-                    android:text="언제?*"
-                    android:textSize="20sp" />
+                    android:visibility="invisible"
+                    android:id="@+id/clear_title_btn"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_gravity="center"
+                    android:background="@drawable/places_ic_clear" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="2dp"
-                    android:background="#000" />
+            </RelativeLayout>
 
-            </LinearLayout>
+            <!-- 제목 글자수 -->
+            <TextView
+                android:id="@+id/title_cnt_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:text="0/10" />
 
-        </RelativeLayout>
+        </LinearLayout>
+
+        <!-- 달력 -->
+        <LinearLayout
+            android:background="?android:attr/selectableItemBackground"
+            android:id="@+id/calendar_btn_line"
+            android:layout_width="match_parent"
+            android:layout_height="64dp">
+
+            <ImageView
+                android:layout_gravity="center"
+                android:src="@drawable/calendar_icon"
+                android:layout_weight="0"
+                android:layout_width="25dp"
+                android:layout_height="25dp" />
+
+            <TextView
+                android:padding="5dp"
+                android:id="@+id/calendar_tv"
+                android:textStyle="bold"
+                android:textColor="#000"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:text="언제?*"
+                android:textSize="18sp" />
+
+            <ImageView
+                android:src="@drawable/right_next_btn"
+                android:layout_weight="0"
+                android:layout_width="35dp"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
 
         <!-- 누구 -->
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp">
+            android:layout_height="64dp">
 
             <LinearLayout
+                android:background="?android:attr/selectableItemBackground"
+                android:id="@+id/who_btn_line"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:padding="2dp">
+                android:layout_height="match_parent">
 
-                <Button
-                    android:id="@+id/who_btn"
+                <ImageView
+                    android:layout_gravity="center"
+                    android:src="@drawable/alarm_icon"
+                    android:layout_weight="0"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp" />
+
+                <TextView
+                    android:padding="5dp"
+                    android:id="@+id/who_tv"
+                    android:textStyle="bold"
+                    android:textColor="#000"
+                    android:layout_weight="1"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="#fff"
-                    android:gravity="center|left"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
                     android:text="누구와?(선택)"
-                    android:textSize="20sp" />
+                    android:textSize="18sp" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="2dp"
-                    android:background="#000" />
+                <ImageView
+                    android:src="@drawable/right_next_btn"
+                    android:layout_weight="0"
+                    android:layout_width="35dp"
+                    android:layout_height="wrap_content" />
 
             </LinearLayout>
 
-            <Button
+            <TextView
+                android:background="?android:attr/selectableItemBackground"
+                android:textColor="#aeadad"
                 android:id="@+id/discon_partner_btn"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="80dp"
-                android:layout_height="40dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
+                android:layout_alignParentBottom="true"
                 android:text="연결끊기" />
 
         </RelativeLayout>
 
         <!-- 해시태그 제목 -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="어떤?"
-            android:textColor="#000"
-            android:textSize="20sp" />
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:textStyle="bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="어떤?"
+                android:textColor="#000"
+                android:textSize="18sp" />
+
+
+                <GridLayout
+
+                    android:columnCount="3"
+                    android:id="@+id/hashtag_gl"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:text="qwe"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                    <TextView
+                        android:text="qwe"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                    <TextView
+                        android:text="qwe"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                    <TextView
+                        android:text="qwe"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </GridLayout>
+
+
+        </LinearLayout>
 
         <!-- 해시태그 -->
-        <ScrollView
+        <!--<ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
@@ -352,7 +405,7 @@
 
             </LinearLayout>
 
-        </ScrollView>
+        </ScrollView>-->
 
     </LinearLayout>
 

@@ -2,6 +2,7 @@ package com.tripco.www.tripco.net;
 
 import com.tripco.www.tripco.model.MemberModel;
 import com.tripco.www.tripco.model.ResponseModel;
+import com.tripco.www.tripco.model.TripModel;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -31,5 +32,17 @@ public interface TripcoFactoryIm {
     // 비밀번호 변경
     @POST("/change_pw")
     Call<ResponseModel> change_pw(@Body MemberModel req);
+
+    // 여행 리스트
+    //@POST("list_trip")
+    //Call<ResponseModel> list_trip(@Body )
+
+    // 여행 만들기
+    @POST("/create_trip")
+    Call<ResponseModel> create_trip(@Body TripModel req);
+
+    // 파트너 찾기
+    @POST("/find_partner")
+    Call<ResponseModel<MemberModel>> find_partner(@Body MemberModel req);
 }
 

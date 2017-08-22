@@ -1,10 +1,9 @@
 package com.tripco.www.tripco.ui;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.SQLException;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -12,18 +11,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.LinearLayout;
+import android.widget.GridLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 import com.rey.material.app.BottomSheetDialog;
+import com.rey.material.widget.CheckBox;
+import com.squareup.otto.Subscribe;
 import com.tripco.www.tripco.R;
+import com.tripco.www.tripco.RootActivity;
 import com.tripco.www.tripco.db.DBOpenHelper;
+import com.tripco.www.tripco.model.MemberModel;
 import com.tripco.www.tripco.model.TripModel;
+import com.tripco.www.tripco.net.NetProcess;
 import com.tripco.www.tripco.util.U;
 
 import java.text.ParseException;
@@ -33,15 +36,15 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MakeTripActivity extends AppCompatActivity {
+public class MakeTripActivity extends RootActivity {
     @BindView(R.id.toolbar_title_tv) TextView toolbarTitleTv;
     @BindView(R.id.toolbar_right_btn) Button toolbarRightBtn;
     @BindView(R.id.title_et) EditText titleEt;
     @BindView(R.id.clear_title_btn) Button clearTitleBtn;
     @BindView(R.id.title_cnt_tv) TextView titleCntTv;
-    @BindView(R.id.calendar_btn) Button calendarBtn;
-    @BindView(R.id.calendar_btn_line) LinearLayout calendarBtnLine;
-    @BindView(R.id.hashtag_cb1) CheckBox hashtagCb1;
+    @BindView(R.id.calendar_tv) TextView calendarTv;
+    @BindView(R.id.hashtag_gl) GridLayout hashtagGl;
+    /*@BindView(R.id.hashtag_cb1) CheckBox hashtagCb1;
     @BindView(R.id.hashtag_cb2) CheckBox hashtagCb2;
     @BindView(R.id.hashtag_cb3) CheckBox hashtagCb3;
     @BindView(R.id.hashtag_cb4) CheckBox hashtagCb4;
@@ -55,7 +58,7 @@ public class MakeTripActivity extends AppCompatActivity {
     @BindView(R.id.hashtag_cb12) CheckBox hashtagCb12;
     @BindView(R.id.hashtag_cb13) CheckBox hashtagCb13;
     @BindView(R.id.hashtag_cb14) CheckBox hashtagCb14;
-    @BindView(R.id.hashtag_cb15) CheckBox hashtagCb15;
+    @BindView(R.id.hashtag_cb15) CheckBox hashtagCb15;*/
     @BindView(R.id.delete_btn) Button deleteBtn;
     private int MAX_TITLE_CNT = 10; // 여행제목 최대 글자수 = 10
     private int trip_no;
@@ -63,12 +66,12 @@ public class MakeTripActivity extends AppCompatActivity {
     private String hashTags = "";
     private final static String ALONE = "혼자";
     private boolean dateSelectFlag; // 시작 날짜를 선택했는지 확인
-    private boolean loginFlag = false; // 로그인되어있지 않다고 가정
     private boolean updateFlag = false; // 수정하기로 들어온건지 확인
     private BottomSheetDialog bottomSheetDialog;
     private InputMethodManager imm; // 키보드 객체
     private Date stringToStartDate, stringToEndDate;
     private final static String BUS_NAME = "MAIN";
+    EditText find_et;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,9 +79,37 @@ public class MakeTripActivity extends AppCompatActivity {
         setContentView(R.layout.activity_make_trip);
         imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         ButterKnife.bind(this);
+        U.getInstance().getBus().register(this);
         toolbarInit();
+        tableInit();
         checkTitleCnt();
         getExtraData();
+    }
+
+    @Subscribe
+    public void ottoBus(String str){
+        if(str.equals("findPartnerSuccess")){
+            stopPD();
+            bottomSheetDialog.findViewById(R.id.cardview).setVisibility(View.VISIBLE);
+            TextView partnerIdTv = bottomSheetDialog.findViewById(R.id.partner_id_tv);
+            partnerIdTv.setText(U.getInstance().partnerModel.getUser_id());
+            TextView partnerNickTv = bottomSheetDialog.findViewById(R.id.partner_nick_tv);
+            partnerNickTv.setText(U.getInstance().partnerModel.getUser_nick());
+        }
+        if(str.equals("findPartnerFailed")){
+            stopPD();
+        }
+        if(str.equals("makeTripSuccess")) {
+            stopPD();
+            finish();
+        }
+        if(str.equals("makeTripFailed")) stopPD();
+    }
+
+    @Override
+    protected void onDestroy() {
+        U.getInstance().getBus().unregister(this);
+        super.onDestroy();
     }
 
     private void getExtraData() {
@@ -91,11 +122,11 @@ public class MakeTripActivity extends AppCompatActivity {
             titleEt.setText(sTripModel.getTrip_title());
             startDate = sTripModel.getStart_date();
             endDate = sTripModel.getEnd_date();
-            calendarBtn.setText(startDate + " ~ " + endDate);
+            calendarTv.setText(startDate + " ~ " + endDate);
             if (!sTripModel.getPartner_id().equals(ALONE)) {
                 // 혼자가 아니라면 친구도 셋팅
             }
-            if (sTripModel.getHashtag().contains(hashtagCb1.getText())) hashtagCb1.setChecked(true);
+            /*if (sTripModel.getHashtag().contains(hashtagCb1.getText())) hashtagCb1.setChecked(true);
             if (sTripModel.getHashtag().contains(hashtagCb2.getText())) hashtagCb2.setChecked(true);
             if (sTripModel.getHashtag().contains(hashtagCb3.getText())) hashtagCb3.setChecked(true);
             if (sTripModel.getHashtag().contains(hashtagCb4.getText())) hashtagCb4.setChecked(true);
@@ -109,7 +140,7 @@ public class MakeTripActivity extends AppCompatActivity {
             if (sTripModel.getHashtag().contains(hashtagCb12.getText())) hashtagCb12.setChecked(true);
             if (sTripModel.getHashtag().contains(hashtagCb13.getText())) hashtagCb13.setChecked(true);
             if (sTripModel.getHashtag().contains(hashtagCb14.getText())) hashtagCb14.setChecked(true);
-            if (sTripModel.getHashtag().contains(hashtagCb15.getText())) hashtagCb15.setChecked(true);
+            if (sTripModel.getHashtag().contains(hashtagCb15.getText())) hashtagCb15.setChecked(true);*/
         }
     }
 
@@ -118,21 +149,34 @@ public class MakeTripActivity extends AppCompatActivity {
         toolbarRightBtn.setText("완료");
     }
 
-    @OnClick({R.id.calendar_btn, R.id.who_btn, R.id.toolbar_right_btn,
+    private void tableInit(){
+        String[] tags = {"힐링", "감성", "먹방" ,"쇼핑" , "조용", "활발", "답사" , "레저" ,"가성비" , "여유로운", "지식"
+                ,"트렌디", "둘이서" , "혼자서", "커플" ,"가족" ,"우정" ,"제주" , "유럽" ,"미국" ,"동남아", "일본" ,"중국"};
+        for (String tag : tags) {
+            CheckBox checkBox = new CheckBox(this);
+            checkBox.setTextSize(18);
+            checkBox.setButtonDrawable(null);
+            checkBox.setBackgroundResource(R.drawable.hashtag);
+            checkBox.setText("#"+tag);
+            hashtagGl.addView(checkBox);
+        }
+    }
+
+    @OnClick({R.id.calendar_btn_line, R.id.who_btn_line, R.id.toolbar_right_btn,
             R.id.clear_title_btn, R.id.delete_btn, R.id.discon_partner_btn})
     public void onClickBtn(View view) {
         switch (view.getId()) {
-            case R.id.calendar_btn:
+            case R.id.calendar_btn_line:
                 imm.hideSoftInputFromWindow(titleEt.getWindowToken(), 0);
                 onCalendar();
                 break;
-            case R.id.who_btn:
+            case R.id.who_btn_line:
                 imm.hideSoftInputFromWindow(titleEt.getWindowToken(), 0);
                 onFindWho();
                 break;
             case R.id.toolbar_right_btn:
                 if (checkData(true)) {
-                    if (hashtagCb1.isChecked()) hashTags = hashTags + hashtagCb1.getText().toString();
+                    /*if (hashtagCb1.isChecked()) hashTags = hashTags + hashtagCb1.getText().toString();
                     if (hashtagCb2.isChecked()) hashTags = hashTags + hashtagCb2.getText().toString();
                     if (hashtagCb3.isChecked()) hashTags = hashTags + hashtagCb3.getText().toString();
                     if (hashtagCb4.isChecked()) hashTags = hashTags + hashtagCb4.getText().toString();
@@ -146,9 +190,17 @@ public class MakeTripActivity extends AppCompatActivity {
                     if (hashtagCb12.isChecked()) hashTags = hashTags + hashtagCb12.getText().toString();
                     if (hashtagCb13.isChecked()) hashTags = hashTags + hashtagCb13.getText().toString();
                     if (hashtagCb14.isChecked()) hashTags = hashTags + hashtagCb14.getText().toString();
-                    if (hashtagCb15.isChecked()) hashTags = hashTags + hashtagCb15.getText().toString();
-                    if (loginFlag) { // 로그인되어있으니 서버로
-                        finish();
+                    if (hashtagCb15.isChecked()) hashTags = hashTags + hashtagCb15.getText().toString();*/
+                    if (U.getInstance().getBoolean("login")) { // 로그인되어있으니 서버로
+                        showPD();
+                        NetProcess.getInstance().netMakeTrip(
+                                new TripModel(titleEt.getText().toString(),
+                                        startDate,
+                                        endDate,
+                                        U.getInstance().getMemberModel().getUser_id(),
+                                        "상대방 아이디",
+                                        hashTags)
+                        );
                     } else { // 로그인되어있지않음 ->// 로컬디비로
                         if (updateFlag) updateSQLite();
                         else insertSQLite();
@@ -233,11 +285,10 @@ public class MakeTripActivity extends AppCompatActivity {
             check = false;
         }
 
-        if (calendarBtn.getText().equals("언제?*")) {
+        if (calendarTv.getText().equals("언제?*")) {
             Toast.makeText(this, "날짜를 선택해주세요.", Toast.LENGTH_SHORT).show();
-            calendarBtnLine.setBackgroundColor(Color.RED);
             check = false;
-        } else calendarBtnLine.setBackgroundColor(Color.WHITE);
+        }
 
         return check;
     }
@@ -325,8 +376,7 @@ public class MakeTripActivity extends AppCompatActivity {
                 Toast.makeText(MakeTripActivity.this, "날짜를 선택해주세요.", Toast.LENGTH_SHORT).show();
             } else {
                 bottomSheetDialog.dismiss();
-                calendarBtnLine.setBackgroundColor(Color.WHITE);
-                calendarBtn.setText(startDate + " ~ " + endDate);
+                calendarTv.setText(startDate + " ~ " + endDate);
             }
         });
     }
@@ -341,28 +391,27 @@ public class MakeTripActivity extends AppCompatActivity {
 
         // 찾기버튼
         bottomSheetDialog.findViewById(R.id.find_btn).setOnClickListener(view -> {
-            EditText find_et = bottomSheetDialog.findViewById(R.id.find_et);
+            find_et = bottomSheetDialog.findViewById(R.id.find_et);
             if (TextUtils.isEmpty(find_et.getText().toString())) {
                 find_et.setError("입력해주세요.");
                 find_et.requestFocus();
             } else {
-                if (loginFlag) {
+                if (U.getInstance().getBoolean("login")) {
                     // 로그인되어있음 -> 서버에서 친구데이터 맞는지 확인
+                    showPD();
+                    NetProcess.getInstance().netPartner(new MemberModel(find_et.getText().toString()));
                 } else {
                     U.getInstance().showAlertDialog(this, "알림", "로그인하시겠습니까?",
                             "예", (dialogInterface, i) -> {
-                                Toast.makeText(this, "아직 로그인 안돼요...", Toast.LENGTH_SHORT).show();
+                                startActivity(new Intent(this, LoginActivity.class));
                                 dialogInterface.dismiss();
                             },
-                            "아니오", (dialogInterface, i) -> {
-                                dialogInterface.dismiss();
-                            });
+                            "아니오", (dialogInterface, i) -> dialogInterface.dismiss());
                 }
-                bottomSheetDialog.findViewById(R.id.relativeLayout).setVisibility(View.VISIBLE);
+
                 imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
             }
         });
-
         // 완료버튼
         toolbarRightBtn.setOnClickListener(view -> {
             bottomSheetDialog.dismiss();
