@@ -48,7 +48,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.MakeTripActivity"
+            android:name=".ui.SetTripActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ui.LoginActivity"

@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import com.tripco.www.tripco.R;
 import com.tripco.www.tripco.holder.TripListViewHolder;
 import com.tripco.www.tripco.model.TripModel;
-import com.tripco.www.tripco.ui.MakeTripActivity;
+import com.tripco.www.tripco.ui.SetTripActivity;
 import com.tripco.www.tripco.ui.TripActivity;
 import com.tripco.www.tripco.util.U;
 
@@ -53,7 +53,7 @@ public class TripListAdapter extends RecyclerView.Adapter<TripListViewHolder> {
         });
 
         holder.update.setOnClickListener(view -> { // 수정버튼 클릭
-            Intent intent = new Intent(context, MakeTripActivity.class);
+            Intent intent = new Intent(context, SetTripActivity.class);
             TripModel serializableTripModel = new TripModel(tripModel.getTrip_no(),
                     tripModel.getTrip_title(),
                     tripModel.getStart_date(),

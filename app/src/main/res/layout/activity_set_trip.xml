@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="#fff"
     android:orientation="vertical"
-    tools:context="com.tripco.www.tripco.ui.MakeTripActivity">
+    tools:context="com.tripco.www.tripco.ui.SetTripActivity">
 
     <include
         android:layout_height="wrap_content"
@@ -14,6 +14,7 @@
         layout="@layout/custom_toolbar_layout"/>
 
     <LinearLayout
+        android:layout_weight="1"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -149,6 +150,7 @@
             </LinearLayout>
 
             <TextView
+                android:visibility="gone"
                 android:background="?android:attr/selectableItemBackground"
                 android:textColor="#aeadad"
                 android:id="@+id/discon_partner_btn"
@@ -168,18 +170,26 @@
             android:layout_height="match_parent">
 
             <TextView
+                android:gravity="center"
                 android:textStyle="bold"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="64dp"
                 android:text="어떤?"
                 android:textColor="#000"
                 android:textSize="18sp" />
 
-            <GridView
-                android:id="@+id/hashtag_gv"
+            <ScrollView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:numColumns="3"/>
+                android:layout_height="match_parent">
+
+                <GridLayout
+                    android:layout_gravity="center_horizontal"
+                    android:id="@+id/hashTag_gl"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:columnCount="3" />
+
+            </ScrollView>
 
         </LinearLayout>
 

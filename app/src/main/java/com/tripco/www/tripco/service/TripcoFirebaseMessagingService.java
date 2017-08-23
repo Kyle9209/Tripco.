@@ -6,13 +6,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.RingtoneManager;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
 
 import com.google.firebase.messaging.RemoteMessage;
-import com.google.gson.Gson;
-import com.tripco.www.tripco.ui.MainActivity;
 import com.tripco.www.tripco.R;
 import com.tripco.www.tripco.model.ResPushModel;
+import com.tripco.www.tripco.ui.MainActivity;
 
 /**
  * Created by kkmnb on 2017-07-07.
@@ -26,12 +24,10 @@ public class TripcoFirebaseMessagingService extends com.google.firebase.messagin
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
 
-        Log.d("FCM", "From > " + remoteMessage.getFrom());
-        if(remoteMessage.getData().size() > 0){
-            ResPushModel res = new Gson().fromJson(remoteMessage.getData().get("data"), ResPushModel.class);
-            Log.d("FCM", "Message data payload > " + res.getBody());
-            showNotification(res);
-        }
+        ResPushModel res = new ResPushModel();
+        res.setTitle(remoteMessage.getNotification().getTitle().toString());
+        res.setBody(remoteMessage.getNotification().getBody().toString());
+        showNotification(res);
     }
 
     // 상단 알림바 푸시알림

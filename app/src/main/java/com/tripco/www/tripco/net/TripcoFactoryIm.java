@@ -45,5 +45,13 @@ public interface TripcoFactoryIm {
     // 파트너 찾기
     @POST("/find_partner")
     Call<ResponseModel<MemberModel>> find_partner(@Body TripModel req);
+
+    // 여행 수정
+    @POST("/update_trip")
+    Call<ResponseModel> update_trip(@Body TripModel req);
+
+    // 여행 삭제
+    @POST("/delete_trip")
+    Call<ResponseModel> delete_trip(@Body TripModel req);
 }
 

@@ -1,11 +1,9 @@
 package com.tripco.www.tripco.ui;
 
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.AppCompatDrawableManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -137,10 +135,11 @@ public class MyPageActivity extends AppCompatActivity {
                     .load(file)
                     .error(R.mipmap.ic_launcher_round)
                     .into(profile);
-        } else {
+        } /*else {
+             실패하면 원래사진 그대로
             Drawable drawable = AppCompatDrawableManager.get().getDrawable(profile.getContext(), R.mipmap.ic_launcher_round);
             profile.setImageDrawable(drawable);
-        }
+        }*/
     }
     //==============================================================================================
 }

@@ -153,48 +153,52 @@ public class NetProcess {
                         U.getInstance().getBus().post("findPartnerSuccess");
                     } else {
                         Toast.makeText(U.getInstance().getContext(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
-                        U.getInstance().getBus().post("findPartnerFailed");
+                        U.getInstance().getBus().post("responseFailed");
                     }
                 } else {
                     Toast.makeText(U.getInstance().getContext(), "서버통신 실패-1", Toast.LENGTH_SHORT).show();
-                    U.getInstance().getBus().post("findPartnerFailed");
+                    U.getInstance().getBus().post("responseFailed");
                 }
             }
             @Override
             public void onFailure(Call<ResponseModel<MemberModel>> call, Throwable t) {
                 Toast.makeText(U.getInstance().getContext(), "서버통신 실패-2", Toast.LENGTH_SHORT).show();
-                U.getInstance().getBus().post("findPartnerFailed");
+                U.getInstance().getBus().post("responseFailed");
             }
         });
     }
 
-    public void netMakeTrip(TripModel req){
-        Call<ResponseModel> res = Net.getInstance().getApiIm().create_trip(req);
+    public void netCrUpDeTrip(TripModel req, String str){
+        Call<ResponseModel> res = null;
+        if(str.equals("생성")) res = Net.getInstance().getApiIm().create_trip(req);
+        else if(str.equals("수정")) res = Net.getInstance().getApiIm().update_trip(req);
+        else if(str.equals("삭제")) res = Net.getInstance().getApiIm().delete_trip(req);
         res.enqueue(new Callback<ResponseModel>() {
             @Override
             public void onResponse(Call<ResponseModel> call, Response<ResponseModel> response) {
                 if(response.isSuccessful()){
                     if(response.body().getCode() == 1){
-                        Toast.makeText(U.getInstance().getContext(), "여행이 생성되었습니다.", Toast.LENGTH_SHORT).show();
-                        U.getInstance().getBus().post("makeTripSuccess");
+                        netListTrip(new MemberModel(U.getInstance().getMemberModel().getUser_id()));
+                        Toast.makeText(U.getInstance().getContext(), "여행이 "+str+"되었습니다.", Toast.LENGTH_SHORT).show();
+                        U.getInstance().getBus().post("responseSuccess");
                     } else {
                         Toast.makeText(U.getInstance().getContext(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
-                        U.getInstance().getBus().post("makeTripFailed");
+                        U.getInstance().getBus().post("responseFailed");
                     }
                 } else {
                     Toast.makeText(U.getInstance().getContext(), "서버통신 실패-1", Toast.LENGTH_SHORT).show();
-                    U.getInstance().getBus().post("makeTripFailed");
+                    U.getInstance().getBus().post("responseFailed");
                 }
             }
             @Override
             public void onFailure(Call<ResponseModel> call, Throwable t) {
                 Toast.makeText(U.getInstance().getContext(), "서버통신 실패-2", Toast.LENGTH_SHORT).show();
-                U.getInstance().getBus().post("makeTripFailed");
+                U.getInstance().getBus().post("responseFailed");
             }
         });
     }
 
-    public void netTripList(MemberModel req){
+    public void netListTrip(MemberModel req){
         Call<ResponseArrayModel<TripModel>> res = Net.getInstance().getApiIm().list_trip(req);
         res.enqueue(new Callback<ResponseArrayModel<TripModel>>() {
             @Override
@@ -214,7 +218,7 @@ public class NetProcess {
                                     null
                             ));
                         }
-                        U.getInstance().getBus().post("tripListSuccess");
+                        U.getInstance().getBus().post("tripListInit");
                     } else {
                         Toast.makeText(U.getInstance().getContext(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
                         U.getInstance().getBus().post("tripListFailed");
@@ -224,7 +228,6 @@ public class NetProcess {
                     U.getInstance().getBus().post("tripListFailed");
                 }
             }
-
             @Override
             public void onFailure(Call<ResponseArrayModel<TripModel>> call, Throwable t) {
                 Toast.makeText(U.getInstance().getContext(), "서버통신 실패-2", Toast.LENGTH_SHORT).show();

@@ -35,7 +35,7 @@ public class TripModel<T> implements Serializable {
         this.hashtag = hashtag;
     }
 
-    // 여행만들때 보내는 그릇
+    // 여행 생성할 때 보내는 그릇
     public TripModel(String trip_title, String start_date, String end_date, String user_id, String partner_id, String hashtag) {
         this.trip_title = trip_title;
         this.start_date = start_date;
@@ -43,6 +43,20 @@ public class TripModel<T> implements Serializable {
         this.user_id = user_id;
         this.partner_id = partner_id;
         this.hashtag = hashtag;
+    }
+
+    // 여행 수정할 때 보내는 그릇
+    public TripModel(int trip_no, String trip_title, String start_date, String end_date, String hashtag) {
+        this.trip_no = trip_no;
+        this.trip_title = trip_title;
+        this.start_date = start_date;
+        this.end_date = end_date;
+        this.hashtag = hashtag;
+    }
+
+    // 여행 삭제할 때 보내는 그릇
+    public TripModel(int trip_no) {
+        this.trip_no = trip_no;
     }
 
     // 파트너 찾을때 보내는 그릇

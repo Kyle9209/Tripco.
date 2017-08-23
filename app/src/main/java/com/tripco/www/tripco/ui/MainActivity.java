@@ -11,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -49,9 +50,10 @@ public class MainActivity extends AppCompatActivity
     @BindView(R.id.nav_view) NavigationView navigationView;
     @BindView(R.id.drawer_layout) DrawerLayout drawer;
     @BindView(R.id.recyclerview) RecyclerView recyclerView;
-    Button loginBtn, joinBtn;
-    LinearLayout userInfo;
-    TextView userEmailTv, userNickTv;
+    @BindView(R.id.swipeContainer) SwipeRefreshLayout swipeContainer;
+    private Button loginBtn, joinBtn;
+    private LinearLayout userInfo;
+    private TextView userEmailTv, userNickTv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +67,7 @@ public class MainActivity extends AppCompatActivity
         makeShortCut(this);
         getServerAddress();
         uiInit();
+        swipeRefreshInit();
         loginCheck();
     }
 
@@ -78,35 +81,22 @@ public class MainActivity extends AppCompatActivity
             userInfo.setVisibility(View.GONE);
             loginBtn.setText("로그인");
             joinBtn.setText("회원가입");
-            recyclerView.removeAllViews();
+            recViewInit();
         }
     }
 
     @Subscribe
     public void ottoBus(String BUS_NAME) {
         if(BUS_NAME.equals("loginSuccess")) loginCheck();
-        if(BUS_NAME.equals("MAIN")) recViewInit();
         if(BUS_NAME.equals("getUserInfo")) {
             userEmailTv.setText(U.getInstance().getMemberModel().getUser_id());
             userNickTv.setText(U.getInstance().getMemberModel().getUser_nick());
-            NetProcess.getInstance().netTripList(new MemberModel(U.getInstance().getMemberModel().getUser_id()));
+            NetProcess.getInstance().netListTrip(new MemberModel(U.getInstance().getMemberModel().getUser_id()));
         }
         if(BUS_NAME.equals("nickChange")){
             userNickTv.setText(U.getInstance().getMemberModel().getUser_nick());
         }
-        if(BUS_NAME.equals("makeTripSuccess")){
-            NetProcess.getInstance().netTripList(new MemberModel(U.getInstance().getMemberModel().getUser_id()));
-            // 성공하면 tripListSuccess 날라옴
-        }
-        if(BUS_NAME.equals("tripListSuccess")){ // 서버에서 리스트받아서 정상적으로 저장되면
-            recViewInit();
-        }
-    }
-
-    @Override // 리사이클러뷰 초기화
-    protected void onResume() {
-        super.onResume();
-        recViewInit();
+        if(BUS_NAME.equals("tripListInit")) recViewInit();
     }
 
     @Override // 디비 클로즈
@@ -218,7 +208,7 @@ public class MainActivity extends AppCompatActivity
     // 기본 UI 셋팅
     private void uiInit() {
         setSupportActionBar(toolbar);
-        fab.setOnClickListener(view -> startActivity(new Intent(getBaseContext(), MakeTripActivity.class)));
+        fab.setOnClickListener(view -> startActivity(new Intent(getBaseContext(), SetTripActivity.class)));
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, 0, 0);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
@@ -240,13 +230,33 @@ public class MainActivity extends AppCompatActivity
         } else {
             adapter = new TripListAdapter(this, ArrayListTripModel());
         }
+        swipeContainer.setRefreshing(false);
         recyclerView.setAdapter(adapter);
     }
 
-    // 로컬에서 리스트 데이터 셋팅
+    // RecyclerView 리프레시 셋팅
+    public void swipeRefreshInit(){
+        swipeContainer.setColorSchemeResources(
+                android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light
+        );
+        swipeContainer.setOnRefreshListener(() -> {
+            swipeContainer.setRefreshing(true);
+            if(U.getInstance().getBoolean("login")) {
+                NetProcess.getInstance().netListTrip(new MemberModel(U.getInstance().getMemberModel().getUser_id()));
+            } else {
+                recViewInit();
+            }
+        });
+    }
+
+    // 로컬디비에있는 리스트 데이터 셋팅
     public ArrayList<TripModel> ArrayListTripModel(){
         ArrayList<TripModel> list = new ArrayList<>();
-            Cursor csr = DBOpenHelper.dbOpenHelper.getWritableDatabase().rawQuery("select * from Trip_Table;", null);
+            Cursor csr = DBOpenHelper.dbOpenHelper.getWritableDatabase()
+                    .rawQuery("select * from Trip_Table order by trip_no desc;", null);
             while (csr.moveToNext()) {
                 list.add(new TripModel(
                         csr.getInt(0),
@@ -257,7 +267,6 @@ public class MainActivity extends AppCompatActivity
                         csr.getString(5),
                         csr.getString(6)
                 ));
-            //csr.close();
         }
         return list;
     }
