@@ -3,9 +3,12 @@ package com.tripco.www.tripco.net;
 import android.widget.Toast;
 
 import com.tripco.www.tripco.model.MemberModel;
+import com.tripco.www.tripco.model.ResponseArrayModel;
 import com.tripco.www.tripco.model.ResponseModel;
 import com.tripco.www.tripco.model.TripModel;
 import com.tripco.www.tripco.util.U;
+
+import java.util.ArrayList;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -131,8 +134,8 @@ public class NetProcess {
         });
     }
 
-    public void netPartner(MemberModel req){
-        Call<ResponseModel<MemberModel>> res = Net.getInstance().getApiIm().simple(req);
+    public void netPartner(TripModel req){
+        Call<ResponseModel<MemberModel>> res = Net.getInstance().getApiIm().find_partner(req);
         res.enqueue(new Callback<ResponseModel<MemberModel>>() {
             @Override
             public void onResponse(Call<ResponseModel<MemberModel>> call, Response<ResponseModel<MemberModel>> response) {
@@ -187,6 +190,45 @@ public class NetProcess {
             public void onFailure(Call<ResponseModel> call, Throwable t) {
                 Toast.makeText(U.getInstance().getContext(), "서버통신 실패-2", Toast.LENGTH_SHORT).show();
                 U.getInstance().getBus().post("makeTripFailed");
+            }
+        });
+    }
+
+    public void netTripList(MemberModel req){
+        Call<ResponseArrayModel<TripModel>> res = Net.getInstance().getApiIm().list_trip(req);
+        res.enqueue(new Callback<ResponseArrayModel<TripModel>>() {
+            @Override
+            public void onResponse(Call<ResponseArrayModel<TripModel>> call, Response<ResponseArrayModel<TripModel>> response) {
+                if(response.isSuccessful()){
+                    if(response.body().getCode() == 1) {
+                        U.getInstance().list = new ArrayList<>();
+                        for(int i=0; i < response.body().getResult().size(); i++) {
+                            U.getInstance().getList().add(new TripModel(
+                                    response.body().getResult().get(i).getTrip_no(),
+                                    response.body().getResult().get(i).getTrip_title(),
+                                    response.body().getResult().get(i).getStart_date(),
+                                    response.body().getResult().get(i).getEnd_date(),
+                                    response.body().getResult().get(i).getUser_id(),
+                                    response.body().getResult().get(i).getPartner_id(),
+                                    response.body().getResult().get(i).getHashtag(),
+                                    null
+                            ));
+                        }
+                        U.getInstance().getBus().post("tripListSuccess");
+                    } else {
+                        Toast.makeText(U.getInstance().getContext(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                        U.getInstance().getBus().post("tripListFailed");
+                    }
+                } else {
+                    Toast.makeText(U.getInstance().getContext(), "서버통신 실패-1", Toast.LENGTH_SHORT).show();
+                    U.getInstance().getBus().post("tripListFailed");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseArrayModel<TripModel>> call, Throwable t) {
+                Toast.makeText(U.getInstance().getContext(), "서버통신 실패-2", Toast.LENGTH_SHORT).show();
+                U.getInstance().getBus().post("tripListFailed");
             }
         });
     }

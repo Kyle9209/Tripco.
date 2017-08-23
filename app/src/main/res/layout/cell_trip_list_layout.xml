@@ -3,42 +3,19 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="5dp">
+    android:layout_margin="5dp" >
 
     <RelativeLayout
+        android:background="?android:attr/selectableItemBackground"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <!-- 셀바디 -->
         <LinearLayout
-            android:gravity="center_vertical"
-            android:background="?android:attr/selectableItemBackground"
-            android:id="@+id/update_btn"
-            android:layout_margin="10dp"
-            android:padding="5dp"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:orientation="horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-            <ImageView
-                android:src="@drawable/edit_icon"
-                android:layout_width="13dp"
-                android:layout_height="13dp" />
-
-            <TextView
-                android:textColor="#000"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/update" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:padding="15dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="15dp">
 
             <TextView
                 android:id="@+id/title_tv"
@@ -47,29 +24,26 @@
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:text="TITLE"
-                android:textColor="?attr/colorPrimaryDark"
                 android:textSize="25sp"
                 android:textStyle="bold" />
 
             <TextView
-                android:textSize="20sp"
                 android:id="@+id/who_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:text="WHO"
-                android:textColor="?attr/colorPrimary" />
+                android:textSize="20sp" />
 
             <TextView
-                android:textSize="20sp"
                 android:id="@+id/when_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:text="WHEN"
-                android:textColor="?attr/colorPrimary" />
+                android:textSize="20sp" />
 
             <TextView
                 android:id="@+id/tag_tv"
@@ -77,8 +51,33 @@
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:text="HASHTAG"
-                android:textColor="?attr/colorPrimary" />
+                android:text="HASHTAG" />
+
+        </LinearLayout>
+
+        <!-- 수정버튼 -->
+        <LinearLayout
+            android:id="@+id/update_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_margin="10dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="5dp">
+
+            <ImageView
+                android:layout_width="13dp"
+                android:layout_height="13dp"
+                android:src="@drawable/edit_icon" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/update"
+                android:textColor="#000" />
 
         </LinearLayout>
 

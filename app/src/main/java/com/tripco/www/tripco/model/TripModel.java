@@ -2,7 +2,7 @@ package com.tripco.www.tripco.model;
 
 import java.io.Serializable;
 
-public class TripModel implements Serializable {
+public class TripModel<T> implements Serializable {
     int trip_no;
     String trip_title;
     String start_date;
@@ -10,8 +10,21 @@ public class TripModel implements Serializable {
     String user_id;
     String partner_id;
     String hashtag;
+    T trip_list;
 
-    // 받는 그릇
+    // 서버용 받는 그릇
+    public TripModel(int trip_no, String trip_title, String start_date, String end_date, String user_id, String partner_id, String hashtag, T trip_list) {
+        this.trip_no = trip_no;
+        this.trip_title = trip_title;
+        this.start_date = start_date;
+        this.end_date = end_date;
+        this.user_id = user_id;
+        this.partner_id = partner_id;
+        this.hashtag = hashtag;
+        this.trip_list = trip_list;
+    }
+
+    // 로컬&서버 디비에 보내는 그릇
     public TripModel(int trip_no, String trip_title, String start_date, String end_date, String user_id, String partner_id, String hashtag) {
         this.trip_no = trip_no;
         this.trip_title = trip_title;
@@ -30,6 +43,12 @@ public class TripModel implements Serializable {
         this.user_id = user_id;
         this.partner_id = partner_id;
         this.hashtag = hashtag;
+    }
+
+    // 파트너 찾을때 보내는 그릇
+    public TripModel(String user_id, String partner_id) {
+        this.user_id = user_id;
+        this.partner_id = partner_id;
     }
 
     public int getTrip_no() {
@@ -86,5 +105,13 @@ public class TripModel implements Serializable {
 
     public void setHashtag(String hashtag) {
         this.hashtag = hashtag;
+    }
+
+    public T getTrip_list() {
+        return trip_list;
+    }
+
+    public void setTrip_list(T trip_list) {
+        this.trip_list = trip_list;
     }
 }

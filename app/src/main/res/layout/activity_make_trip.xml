@@ -22,6 +22,7 @@
 
         <!-- 제목 -->
         <LinearLayout
+            android:paddingRight="5dp"
             android:layout_marginTop="16dp"
             android:orientation="vertical"
             android:layout_width="match_parent"
@@ -38,6 +39,7 @@
                     android:layout_height="wrap_content">
 
                     <EditText
+                        android:textStyle="bold"
                         android:id="@+id/title_et"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -159,7 +161,7 @@
 
         </RelativeLayout>
 
-        <!-- 해시태그 제목 -->
+        <!-- 해시태그 -->
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
@@ -173,239 +175,13 @@
                 android:textColor="#000"
                 android:textSize="18sp" />
 
-
-                <GridLayout
-
-                    android:columnCount="3"
-                    android:id="@+id/hashtag_gl"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:text="qwe"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
-                    <TextView
-                        android:text="qwe"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
-                    <TextView
-                        android:text="qwe"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
-                    <TextView
-                        android:text="qwe"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
-                </GridLayout>
-
+            <GridView
+                android:id="@+id/hashtag_gv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:numColumns="3"/>
 
         </LinearLayout>
-
-        <!-- 해시태그 -->
-        <!--<ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <CheckBox
-                        android:id="@+id/hashtag_cb1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="10dp"
-                        android:background="@drawable/hashtag"
-                        android:button="@null"
-                        android:checked="false"
-                        android:text="#힐링"
-                        android:textSize="20sp" />
-
-                    <CheckBox
-                        android:id="@+id/hashtag_cb2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="10dp"
-                        android:background="@drawable/hashtag"
-                        android:button="@null"
-                        android:checked="false"
-                        android:text="#감성"
-                        android:textSize="20sp" />
-
-                    <CheckBox
-                        android:id="@+id/hashtag_cb3"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="10dp"
-                        android:background="@drawable/hashtag"
-                        android:button="@null"
-                        android:checked="false"
-                        android:text="#먹방"
-                        android:textSize="20sp" />
-
-                    <CheckBox
-                        android:id="@+id/hashtag_cb4"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="10dp"
-                        android:background="@drawable/hashtag"
-                        android:button="@null"
-                        android:checked="false"
-                        android:text="#쇼핑"
-                        android:textSize="20sp" />
-
-                    <CheckBox
-                        android:id="@+id/hashtag_cb13"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="10dp"
-                        android:background="@drawable/hashtag"
-                        android:button="@null"
-                        android:checked="false"
-                        android:text="#가성비"
-                        android:textSize="20sp" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <CheckBox
-                        android:id="@+id/hashtag_cb5"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="10dp"
-                        android:background="@drawable/hashtag"
-                        android:button="@null"
-                        android:checked="false"
-                        android:text="#조용"
-                        android:textSize="20sp" />
-
-                    <CheckBox
-                        android:id="@+id/hashtag_cb6"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="10dp"
-                        android:background="@drawable/hashtag"
-                        android:button="@null"
-                        android:checked="false"
-                        android:text="#활발"
-                        android:textSize="20sp" />
-
-                    <CheckBox
-                        android:id="@+id/hashtag_cb7"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="10dp"
-                        android:background="@drawable/hashtag"
-                        android:button="@null"
-                        android:checked="false"
-                        android:text="#답사"
-                        android:textSize="20sp" />
-
-                    <CheckBox
-                        android:id="@+id/hashtag_cb8"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="10dp"
-                        android:background="@drawable/hashtag"
-                        android:button="@null"
-                        android:checked="false"
-                        android:text="#레저"
-                        android:textSize="20sp" />
-
-                    <CheckBox
-                        android:id="@+id/hashtag_cb14"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="10dp"
-                        android:background="@drawable/hashtag"
-                        android:button="@null"
-                        android:checked="false"
-                        android:text="#여유"
-                        android:textSize="20sp" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <CheckBox
-                        android:id="@+id/hashtag_cb9"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="10dp"
-                        android:background="@drawable/hashtag"
-                        android:button="@null"
-                        android:checked="false"
-                        android:text="#혼자"
-                        android:textSize="20sp" />
-
-                    <CheckBox
-                        android:id="@+id/hashtag_cb10"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="10dp"
-                        android:background="@drawable/hashtag"
-                        android:button="@null"
-                        android:checked="false"
-                        android:text="#친구"
-                        android:textSize="20sp" />
-
-                    <CheckBox
-                        android:id="@+id/hashtag_cb11"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="10dp"
-                        android:background="@drawable/hashtag"
-                        android:button="@null"
-                        android:checked="false"
-                        android:text="#가족"
-                        android:textSize="20sp" />
-
-                    <CheckBox
-                        android:id="@+id/hashtag_cb12"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="10dp"
-                        android:background="@drawable/hashtag"
-                        android:button="@null"
-                        android:checked="false"
-                        android:text="#커플"
-                        android:textSize="20sp" />
-
-                    <CheckBox
-                        android:id="@+id/hashtag_cb15"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="10dp"
-                        android:background="@drawable/hashtag"
-                        android:button="@null"
-                        android:checked="false"
-                        android:text="#즉흥"
-                        android:textSize="20sp" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-        </ScrollView>-->
 
     </LinearLayout>
 

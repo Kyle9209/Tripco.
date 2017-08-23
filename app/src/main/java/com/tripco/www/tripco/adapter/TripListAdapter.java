@@ -19,7 +19,6 @@ import java.util.ArrayList;
 public class TripListAdapter extends RecyclerView.Adapter<TripListViewHolder> {
     private Context context;
     private ArrayList<TripModel> tripModels;
-    private final static String ALONE = "혼자";
 
     public TripListAdapter(Context context, ArrayList<TripModel> tripModels) {
         this.context = context;
@@ -36,9 +35,14 @@ public class TripListAdapter extends RecyclerView.Adapter<TripListViewHolder> {
     public void onBindViewHolder(TripListViewHolder holder, int position) {
         // 데이터 셋팅
         final TripModel tripModel = tripModels.get(position);
+        // 제목
         holder.title.setText(tripModel.getTrip_title());
-        if(tripModel.getPartner_id().equals(ALONE)) holder.who.setText(ALONE);
+        // 누구
+        if(tripModel.getPartner_id().equals("")) holder.who.setText("혼자");
+        else holder.who.setText(tripModel.getPartner_id());
+        // 기간
         holder.when.setText(tripModel.getStart_date() + " ~ " + tripModel.getEnd_date());
+        // 해시태그
         holder.tag.setText(tripModel.getHashtag());
 
         holder.itemView.setOnClickListener(view -> { // 짧게누르면 후보지리스트로

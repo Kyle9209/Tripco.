@@ -1,6 +1,7 @@
 package com.tripco.www.tripco.net;
 
 import com.tripco.www.tripco.model.MemberModel;
+import com.tripco.www.tripco.model.ResponseArrayModel;
 import com.tripco.www.tripco.model.ResponseModel;
 import com.tripco.www.tripco.model.TripModel;
 
@@ -34,8 +35,8 @@ public interface TripcoFactoryIm {
     Call<ResponseModel> change_pw(@Body MemberModel req);
 
     // 여행 리스트
-    //@POST("list_trip")
-    //Call<ResponseModel> list_trip(@Body )
+    @POST("/list_trip")
+    Call<ResponseArrayModel<TripModel>> list_trip(@Body MemberModel req);
 
     // 여행 만들기
     @POST("/create_trip")
@@ -43,6 +44,6 @@ public interface TripcoFactoryIm {
 
     // 파트너 찾기
     @POST("/find_partner")
-    Call<ResponseModel<MemberModel>> find_partner(@Body MemberModel req);
+    Call<ResponseModel<MemberModel>> find_partner(@Body TripModel req);
 }
 

@@ -11,8 +11,10 @@ import android.util.Log;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.squareup.otto.Bus;
 import com.tripco.www.tripco.model.MemberModel;
+import com.tripco.www.tripco.model.TripModel;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -196,6 +198,19 @@ public class U {
     }
     public void setPartnerModel(MemberModel partnerModel) {
         this.partnerModel = partnerModel;
+    }
+
+    // 해쉬태그 정보
+    public String[] tags = {"힐링", "감성", "먹방" ,"쇼핑" , "조용", "활발", "답사" , "레저" ,"가성비" , "여유로운", "지식",
+            "트렌디", "둘이서" , "혼자서", "커플" ,"가족" ,"우정" ,"제주" , "유럽" ,"미국" ,"동남아", "일본" ,"중국"};
+
+    // 가져온 리스트 정보
+    public ArrayList<TripModel> list;
+    public ArrayList<TripModel> getList() {
+        return list;
+    }
+    public void setList(ArrayList<TripModel> list) {
+        this.list = list;
     }
 }
 

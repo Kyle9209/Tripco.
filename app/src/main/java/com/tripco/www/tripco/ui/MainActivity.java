@@ -58,19 +58,13 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-
-        loginBtn = navigationView.getHeaderView(0).findViewById(R.id.login_btn);
-        joinBtn = navigationView.getHeaderView(0).findViewById(R.id.join_btn);
-        userInfo = navigationView.getHeaderView(0).findViewById(R.id.user_info_line);
-        userEmailTv = navigationView.getHeaderView(0).findViewById(R.id.user_email_tv);
-        userNickTv = navigationView.getHeaderView(0).findViewById(R.id.user_nick_tv);
+        U.getInstance().getBus().register(this);
+        DBOpenHelper.getInstance();
 
         if(!checkPlayService(this)) return;
         makeShortCut(this);
         getServerAddress();
         uiInit();
-        DBOpenHelper.getInstance();
-        U.getInstance().getBus().register(this);
         loginCheck();
     }
 
@@ -84,6 +78,7 @@ public class MainActivity extends AppCompatActivity
             userInfo.setVisibility(View.GONE);
             loginBtn.setText("로그인");
             joinBtn.setText("회원가입");
+            recyclerView.removeAllViews();
         }
     }
 
@@ -92,12 +87,19 @@ public class MainActivity extends AppCompatActivity
         if(BUS_NAME.equals("loginSuccess")) loginCheck();
         if(BUS_NAME.equals("MAIN")) recViewInit();
         if(BUS_NAME.equals("getUserInfo")) {
-            U.getInstance().log(U.getInstance().getMemberModel().toString());
             userEmailTv.setText(U.getInstance().getMemberModel().getUser_id());
             userNickTv.setText(U.getInstance().getMemberModel().getUser_nick());
+            NetProcess.getInstance().netTripList(new MemberModel(U.getInstance().getMemberModel().getUser_id()));
         }
         if(BUS_NAME.equals("nickChange")){
             userNickTv.setText(U.getInstance().getMemberModel().getUser_nick());
+        }
+        if(BUS_NAME.equals("makeTripSuccess")){
+            NetProcess.getInstance().netTripList(new MemberModel(U.getInstance().getMemberModel().getUser_id()));
+            // 성공하면 tripListSuccess 날라옴
+        }
+        if(BUS_NAME.equals("tripListSuccess")){ // 서버에서 리스트받아서 정상적으로 저장되면
+            recViewInit();
         }
     }
 
@@ -221,21 +223,29 @@ public class MainActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
+
+        loginBtn = navigationView.getHeaderView(0).findViewById(R.id.login_btn);
+        joinBtn = navigationView.getHeaderView(0).findViewById(R.id.join_btn);
+        userInfo = navigationView.getHeaderView(0).findViewById(R.id.user_info_line);
+        userEmailTv = navigationView.getHeaderView(0).findViewById(R.id.user_email_tv);
+        userNickTv = navigationView.getHeaderView(0).findViewById(R.id.user_nick_tv);
     }
 
     // RecyclerView 셋팅
     private void recViewInit(){
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        TripListAdapter adapter = new TripListAdapter(this, ArrayListTripModel());
+        TripListAdapter adapter;
+        if(U.getInstance().getBoolean("login")) {
+            adapter = new TripListAdapter(this, U.getInstance().getList());
+        } else {
+            adapter = new TripListAdapter(this, ArrayListTripModel());
+        }
         recyclerView.setAdapter(adapter);
     }
 
-    // 리스트 데이터 셋팅
+    // 로컬에서 리스트 데이터 셋팅
     public ArrayList<TripModel> ArrayListTripModel(){
         ArrayList<TripModel> list = new ArrayList<>();
-        if(U.getInstance().getBoolean("login")) {
-
-        } else {
             Cursor csr = DBOpenHelper.dbOpenHelper.getWritableDatabase().rawQuery("select * from Trip_Table;", null);
             while (csr.moveToNext()) {
                 list.add(new TripModel(
@@ -247,10 +257,8 @@ public class MainActivity extends AppCompatActivity
                         csr.getString(5),
                         csr.getString(6)
                 ));
-            }
-            csr.close();
+            //csr.close();
         }
-
         return list;
     }
 
@@ -262,6 +270,7 @@ public class MainActivity extends AppCompatActivity
                     U.getInstance().showAlertDialog(this, "알림", "로그아웃 하시겠습니까?",
                             "예", (dialogInterface, i) -> {
                                 U.getInstance().setBoolean("login", false);
+                                recViewInit();
                                 loginCheck();
                                 dialogInterface.dismiss();
                             },
