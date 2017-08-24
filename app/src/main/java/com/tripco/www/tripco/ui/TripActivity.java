@@ -28,8 +28,7 @@ public class TripActivity extends RootActivity {
                 if (flag) { // flag = true 일 때 탐색창 초기화
                     ft.replace(R.id.content, new SearchingFragment()).commit();
                     flag = false;
-                }
-                // flag = false 일 때 탐색창 유지
+                } // flag = false 일 때 탐색창 유지
                 break;
             case R.id.candidate:
                 ft.replace(R.id.content, new CandidateLIstFragment()).commit();
@@ -50,9 +49,9 @@ public class TripActivity extends RootActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trip);
         ButterKnife.bind(this);
+        U.getInstance().getBus().register(this);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         navigation.setSelectedItemId(R.id.candidate); // 초기 화면 -> 후보지리스트
-        U.getInstance().getBus().register(this);
     }
 
     @Subscribe
@@ -67,12 +66,8 @@ public class TripActivity extends RootActivity {
             ft.replace(R.id.content, fragment).commit();
             navigation.getMenu().findItem(R.id.candidate).setChecked(true);
         }
-        else if(str.equals("CANDIDATE")) {
-            ft = getSupportFragmentManager().beginTransaction();
-            flag = true;
-            ft.replace(R.id.content, new CandidateLIstFragment()).commit();
-            navigation.getMenu().findItem(R.id.candidate).setChecked(true);
-        }
+        if(str.equals("moveToCandidate")) navigation.setSelectedItemId(R.id.candidate);
+        if(str.equals("moveToSearching")) navigation.setSelectedItemId(R.id.searching);
     }
 
     @Override

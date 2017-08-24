@@ -36,14 +36,14 @@ public class ViewPagerFragment extends Fragment {
     String n = "1";
     public ViewPagerFragment() {}
 
-    @Override
+    @Override // 뷰페이저가 생성되는 최초 1번 trip_no, cate_no 초기화
     public void onCreate(@Nullable Bundle savedInstanceState) {
         cateNo = getArguments().getInt("cateNo");
         tripNo = U.getInstance().getTripNo();
         super.onCreate(savedInstanceState);
     }
 
-    @Override
+    @Override // 뷰페이저 다시 시작점
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_view_pager, container, false);
         unbinder = ButterKnife.bind(this, view);
@@ -53,7 +53,7 @@ public class ViewPagerFragment extends Fragment {
         return view;
     }
 
-    @Override
+    @Override // 리사이클러뷰 초기화(일부러 늦게함)
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         recViewInit();
@@ -97,6 +97,7 @@ public class ViewPagerFragment extends Fragment {
         String sql = "select * from ScheduleList_Table where trip_no=" + tripNo +
                 " and schedule_date= '" + selectDate + "' and cate_no = " + cateNo + ";";
         Cursor csr = DBOpenHelper.dbOpenHelper.getWritableDatabase().rawQuery(sql, null);
+        list.add(null);
         while (csr.moveToNext()) {
             list.add(new ScheduleModel(
                     csr.getInt(0),
@@ -113,7 +114,7 @@ public class ViewPagerFragment extends Fragment {
                     csr.getString(11)
             ));
         }
-        csr.close();
+        //csr.close();
         return list;
     }
 

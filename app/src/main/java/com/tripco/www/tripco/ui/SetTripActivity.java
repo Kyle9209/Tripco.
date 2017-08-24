@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.GridLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,6 +48,7 @@ public class SetTripActivity extends RootActivity {
     @BindView(R.id.title_cnt_tv) TextView titleCntTv;
     @BindView(R.id.calendar_tv) TextView calendarTv;
     @BindView(R.id.who_tv) TextView whoTv;
+    @BindView(R.id.who_btn_line) LinearLayout whoBtnLine;
     @BindView(R.id.hashTag_gl) GridLayout hashTagGl;
     @BindView(R.id.delete_btn) Button deleteBtn;
     @BindView(R.id.discon_partner_btn) TextView disconPartnerBtn;
@@ -162,9 +164,16 @@ public class SetTripActivity extends RootActivity {
             calendarTv.setText(startDateString + " ~ " + endDateString);
             if (U.getInstance().getBoolean("login")) { // 로그인되어있으면
                 if(!sTripModel.getPartner_id().equals("")) { // 로그인 & 파트너아이디가 있다면
-                    partner = sTripModel.getPartner_id().toString();
-                    whoTv.setText(partner);
-                    disconPartnerBtn.setVisibility(View.VISIBLE);
+                    whoBtnLine.setClickable(false);
+                    whoTv.setTextColor(Color.LTGRAY);
+                    partner = sTripModel.getPartner_id();
+                    // 파트너아이디가 내 아이디라면 유저아이디를 셋팅
+                    if(partner.equals(U.getInstance().getMemberModel().getUser_id())){
+                        whoTv.setText(sTripModel.getUser_id());
+                    } else {
+                        whoTv.setText(partner);
+                    }
+                    //disconPartnerBtn.setVisibility(View.VISIBLE);
                 }
             }
             for (int i = 0; i < U.getInstance().tags.length; i++) {

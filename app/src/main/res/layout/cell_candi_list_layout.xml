@@ -1,91 +1,111 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="150dp"
     android:layout_margin="5dp">
 
-    <LinearLayout
+    <RelativeLayout
+        android:background="?android:attr/selectableItemBackground"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-        <RelativeLayout
-            android:layout_weight="1"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" >
-
-            <ImageView
-                android:layout_centerVertical="true"
-                android:layout_centerHorizontal="true"
-                android:src="@drawable/ic_menu_gallery"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <ImageView
-                android:background="#00000000"
-                android:id="@+id/img_iv"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop" />
-
-            <ProgressBar
-                android:id="@+id/loading_img_pb"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_centerHorizontal="true" />
-
-        </RelativeLayout>
-
+        <!-- 상단+하단 -->
         <LinearLayout
-            android:orientation="horizontal"
-            android:layout_weight="0"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <TextView
-                android:gravity="center|left"
-                android:maxLines="1"
-                android:ellipsize="end"
-                android:id="@+id/title_tv"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+            <!-- 상단 이미지 부분 -->
+            <RelativeLayout
                 android:layout_weight="1"
-                android:text="위치명"
-                android:textColor="#000" />
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-            <Button
+                <!-- 기본이미지 -->
+                <ImageView
+                    android:layout_margin="35dp"
+                    android:id="@+id/default_image_iv"
+                    android:layout_centerVertical="true"
+                    android:layout_centerHorizontal="true"
+                    android:src="@drawable/default_image_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <!-- 받은이미지 -->
+                <ImageView
+                    android:id="@+id/img_iv"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop" />
+
+                <!-- 로딩 -->
+                <ProgressBar
+                    android:id="@+id/loading_img_pb"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_centerHorizontal="true" />
+
+            </RelativeLayout>
+
+            <!-- 하단 텍스트 부분 -->
+            <LinearLayout
+                android:background="?attr/colorPrimary"
+                android:orientation="horizontal"
                 android:layout_weight="0"
-                android:id="@+id/open_url_btn"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:background="@drawable/ic_menu_slideshow" />
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:id="@+id/title_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="위치명"
+                    android:textColor="#fff" />
+
+                <ImageButton
+                    android:padding="3dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/web_btn2"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:layout_weight="0"
+                    android:id="@+id/open_url_btn"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp" />
+
+            </LinearLayout>
 
         </LinearLayout>
 
-    </LinearLayout>
+        <!-- 최종일정 선택 체크박스 -->
+        <CheckBox
+            android:id="@+id/check_cb"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
-    <CheckBox
-        android:id="@+id/check_cb"
-        android:layout_margin="5dp"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        <!-- 이 셀에선 안보여야하는 시간 -->
+        <TextView
+            android:visibility="gone"
+            android:layout_margin="10dp"
+            android:layout_gravity="center"
+            android:id="@+id/time_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:gravity="center"
+            android:padding="5dp"
+            android:text="00:00"
+            android:textSize="20sp" />
 
-    <!-- 이 셀에선 안보여야하는 시간 -->
-    <TextView
-        android:visibility="gone"
-        android:layout_margin="10dp"
-        android:layout_gravity="center"
-        android:id="@+id/time_tv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="0"
-        android:gravity="center"
-        android:padding="5dp"
-        android:text="00:00"
-        android:textSize="20sp" />
+    </RelativeLayout>
 
-</RelativeLayout>
+</android.support.v7.widget.CardView>
 

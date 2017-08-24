@@ -5,8 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.SQLException;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,7 +17,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.JsPromptResult;
+import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ArrayAdapter;
@@ -54,6 +57,7 @@ import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 
+import butterknife.BindColor;
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -69,7 +73,8 @@ public class SearchingFragment extends Fragment implements OnMapReadyCallback,
     @BindView(R.id.toolbar_right_btn) Button toolbarRightBtn;
     @BindView(R.id.url_et) EditText urlEt;
     @BindView(R.id.webview) WebView webView;
-    @BindView(R.id.webview_pb) ProgressBar progressBar;
+    @BindView(R.id.webview_pb) ProgressBar webViewPb;
+    // 상세정보창 뷰들==============================================
     @BindView(R.id.frontLayout) LinearLayout frontLayout;
     @BindView(R.id.days_spin) Spinner spinner;
     @BindView(R.id.previous_btn) Button previousBtn;
@@ -82,13 +87,14 @@ public class SearchingFragment extends Fragment implements OnMapReadyCallback,
     @BindView(R.id.memo_et) EditText memoEt;
     @BindView(R.id.map) MapView mapView;
     @BindView(R.id.rbs_rg) RadioGroup rbsGroup;
-    @BindView(R.id.google_places_btn) Button googlePlacesbtn;
-    @BindString(R.string.add_candidate) String addCandidate;
-    //@BindView(R.id.add_memo_btn) Button addMemoBtn;
+    @BindView(R.id.google_places_btn) Button googlePlacesBtn;
+    // 상세정보창 뷰들==============================================
+    @BindString(R.string.add_candidate) String addCandidateText;
+    @BindString(R.string.url_search) String searchUrlText;
+    @BindColor(R.color.colorAccent) int webViewPbColor;
     private Unbinder unbinder;
     private InputMethodManager inputMethodManager;
     private int index = 1;
-    //private int memoIdx = 0;
     private int tripNo;
     private String startDate, endDate;
     private GoogleMap mMap = null;
@@ -98,7 +104,6 @@ public class SearchingFragment extends Fragment implements OnMapReadyCallback,
     private Double lng = null;
     private String placeId = null;
     private String rbStr = U.getInstance().category0;
-    //private String memo = null;
     private boolean mapFlag = false;
     final static String INIT_TITLE = "무엇에 대한 정보인가요?";
 
@@ -126,38 +131,58 @@ public class SearchingFragment extends Fragment implements OnMapReadyCallback,
     }
 
     private void webViewInit(){
-        // ProgressBar 설정 ============================================================================
-
-        webView.getSettings().setJavaScriptEnabled(true);
+        WebSettings webSettings = webView.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+        webSettings.setSupportZoom(true);
+        webSettings.setAppCacheEnabled(true);
+        webSettings.setLoadsImagesAutomatically(true);
+        webSettings.setUseWideViewPort(true);
+        webSettings.setLoadWithOverviewMode(true);
+        webSettings.setDomStorageEnabled(true);
+        webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
+        webView.setScrollbarFadingEnabled(true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+            webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        else webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         webView.setWebViewClient(new WebViewClient(){
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 view.loadUrl(url);
                 return true;
             }
-
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 super.onPageStarted(view, url, favicon);
-                progressBar.setVisibility(View.VISIBLE);
+                webViewPb.setVisibility(View.VISIBLE);
             }
-
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                progressBar.setVisibility(View.INVISIBLE);
+                webViewPb.setVisibility(View.GONE);
                 urlEt.setText(url);
             }
         });
         webView.setWebChromeClient(new WebChromeClient() {
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
-                progressBar.setProgress(newProgress);
+                webViewPb.setProgress(newProgress);
             }
+            // 메소드 내부에서 재정의하여 팝업 자체 상단에 보이는 url을 숨김==================================
+            @Override
+            public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
+                return super.onJsAlert(view, url, message, result);
+            }
+            @Override
+            public boolean onJsConfirm(WebView view, String url, String message, JsResult result) {
+                return super.onJsConfirm(view, url, message, result);
+            }
+            @Override
+            public boolean onJsPrompt(WebView view, String url, String message, String defaultValue, JsPromptResult result) {
+                return super.onJsPrompt(view, url, message, defaultValue, result);
+            }
+            // 메소드 내부에서 재정의하여 팝업 자체 상단에 보이는 url을 숨김==================================
         });
-
-        progressBar.getProgressDrawable().setColorFilter(Color.BLUE, PorterDuff.Mode.SRC_IN);
-        //==========================================================================================
+        webViewPb.getProgressDrawable().setColorFilter(webViewPbColor, PorterDuff.Mode.SRC_IN);
     }
 
     private void spinnerInit() {
@@ -199,13 +224,15 @@ public class SearchingFragment extends Fragment implements OnMapReadyCallback,
 
     @OnClick(R.id.search_url_btn) // URL주소검색 (호출하는 곳이 따로 있어서 따로둠)
     public void onClickSearchUrlBtn(){
+        webView.setVisibility(View.VISIBLE);
         String inputAddrStr = urlEt.getText().toString();
         if (!TextUtils.isEmpty(inputAddrStr)) {
             String httpAddress = checkHttps(inputAddrStr);
+            webViewPb.setVisibility(View.VISIBLE);
             webView.loadUrl(httpAddress);
-            inputMethodManager.hideSoftInputFromWindow(urlEt.getWindowToken(), 0); // 키보드 내리기
+            inputMethodManager.hideSoftInputFromWindow(urlEt.getWindowToken(), 0);
         } else {
-            Toast.makeText(getContext(), "주소를 입력해주세요.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), searchUrlText, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -326,8 +353,8 @@ public class SearchingFragment extends Fragment implements OnMapReadyCallback,
 
             detailInit();
 
-            U.getInstance().showAlertDialog(getContext(), "알림", addCandidate + "\n후보지로 이동하시겠습니까?",
-                    "예", (dialogInterface, i) -> U.getInstance().getBus().post("CANDIDATE"),
+            U.getInstance().showAlertDialog(getContext(), "알림", addCandidateText + "\n후보지로 이동하시겠습니까?",
+                    "예", (dialogInterface, i) -> U.getInstance().getBus().post("moveToCandidate"),
                     "아니오", (dialogInterface, i) -> dialogInterface.dismiss()
             );
         } catch (SQLException e) {
@@ -366,7 +393,7 @@ public class SearchingFragment extends Fragment implements OnMapReadyCallback,
             if (resultCode == RESULT_OK) {
                 mapFlag = true;
                 Place place = PlaceAutocomplete.getPlace(getContext(), data);
-                googlePlacesbtn.setText(place.getName());
+                googlePlacesBtn.setText(place.getName());
                 placeId = place.getId();
                 latlng = place.getLatLng();
                 titleEt.setText(place.getName());
@@ -446,7 +473,6 @@ public class SearchingFragment extends Fragment implements OnMapReadyCallback,
     // "https://" 동적 추가
     private String checkHttps(String inputUrl) {
         if (inputUrl.indexOf("https://") != -1) return inputUrl;
-        else if (inputUrl.indexOf("http://") != -1) return inputUrl;
         else return "https://" + inputUrl;
     }
 
@@ -531,7 +557,5 @@ public class SearchingFragment extends Fragment implements OnMapReadyCallback,
         }
     }
     @Override // 구글플레이스 연결 실패 처리
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
-    }
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {}
 }

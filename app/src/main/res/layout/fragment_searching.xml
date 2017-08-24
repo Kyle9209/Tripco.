@@ -15,31 +15,30 @@
         android:focusableInTouchMode="true"
         android:orientation="vertical">
 
+        <!-- 상단 검색창 + 버튼들 -->
         <LinearLayout
+            android:paddingRight="5dp"
+            android:paddingLeft="5dp"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:layout_weight="0"
             android:background="?attr/colorPrimary"
             android:gravity="center">
 
-            <android.support.v7.widget.CardView
+            <!-- 검색창 -->
+            <EditText
+                style="@style/CustomEditText"
+                android:theme="@style/CustomEditText"
+                android:id="@+id/url_et"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
-                android:layout_weight="1">
+                android:layout_weight="1"
+                android:hint="@string/url_search"
+                android:inputType="textUri"
+                android:maxLines="1"
+                android:selectAllOnFocus="true" />
 
-                <EditText
-                    android:id="@+id/url_et"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="URL 입력"
-                    android:inputType="textUri"
-                    android:maxLines="1"
-                    android:selectAllOnFocus="true" />
-
-            </android.support.v7.widget.CardView>
-
+            <!-- 검색버튼 -->
             <ImageButton
                 android:padding="5dp"
                 android:id="@+id/search_url_btn"
@@ -50,37 +49,60 @@
                 android:scaleType="fitCenter"
                 android:src="@drawable/search_icon" />
 
-            <Button
+            <!-- 즉시저장 -->
+            <ImageButton
+                android:padding="5dp"
                 android:id="@+id/short_save_btn"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:layout_gravity="center"
                 android:layout_weight="0"
-                android:background="@android:drawable/ic_menu_save" />
+                android:background="?android:attr/selectableItemBackground"
+                android:scaleType="fitCenter"
+                android:src="@drawable/short_save_btn" />
 
-            <Button
+            <!-- 상세저장 -->
+            <ImageButton
+                android:padding="5dp"
                 android:id="@+id/show_detail_btn"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:layout_gravity="center"
                 android:layout_weight="0"
-                android:background="@android:drawable/ic_menu_add" />
+                android:background="?android:attr/selectableItemBackground"
+                android:scaleType="fitCenter"
+                android:src="@drawable/detail_save_btn" />
 
         </LinearLayout>
 
+        <!-- 웹 로딩바 -->
         <android.support.v4.widget.ContentLoadingProgressBar
             android:id="@+id/webview_pb"
+            android:visibility="gone"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
             android:layout_height="3dp"
             android:layout_weight="0"
             android:max="100" />
 
-        <WebView
-            android:id="@+id/webview"
+        <!-- 웹뷰 -->
+        <RelativeLayout
+            android:layout_weight="1"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
+            android:layout_height="match_parent">
+
+            <!-- 웹페이지 띄우기 전 화면 -->
+            <ImageView
+                android:layout_centerInParent="true"
+                android:src="@drawable/search_webview_image"
+                android:layout_width="100dp"
+                android:layout_height="100dp" />
+
+            <WebView
+                android:visibility="invisible"
+                android:id="@+id/webview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </RelativeLayout>
 
     </LinearLayout>
 

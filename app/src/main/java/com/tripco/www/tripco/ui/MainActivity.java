@@ -73,6 +73,7 @@ public class MainActivity extends AppCompatActivity
 
     private void loginCheck(){
         if(U.getInstance().getBoolean("login")){
+            swipeContainer.setRefreshing(true);
             NetProcess.getInstance().netLoginJoinSimple(new MemberModel(U.getInstance().getString("email")), "simple");
             userInfo.setVisibility(View.VISIBLE);
             loginBtn.setText("로그아웃");

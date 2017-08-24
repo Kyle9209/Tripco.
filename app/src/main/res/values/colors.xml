@@ -5,4 +5,5 @@
     <color name="colorAccent">#ED8787</color>
     <color name="red">#FF0000</color>
     <color name="editTextColor">#aeadad</color>
+    <color name="colorGray">#aeadad</color>
 </resources>

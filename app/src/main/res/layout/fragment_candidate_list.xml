@@ -63,9 +63,8 @@
             <!-- 탭바 -->
             <android.support.design.widget.TabLayout
                 app:tabTextAppearance="@style/CustomTabText"
-                app:tabSelectedTextColor="#fff"
-                app:tabIndicatorColor="#fff"
-                android:background="?attr/colorPrimary"
+                app:tabSelectedTextColor="@color/colorAccent"
+                app:tabIndicatorColor="@color/colorAccent"
                 android:id="@+id/tabs"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />

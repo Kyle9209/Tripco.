@@ -38,8 +38,16 @@ public class TripListAdapter extends RecyclerView.Adapter<TripListViewHolder> {
         // 제목
         holder.title.setText(tripModel.getTrip_title());
         // 누구
+        // 파트너가 없다면
         if(tripModel.getPartner_id().equals("")) holder.who.setText("혼자");
-        else holder.who.setText(tripModel.getPartner_id());
+        else { // 파트너가 있다면
+            // 파트너아이디가 내 아이디라면
+            if(tripModel.getPartner_id().equals(U.getInstance().getMemberModel().getUser_id())){
+                holder.who.setText(tripModel.getUser_id());
+            } else {
+                holder.who.setText(tripModel.getPartner_id());
+            }
+        }
         // 기간
         holder.when.setText(tripModel.getStart_date() + " ~ " + tripModel.getEnd_date());
         // 해시태그

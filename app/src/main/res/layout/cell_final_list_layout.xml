@@ -36,9 +36,11 @@
                 android:layout_height="match_parent">
 
                 <ImageView
+                    android:layout_margin="25dp"
+                    android:id="@+id/default_image_iv"
                     android:layout_centerVertical="true"
                     android:layout_centerHorizontal="true"
-                    android:src="@drawable/ic_menu_gallery"
+                    android:src="@drawable/default_image_icon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
@@ -56,14 +58,18 @@
                     android:layout_centerVertical="true"
                     android:layout_centerHorizontal="true" />
 
-                <Button
+                <ImageButton
+                    android:padding="3dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/web_btn2"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:layout_weight="0"
                     android:id="@+id/open_url_btn"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:background="@drawable/ic_menu_slideshow"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
                     android:layout_alignParentBottom="true"
                     android:layout_alignParentRight="true"
-                    android:layout_alignParentEnd="true" />
+                    android:layout_alignParentEnd="true"/>
 
             </RelativeLayout>
 
