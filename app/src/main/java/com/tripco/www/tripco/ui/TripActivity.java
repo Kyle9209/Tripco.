@@ -56,7 +56,7 @@ public class TripActivity extends RootActivity {
 
     @Subscribe
     public void ottoBus(String str){
-        if(str.equals("CANDIDATE_SEARCHING")) {
+        if(str.equals("moveToCandidateOnSearch")) {
             ft = getSupportFragmentManager().beginTransaction();
             flag = true;
             Fragment fragment =new CandidateLIstFragment();

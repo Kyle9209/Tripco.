@@ -105,7 +105,7 @@ public class ModifyPwdActivity extends RootActivity {
             } else {
                 showPD();
                 NetProcess.getInstance().netPassword(
-                        new MemberModel(U.getInstance().getMemberModel().getUser_id(), StrNewPwd), "change");
+                        new MemberModel(U.getInstance().getUserModel().getUser_id(), StrNewPwd), "change");
             }
         }
     }
@@ -122,7 +122,7 @@ public class ModifyPwdActivity extends RootActivity {
         } else {
             showPD();
             NetProcess.getInstance().netPassword(
-                    new MemberModel(U.getInstance().getMemberModel().getUser_id(), original), "check");
+                    new MemberModel(U.getInstance().getUserModel().getUser_id(), original), "check");
         }
     }
 

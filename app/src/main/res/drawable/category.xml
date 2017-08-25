@@ -9,7 +9,8 @@
                 android:topRightRadius="10dp"/>
             <stroke
                 android:width="2dp"
-                android:color="#4caf50" />
+                android:color="@color/colorAccent" />
+            <solid android:color="@color/colorAccent" />
         </shape>
     </item>
     <item>
@@ -22,6 +23,7 @@
             <stroke
                 android:width="2dp"
                 android:color="@color/colorGray" />
+            <solid android:color="@color/colorGray" />
         </shape>
     </item>
 </selector>

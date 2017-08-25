@@ -187,7 +187,7 @@ public class CandidateLIstFragment extends Fragment
             Intent intent =
                     new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
                             .build(getActivity());
-            startActivityForResult(intent, U.getInstance().getPLACE_AUTOCOMPLETE_REQUEST_CODE());
+            startActivityForResult(intent, U.PLACE_AUTOCOMPLETE_REQUEST_CODE);
         } catch (GooglePlayServicesRepairableException e) {
             // TODO: Handle the error.
         } catch (GooglePlayServicesNotAvailableException e) {
@@ -197,7 +197,7 @@ public class CandidateLIstFragment extends Fragment
 
     @Override // 구글 플레이스에서 검색한 데이터 받아서 처리
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == U.getInstance().getPLACE_AUTOCOMPLETE_REQUEST_CODE()) {
+        if (requestCode == U.PLACE_AUTOCOMPLETE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 Place place = PlaceAutocomplete.getPlace(getContext(), data);
                 Double lat = place.getLatLng().latitude;

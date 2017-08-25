@@ -90,12 +90,12 @@ public class MainActivity extends AppCompatActivity
     public void ottoBus(String BUS_NAME) {
         if(BUS_NAME.equals("loginSuccess")) loginCheck();
         if(BUS_NAME.equals("getUserInfo")) {
-            userEmailTv.setText(U.getInstance().getMemberModel().getUser_id());
-            userNickTv.setText(U.getInstance().getMemberModel().getUser_nick());
-            NetProcess.getInstance().netListTrip(new MemberModel(U.getInstance().getMemberModel().getUser_id()));
+            userEmailTv.setText(U.getInstance().getUserModel().getUser_id());
+            userNickTv.setText(U.getInstance().getUserModel().getUser_nick());
+            NetProcess.getInstance().netListTrip(new MemberModel(U.getInstance().getUserModel().getUser_id()));
         }
         if(BUS_NAME.equals("nickChange")){
-            userNickTv.setText(U.getInstance().getMemberModel().getUser_nick());
+            userNickTv.setText(U.getInstance().getUserModel().getUser_nick());
         }
         if(BUS_NAME.equals("tripListInit")) recViewInit();
     }
@@ -227,7 +227,7 @@ public class MainActivity extends AppCompatActivity
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         TripListAdapter adapter;
         if(U.getInstance().getBoolean("login")) {
-            adapter = new TripListAdapter(this, U.getInstance().getList());
+            adapter = new TripListAdapter(this, U.getInstance().getTripListModel());
         } else {
             adapter = new TripListAdapter(this, ArrayListTripModel());
         }
@@ -246,7 +246,7 @@ public class MainActivity extends AppCompatActivity
         swipeContainer.setOnRefreshListener(() -> {
             swipeContainer.setRefreshing(true);
             if(U.getInstance().getBoolean("login")) {
-                NetProcess.getInstance().netListTrip(new MemberModel(U.getInstance().getMemberModel().getUser_id()));
+                NetProcess.getInstance().netListTrip(new MemberModel(U.getInstance().getUserModel().getUser_id()));
             } else {
                 recViewInit();
             }

@@ -37,7 +37,7 @@ public class NetProcess {
                 if (response.isSuccessful()) {
                     if (response.body().getCode() == 1) { // 성공 ->
                         if(str.equals("simple")){
-                            U.getInstance().setMemberModel(
+                            U.getInstance().setUserModel(
                                     new MemberModel(
                                             response.body().getResult().getUser_no(),
                                             response.body().getResult().getUser_id(),
@@ -178,7 +178,7 @@ public class NetProcess {
             public void onResponse(Call<ResponseModel> call, Response<ResponseModel> response) {
                 if(response.isSuccessful()){
                     if(response.body().getCode() == 1){
-                        netListTrip(new MemberModel(U.getInstance().getMemberModel().getUser_id()));
+                        netListTrip(new MemberModel(U.getInstance().getUserModel().getUser_id()));
                         Toast.makeText(U.getInstance().getContext(), "여행이 "+str+"되었습니다.", Toast.LENGTH_SHORT).show();
                         U.getInstance().getBus().post("responseSuccess");
                     } else {
@@ -205,9 +205,9 @@ public class NetProcess {
             public void onResponse(Call<ResponseArrayModel<TripModel>> call, Response<ResponseArrayModel<TripModel>> response) {
                 if(response.isSuccessful()){
                     if(response.body().getCode() == 1) {
-                        U.getInstance().list = new ArrayList<>();
+                        ArrayList<TripModel> list = new ArrayList<>();
                         for(int i=0; i < response.body().getResult().size(); i++) {
-                            U.getInstance().getList().add(new TripModel(
+                            list.add(new TripModel(
                                     response.body().getResult().get(i).getTrip_no(),
                                     response.body().getResult().get(i).getTrip_title(),
                                     response.body().getResult().get(i).getStart_date(),
@@ -218,6 +218,7 @@ public class NetProcess {
                                     null
                             ));
                         }
+                        U.getInstance().setTripListModel(list);
                         U.getInstance().getBus().post("tripListInit");
                     } else {
                         Toast.makeText(U.getInstance().getContext(), response.body().getMessage(), Toast.LENGTH_SHORT).show();

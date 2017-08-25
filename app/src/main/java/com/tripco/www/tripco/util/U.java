@@ -104,21 +104,17 @@ public class U {
     }
 
     // 관광, 맛집, 숙소
-    public String category0 = "관광";
-    public String category1 = "맛집";
-    public String category2 = "숙소";
-    public String getCategory0() {
-        return category0;
-    }
-    public String getCategory1() {
-        return category1;
-    }
-    public String getCategory2() {
-        return category2;
-    }
+    public final static String category0 = "관광";
+    public final static String category1 = "맛집";
+    public final static String category2 = "숙소";
+
+    // 해쉬태그 정보
+    public final static String[] tags = {"#힐링", "#감성", "#먹방" ,"#쇼핑" , "#조용", "#활발", "#답사" ,
+            "#레저" ,"#가성비" , "#여유로운", "#지식", "#트렌디", "#둘이서" , "#혼자서",
+            "#커플" ,"#가족" ,"#우정" ,"#제주" , "#유럽" ,"#미국" ,"#동남아", "#일본" ,"#중국"};
 
     // GoogleApiClient 셋팅
-    private GoogleApiClient mGoogleApiClient = null;
+    GoogleApiClient mGoogleApiClient = null;
     public void setmGoogleApiClient(GoogleApiClient mGoogleApiClient) {
         this.mGoogleApiClient = mGoogleApiClient;
     }
@@ -126,27 +122,20 @@ public class U {
         return mGoogleApiClient;
     }
 
-    public int getPLACE_AUTOCOMPLETE_REQUEST_CODE() {
-        return 1;
-    }
-
-    // 하나의 여행을 선택했을 때 계속 가지고 있어야하는 여행번호, 기간을 U에서 가지고 있음
-    public TripDataModel tripDataModel = new TripDataModel();
-    public TripDataModel getTripDataModel() {
-        return tripDataModel;
-    }
+    // GooglePlacesApi 에서 쓰는 리퀘스트 코드
+    public final static int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
 
     // 메인에서 로그인되어있으면 1번 가져와서 앱을 끌때까지 계속 가지고있는 회원정보
-    public MemberModel memberModel;
-    public MemberModel getMemberModel() {
-        return memberModel;
+    MemberModel userModel;
+    public MemberModel getUserModel() {
+        return userModel;
     }
-    public void setMemberModel(MemberModel memberModel) {
-        this.memberModel = memberModel;
+    public void setUserModel(MemberModel userModel) {
+        this.userModel = userModel;
     }
 
     // 검색한 파트너정보
-    public MemberModel partnerModel;
+    MemberModel partnerModel;
     public MemberModel getPartnerModel() {
         return partnerModel;
     }
@@ -154,15 +143,16 @@ public class U {
         this.partnerModel = partnerModel;
     }
 
-    // 해쉬태그 정보
-    public String[] tags = {"#힐링", "#감성", "#먹방" ,"#쇼핑" , "#조용", "#활발", "#답사" ,
-            "#레저" ,"#가성비" , "#여유로운", "#지식", "#트렌디", "#둘이서" , "#혼자서",
-            "#커플" ,"#가족" ,"#우정" ,"#제주" , "#유럽" ,"#미국" ,"#동남아", "#일본" ,"#중국"};
-
-    // 가져온 리스트 정보
-    public ArrayList<TripModel> list;
-    public ArrayList<TripModel> getList() {
-        return list;
+    // 유저의 여행 리스트 정보
+    ArrayList<TripModel> TripListModel;
+    public ArrayList<TripModel> getTripListModel() {
+        return TripListModel;
     }
+    public void setTripListModel(ArrayList<TripModel> tripListModel) {
+        this.TripListModel = tripListModel;
+    }
+
+    // 하나의 여행을 선택했을 때 계속 가지고 있어야하는 여행번호, 기간을 U에서 가지고 있음
+    public TripDataModel tripDataModel = new TripDataModel();
 }
 

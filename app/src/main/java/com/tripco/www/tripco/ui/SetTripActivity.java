@@ -93,9 +93,9 @@ public class SetTripActivity extends RootActivity {
             findWhoFinishBtn.setEnabled(true);
             findWhoFinishBtn.setTextColor(Color.WHITE);
             TextView partnerIdTv = bottomSheetDialog.findViewById(R.id.partner_id_tv);
-            partnerIdTv.setText(U.getInstance().partnerModel.getUser_id());
+            partnerIdTv.setText(U.getInstance().getPartnerModel().getUser_id());
             TextView partnerNickTv = bottomSheetDialog.findViewById(R.id.partner_nick_tv);
-            partnerNickTv.setText(U.getInstance().partnerModel.getUser_nick());
+            partnerNickTv.setText(U.getInstance().getPartnerModel().getUser_nick());
         }
     }
 
@@ -171,7 +171,7 @@ public class SetTripActivity extends RootActivity {
                     whoTv.setTextColor(Color.LTGRAY);
                     partner = sTripModel.getPartner_id();
                     // 파트너아이디가 내 아이디라면 유저아이디를 셋팅
-                    if(partner.equals(U.getInstance().getMemberModel().getUser_id())){
+                    if(partner.equals(U.getInstance().getUserModel().getUser_id())){
                         whoTv.setText(sTripModel.getUser_id());
                     } else {
                         whoTv.setText(partner);
@@ -273,7 +273,7 @@ public class SetTripActivity extends RootActivity {
                     new TripModel(titleEt.getText().toString(),
                             startDateString,
                             endDateString,
-                            U.getInstance().getMemberModel().getUser_id(),
+                            U.getInstance().getUserModel().getUser_id(),
                             partner,
                             hashTags), msg
             );
@@ -429,7 +429,7 @@ public class SetTripActivity extends RootActivity {
                     // 로그인되어있음 -> 서버에서 친구데이터 맞는지 확인
                     showPD();
                     NetProcess.getInstance().netPartner(
-                            new TripModel(U.getInstance().getMemberModel().getUser_id(),
+                            new TripModel(U.getInstance().getUserModel().getUser_id(),
                                     find_et.getText().toString())
                     );
                 }
@@ -438,7 +438,7 @@ public class SetTripActivity extends RootActivity {
         });
         // 완료버튼
         findWhoFinishBtn.setOnClickListener(view -> {
-            partner = U.getInstance().partnerModel.getUser_id();
+            partner = U.getInstance().getPartnerModel().getUser_id();
             whoTv.setText(partner);
             disconPartnerBtn.setVisibility(View.VISIBLE);
             bottomSheetDialog.dismiss();

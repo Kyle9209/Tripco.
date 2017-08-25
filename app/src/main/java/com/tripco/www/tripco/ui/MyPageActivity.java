@@ -38,8 +38,8 @@ public class MyPageActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         toolbarInit();
 
-        nickNameTv.setText(U.getInstance().getMemberModel().getUser_nick());
-        emailTv.setText(U.getInstance().getMemberModel().getUser_id());
+        nickNameTv.setText(U.getInstance().getUserModel().getUser_nick());
+        emailTv.setText(U.getInstance().getUserModel().getUser_id());
     }
 
     private void toolbarInit(){

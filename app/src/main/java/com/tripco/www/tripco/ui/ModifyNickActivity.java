@@ -38,7 +38,7 @@ public class ModifyNickActivity extends RootActivity {
     @Subscribe
     public void ottoBus(String str){
         if(str.equals("nickChangeSuccess")) {
-            U.getInstance().getMemberModel().setUser_nick(nickname.getText().toString());
+            U.getInstance().getUserModel().setUser_nick(nickname.getText().toString());
             U.getInstance().getBus().post("nickChange");
             Intent intent = new Intent();
             intent.putExtra("resultSetting", nickname.getText().toString());
@@ -71,9 +71,9 @@ public class ModifyNickActivity extends RootActivity {
         } else {
             showPD();
             NetProcess.getInstance().netNick(new MemberModel(
-                    U.getInstance().getMemberModel().getUser_id(),
+                    U.getInstance().getUserModel().getUser_id(),
                     nickname.getText().toString(),
-                    U.getInstance().getMemberModel().getUser_pw()
+                    U.getInstance().getUserModel().getUser_pw()
                     )
             );
         }

@@ -20,4 +20,10 @@
     <string name="add_candidate">후보지에 추가되었습니다.</string>
     <string name="update">수정</string>
     <string name="url_search">주소를 입력해주세요.</string>
+    <string name="previous">이전</string>
+    <string name="next">다음</string>
+    <string name="first_title">무엇에 대한 정보인가요?</string>
+    <string name="second_title">위치를 알려주세요!</string>
+    <string name="third_title">언제 방문하면 좋을까요?</string>
+    <string name="fourth_title">제목&amp;메모를 입력해주세요!</string>
 </resources>

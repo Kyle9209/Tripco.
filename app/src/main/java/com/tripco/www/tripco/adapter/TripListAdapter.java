@@ -48,7 +48,7 @@ public class TripListAdapter extends RecyclerView.Adapter<TripListViewHolder> {
         if(tripModel.getPartner_id().equals("")) holder.who.setText("혼자");
         else { // 파트너가 있다면
             // 파트너아이디가 내 아이디라면
-            if(tripModel.getPartner_id().equals(U.getInstance().getMemberModel().getUser_id())){
+            if(tripModel.getPartner_id().equals(U.getInstance().getUserModel().getUser_id())){
                 holder.who.setText(tripModel.getUser_id());
             } else {
                 holder.who.setText(tripModel.getPartner_id());

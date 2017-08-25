@@ -1,5 +1,5 @@
-echo 'SHA-1 Áö¹® È¹µæ'
+echo 'SHA-1 ï¿½ï¿½ï¿½ï¿½ È¹ï¿½ï¿½'
 
-keytool -list -v -keystore TripcoKey.jks
+keytool -tripListModel -v -keystore TripcoKey.jks
 
 pause
