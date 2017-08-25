@@ -41,10 +41,7 @@ import com.tripco.www.tripco.model.ScheduleModel;
 import com.tripco.www.tripco.ui.TripActivity;
 import com.tripco.www.tripco.util.U;
 
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 
 import butterknife.BindString;
 import butterknife.BindView;
@@ -68,66 +65,37 @@ public class CandidateLIstFragment extends Fragment
     private GoogleMap mMap = null;
     private Unbinder unbinder;
     private View view;
-    private int tripNo;
-    private String startDate, endDate;
 
     public CandidateLIstFragment() {}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        tripNo = U.getInstance().getTripNo();
-        startDate = U.getInstance().getStartDate();
-        endDate = U.getInstance().getEndDate();
-        U.getInstance().setSelectDate(startDate);
-        if(getArguments() != null && getArguments().getInt("i", 0) == 1) onGooglePlaces();
         view = inflater.inflate(R.layout.fragment_candidate_list, container, false);
         unbinder = ButterKnife.bind(this, view);
-//        U.getInstance().getBus().register(this);
         uiInit();
         spinnerInit();
+        if(getArguments() != null && getArguments().getInt("i", 0) == 1) onGooglePlaces();
         return view;
     }
-
-//    @Subscribe
-//    public void ottoBus(){
-//    }
 
     private void uiInit(){
         SectionsPagerAdapter spAdapter = new SectionsPagerAdapter(getChildFragmentManager());
         mViewPager.setAdapter(spAdapter);
         tabLayout.setupWithViewPager(mViewPager);
+        mViewPager.setOffscreenPageLimit(3);
     }
 
     private void spinnerInit(){
-        Date start = null;
-        Date end = null;
-        try {
-            start = U.getInstance().getDateFormat().parse(startDate);
-            end = U.getInstance().getDateFormat().parse(endDate);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(start);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), R.layout.custom_spinner_item, 0);
-        int n = 1;
-        while (true){
-            adapter.add(n + "일차(" + U.getInstance().getDateFormat().format(calendar.getTime()).replace("-",".") + ")");
-            n++;
-            calendar.add(Calendar.DATE, 1);
-            if(calendar.getTime().after(end)) break;
+        for (int i = 0; i < U.getInstance().tripDataModel.getDateList().size(); i++) {
+            adapter.add(U.getInstance().tripDataModel.getDateSpinnerList().get(i));
         }
-        adapter.notifyDataSetChanged();
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
-
-        U.getInstance().setSpinnerDate(spinner.getSelectedItem().toString());
+        // 스피너에서 날짜를 선택하면
         spinner.setOnItemSelectedListener((parent, view1, position, id) -> {
-            String selectDate = U.getInstance().getDate(parent.getSelectedItem().toString()).replace(".","-");
-            U.getInstance().setSelectDate(selectDate);
-            U.getInstance().getBus().post(selectDate);
-            U.getInstance().setSpinnerDate(parent.getSelectedItem().toString());
-
+            // 뷰페이저에 날짜를 바꿧다고 알려줌
+            U.getInstance().getBus().post("position" + position);
             onMapMarker();
         });
     }
@@ -137,8 +105,10 @@ public class CandidateLIstFragment extends Fragment
         ArrayList<LatLng> latLng = new ArrayList<>();
         String lat, lng;
         ArrayList<ScheduleModel> list = new ArrayList<>();
-        String sql = "select * from ScheduleList_Table where trip_no=" + tripNo +
-                " and schedule_date= '" + U.getInstance().getSelectDate() + "';";
+        String sql = "select * from ScheduleList_Table where trip_no="
+                + U.getInstance().tripDataModel.getTripNo() +
+                " and schedule_date='"
+                + U.getInstance().tripDataModel.getDateList().get(spinner.getSelectedItemPosition()) + "';";
         Cursor csr = DBOpenHelper.dbOpenHelper.getWritableDatabase().rawQuery(sql, null);
         int n = 0;
         while (csr.moveToNext()) {
@@ -158,7 +128,7 @@ public class CandidateLIstFragment extends Fragment
             ));
             lat = csr.getString(5);
             lng = csr.getString(6);
-            if(lat != null && lng != null) {
+            if(!lat.equals("null") && !lng.equals("null")) {
                 latLng.add(new LatLng(Double.parseDouble(lat), Double.parseDouble(lng)));
                 if(n == 0) {
                     mMap.addMarker(new MarkerOptions()
@@ -174,7 +144,6 @@ public class CandidateLIstFragment extends Fragment
                 n++;
             }
         }
-        csr.close();
 
         // 리스트뷰 초기화
         recViewInit(list);
@@ -259,8 +228,8 @@ public class CandidateLIstFragment extends Fragment
                     " item_title, " +
                     " item_memo) " +
                     " values(" +
-                    "'" + tripNo + "', " +
-                    "'" + U.getInstance().getDate(spinner.getSelectedItem().toString()).replace(".","-") + "', " +
+                    "'" + U.getInstance().tripDataModel.getTripNo() + "', " +
+                    "'" + U.getInstance().tripDataModel.getDateList().get(spinner.getSelectedItemPosition()) + "', " +
                     "'', " + // item_url == ""
                     "0, " +  // cate_no == 0
                     "'" + lat + "', " +
@@ -270,7 +239,8 @@ public class CandidateLIstFragment extends Fragment
                     "'');"; // memo == ""
             DBOpenHelper.dbOpenHelper.getWritableDatabase().execSQL(sql);
             Toast.makeText(getContext(), addCandidate, Toast.LENGTH_SHORT).show();
-            U.getInstance().getBus().post("");
+            mViewPager.setCurrentItem(0);
+            //U.getInstance().getBus().post("");
         } catch (SQLException e) {
             e.printStackTrace();
         }

@@ -31,14 +31,15 @@ import java.util.ArrayList;
 
 public class FinScheduleListAdapter extends RecyclerView.Adapter<ScheduleListViewHolder>
         implements GoogleApiClient.OnConnectionFailedListener {
-    Context context;
+    private Context context;
     private ArrayList<ScheduleModel> scheduleModels;
-    private String n;
+    int pos = 0;
 
-    public FinScheduleListAdapter(Context context, ArrayList<ScheduleModel> scheduleModels, String n) {
+
+    public FinScheduleListAdapter(Context context, ArrayList<ScheduleModel> scheduleModels, int pos) {
         this.context = context;
         this.scheduleModels = scheduleModels;
-        this.n = n;
+        this.pos = pos;
     }
 
     @Override
@@ -93,7 +94,7 @@ public class FinScheduleListAdapter extends RecyclerView.Adapter<ScheduleListVie
         holder.image.setOnClickListener(view -> {
             Intent intent = new Intent(context, ScheduleInfoActivity.class);
             intent.putExtra("scheduleModel", scheduleModel);
-            intent.putExtra("n", n);
+            intent.putExtra("position,", pos);
             intent.putExtra("fin", true);
             context.startActivity(intent);
         });

@@ -30,10 +30,7 @@ import com.tripco.www.tripco.model.ScheduleModel;
 import com.tripco.www.tripco.ui.TripActivity;
 import com.tripco.www.tripco.util.U;
 
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -51,22 +48,18 @@ public class FinalScheduleFragment extends Fragment
     private Unbinder unbinder;
     private View view;
     private int tripNo;
-    private String startDate, endDate;
     private String scheduleDate;
-    private String n = "1";
+    int position = 0;
 
     public FinalScheduleFragment() {}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        tripNo = U.getInstance().getTripNo();
-        startDate = U.getInstance().getStartDate();
-        endDate = U.getInstance().getEndDate();
         view = inflater.inflate(R.layout.fragment_final_schedule, container, false);
         unbinder = ButterKnife.bind(this, view);
         U.getInstance().getBus().register(this);
+        tripNo = U.getInstance().tripDataModel.getTripNo();
         spinnerInit();
-        scheduleDate = U.getInstance().getDate(spinner.getSelectedItem().toString()).replace(".","-");
         recViewInit();
         swipeRefreshInit();
         return view;
@@ -87,43 +80,25 @@ public class FinalScheduleFragment extends Fragment
     private void recViewInit(){
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         ArrayList<ScheduleModel> scheduleModels = setScheduleModel();
-        FinScheduleListAdapter adapter = new FinScheduleListAdapter(getContext(), scheduleModels, n);
+        FinScheduleListAdapter adapter = new FinScheduleListAdapter(getContext(), scheduleModels, position);
         recyclerView.setAdapter(adapter);
     }
 
     private void spinnerInit(){
-        Date start = null;
-        Date end = null;
-        try {
-            start = U.getInstance().getDateFormat().parse(startDate);
-            end = U.getInstance().getDateFormat().parse(endDate);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(start);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), R.layout.custom_spinner_item, 0);
-        int n = 1;
-        while (true){
-            adapter.add(n + "일차(" + U.getInstance().getDateFormat().format(calendar.getTime()).replace("-",".") + ")");
-            n++;
-            calendar.add(Calendar.DATE, 1);
-            if(calendar.getTime().after(end)) break;
+        for (int i = 0; i < U.getInstance().tripDataModel.getDateList().size(); i++) {
+            adapter.add(U.getInstance().tripDataModel.getDateSpinnerList().get(i));
         }
-        adapter.notifyDataSetChanged();
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
-
-        U.getInstance().setSpinnerDate(spinner.getSelectedItem().toString());
+        scheduleDate = U.getInstance().tripDataModel.getDateList().get(spinner.getSelectedItemPosition());
+        // 스피너에서 날짜를 선택하면
         spinner.setOnItemSelectedListener((parent, view1, position, id) -> {
-            U.getInstance().setSpinnerDate(parent.getSelectedItem().toString());
-            scheduleDate = U.getInstance().getDate(parent.getSelectedItem().toString()).replace(".","-");
-            setN(parent.getSelectedItemPosition() + 1);
+            scheduleDate = U.getInstance().tripDataModel.getDateList().get(position);
+            this.position = position;
             recViewInit();
         });
     }
-
-    private void setN(int i){ n = i + ""; }
 
     private ArrayList<ScheduleModel> setScheduleModel(){
         ArrayList<ScheduleModel> list = new ArrayList<>();
@@ -146,7 +121,6 @@ public class FinalScheduleFragment extends Fragment
                     csr.getString(11)
             ));
         }
-        csr.close();
         return list;
     }
 
@@ -163,7 +137,6 @@ public class FinalScheduleFragment extends Fragment
                 recViewInit();
                 swipeContainer.setRefreshing(false);
             }, 3000);
-            //recyclerView.getAdapter().notifyDataSetChanged();
         });
     }
 

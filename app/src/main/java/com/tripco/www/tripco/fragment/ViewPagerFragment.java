@@ -33,24 +33,25 @@ public class ViewPagerFragment extends Fragment {
     private int tripNo;
     private String selectDate;
     private int cateNo;
-    String n = "1";
+    int position = 0;
+
     public ViewPagerFragment() {}
 
-    @Override // 뷰페이저가 생성되는 최초 1번 trip_no, cate_no 초기화
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        cateNo = getArguments().getInt("cateNo");
-        tripNo = U.getInstance().getTripNo();
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override // 뷰페이저 다시 시작점
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_view_pager, container, false);
         unbinder = ButterKnife.bind(this, view);
         U.getInstance().getBus().register(this);
-        selectDate = U.getInstance().getSelectDate();
+        getInitData();
         swipeRefreshInit();
         return view;
+    }
+
+    // 날짜, 번호, 유형 초기화
+    private void getInitData(){
+        cateNo = getArguments().getInt("cateNo");
+        tripNo = U.getInstance().tripDataModel.getTripNo();
+        selectDate = U.getInstance().tripDataModel.getDateList().get(0);
     }
 
     @Override // 리사이클러뷰 초기화(일부러 늦게함)
@@ -61,10 +62,12 @@ public class ViewPagerFragment extends Fragment {
 
     @Subscribe
     public void ottoBus(String str){
-        if(str.equals(U.getInstance().getSelectDate())){
-            selectDate = U.getInstance().getSelectDate();
+        if(str.contains("position")){
+            int position = Integer.parseInt(str.split("n")[1]);
+            this.position = position;
+            selectDate = U.getInstance().tripDataModel.getDateList().get(position);
+            recViewInit();
         }
-        recViewInit();
     }
 
     public void swipeRefreshInit(){
@@ -88,7 +91,7 @@ public class ViewPagerFragment extends Fragment {
         recyclerView.setLayoutManager
                 (new GridLayoutManager(getContext(), 3, GridLayoutManager.VERTICAL, false));
         CanScheduleListAdapter adapter =
-                new CanScheduleListAdapter(getContext(), setScheduleModel(), n);
+                new CanScheduleListAdapter(getContext(), setScheduleModel(), position);
         recyclerView.setAdapter(adapter);
     }
 
@@ -114,7 +117,6 @@ public class ViewPagerFragment extends Fragment {
                     csr.getString(11)
             ));
         }
-        //csr.close();
         return list;
     }
 

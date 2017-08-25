@@ -14,11 +14,17 @@ import com.tripco.www.tripco.ui.SetTripActivity;
 import com.tripco.www.tripco.ui.TripActivity;
 import com.tripco.www.tripco.util.U;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 public class TripListAdapter extends RecyclerView.Adapter<TripListViewHolder> {
     private Context context;
     private ArrayList<TripModel> tripModels;
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.KOREA);
 
     public TripListAdapter(Context context, ArrayList<TripModel> tripModels) {
         this.context = context;
@@ -54,9 +60,33 @@ public class TripListAdapter extends RecyclerView.Adapter<TripListViewHolder> {
         holder.tag.setText(tripModel.getHashtag());
 
         holder.itemView.setOnClickListener(view -> { // 짧게누르면 후보지리스트로
-            U.getInstance().setTripNo(tripModel.getTrip_no());
-            U.getInstance().setStartDate(tripModel.getStart_date());
-            U.getInstance().setEndDate(tripModel.getEnd_date());
+            // U에 있는 tripDataModel에 번호, 기간 2종류 저장
+            U.getInstance().tripDataModel.setTripNo(tripModel.getTrip_no());
+            // 디비에서 쓰는 날짜 리스트, 스피너에서 쓰는 날짜 리스트도 U에 저장
+            ArrayList<String> dateList = new ArrayList<>();
+            ArrayList<String> dateSpinnerList = new ArrayList<>();
+            Date start = null;
+            Date end   = null;
+            try {
+                start = dateFormat.parse(tripModel.getStart_date());
+                end   = dateFormat.parse(tripModel.getEnd_date());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(start);
+            int n = 1;
+            while (true){
+                String date = dateFormat.format(calendar.getTime());
+                dateList.add(date);
+                dateSpinnerList.add(n + "일차(" + date.replace("-",".") + ")");
+                n++;
+                calendar.add(Calendar.DATE, 1);
+                if(calendar.getTime().after(end)) break;
+            }
+            U.getInstance().tripDataModel.setDateList(dateList);
+            U.getInstance().tripDataModel.setDateSpinnerList(dateSpinnerList);
+
             context.startActivity(new Intent(context, TripActivity.class));
         });
 

@@ -11,11 +11,10 @@ import android.util.Log;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.squareup.otto.Bus;
 import com.tripco.www.tripco.model.MemberModel;
+import com.tripco.www.tripco.model.TripDataModel;
 import com.tripco.www.tripco.model.TripModel;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Locale;
 import java.util.UUID;
 
 public class U {
@@ -104,18 +103,6 @@ public class U {
         return bus;
     }
 
-    // 날짜 포맷 설정
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.KOREA);
-    public SimpleDateFormat getDateFormat() {
-        return dateFormat;
-    }
-
-    // 스피너의 날짜 추출
-    public String getDate(String str){
-        String[] itemDate = str.split("\\(");
-        return itemDate[1].substring(0, itemDate[1].length()-1);
-    }
-
     // 관광, 맛집, 숙소
     public String category0 = "관광";
     public String category1 = "맛집";
@@ -139,47 +126,14 @@ public class U {
         return mGoogleApiClient;
     }
 
-    // 구글플레이스 코드
-    private int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
     public int getPLACE_AUTOCOMPLETE_REQUEST_CODE() {
-        return PLACE_AUTOCOMPLETE_REQUEST_CODE;
+        return 1;
     }
 
-    // 메인 리스트 하나 클릭했을 때 계속 가지고 있어야하는 값
-    private int tripNo;
-    private String startDate;
-    private String endDate;
-    private String selectDate;
-    private String spinnerDate;
-    public int getTripNo() {
-        return tripNo;
-    }
-    public void setTripNo(int tripNo) {
-        this.tripNo = tripNo;
-    }
-    public String getStartDate() {
-        return startDate;
-    }
-    public void setStartDate(String startDate) {
-        this.startDate = startDate;
-    }
-    public String getEndDate() {
-        return endDate;
-    }
-    public void setEndDate(String endDate) {
-        this.endDate = endDate;
-    }
-    public String getSelectDate() {
-        return selectDate;
-    }
-    public void setSelectDate(String selectDate) {
-        this.selectDate = selectDate;
-    }
-    public String getSpinnerDate() {
-        return spinnerDate;
-    }
-    public void setSpinnerDate(String spinnerDate) {
-        this.spinnerDate = spinnerDate;
+    // 하나의 여행을 선택했을 때 계속 가지고 있어야하는 여행번호, 기간을 U에서 가지고 있음
+    public TripDataModel tripDataModel = new TripDataModel();
+    public TripDataModel getTripDataModel() {
+        return tripDataModel;
     }
 
     // 메인에서 로그인되어있으면 1번 가져와서 앱을 끌때까지 계속 가지고있는 회원정보
@@ -209,9 +163,6 @@ public class U {
     public ArrayList<TripModel> list;
     public ArrayList<TripModel> getList() {
         return list;
-    }
-    public void setList(ArrayList<TripModel> list) {
-        this.list = list;
     }
 }
 

@@ -35,10 +35,6 @@ import com.tripco.www.tripco.db.DBOpenHelper;
 import com.tripco.www.tripco.model.ScheduleModel;
 import com.tripco.www.tripco.util.U;
 
-import java.text.ParseException;
-import java.util.Calendar;
-import java.util.Date;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -64,6 +60,7 @@ public class ModifyScheduleActivity extends AppCompatActivity implements GoogleA
     private GoogleApiClient mGoogleApiClient;
     private String placeId;
     private String lat, lng;
+    int position = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +68,7 @@ public class ModifyScheduleActivity extends AppCompatActivity implements GoogleA
         setContentView(R.layout.activity_modify_schedule);
         ButterKnife.bind(this);
         scheduleModel = (ScheduleModel) getIntent().getSerializableExtra("scheduleModel");
+        position = getIntent().getIntExtra("position", 0);
         toolbarInit();
         uiInit();
         spinnerInit();
@@ -146,7 +144,7 @@ public class ModifyScheduleActivity extends AppCompatActivity implements GoogleA
     private void updateSQLite(int trip_no, int s_no, String str) {
         try {
             String sql = "update ScheduleList_Table set" +
-                    " schedule_date = '"+U.getInstance().getDate(spinner.getSelectedItem().toString()).replace(".","-")+"', "+
+                    " schedule_date = '"+U.getInstance().tripDataModel.getDateList().get(spinner.getSelectedItemPosition())+"', "+
                     " item_url = '"+openUrlTv.getText()+"', "+
                     " cate_no = "+getCategoryNum()+", "+
                     " item_lat = '"+lat+"', "+
@@ -208,28 +206,13 @@ public class ModifyScheduleActivity extends AppCompatActivity implements GoogleA
     }
 
     public void spinnerInit() {
-        Date start = null;
-        Date end = null;
-        try {
-            start = U.getInstance().getDateFormat().parse(U.getInstance().getStartDate());
-            end = U.getInstance().getDateFormat().parse(U.getInstance().getEndDate());
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(start);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, 0);
-        int n = 1;
-        while (true){
-            adapter.add(n + "일차(" + U.getInstance().getDateFormat().format(calendar.getTime()).replace("-",".") + ")");
-            n++;
-            calendar.add(Calendar.DATE, 1);
-            if(calendar.getTime().after(end)) break;
+        for (int i = 0; i < U.getInstance().tripDataModel.getDateList().size(); i++) {
+            adapter.add(U.getInstance().tripDataModel.getDateSpinnerList().get(i));
         }
-        adapter.notifyDataSetChanged();
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
-        spinner.setSelection(Integer.parseInt(U.getInstance().getSpinnerDate().split("일")[0])-1);
+        spinner.setSelection(position);
     }
 
     private void getPlaceData() {
@@ -284,7 +267,5 @@ public class ModifyScheduleActivity extends AppCompatActivity implements GoogleA
         placeImgIv.setImageBitmap(placePhotoResult.getBitmap());
     };
     @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
-    }
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {}
 }

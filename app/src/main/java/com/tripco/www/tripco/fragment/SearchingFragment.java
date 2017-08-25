@@ -53,10 +53,6 @@ import com.tripco.www.tripco.db.DBOpenHelper;
 import com.tripco.www.tripco.ui.TripActivity;
 import com.tripco.www.tripco.util.U;
 
-import java.text.ParseException;
-import java.util.Calendar;
-import java.util.Date;
-
 import butterknife.BindColor;
 import butterknife.BindString;
 import butterknife.BindView;
@@ -69,12 +65,12 @@ import static android.app.Activity.RESULT_OK;
 
 public class SearchingFragment extends Fragment implements OnMapReadyCallback,
         GoogleApiClient.OnConnectionFailedListener, TripActivity.onKeyBackPressedListener {
-    @BindView(R.id.toolbar_title_tv) TextView toolbarTitleTv;
-    @BindView(R.id.toolbar_right_btn) Button toolbarRightBtn;
     @BindView(R.id.url_et) EditText urlEt;
     @BindView(R.id.webview) WebView webView;
     @BindView(R.id.webview_pb) ProgressBar webViewPb;
     // 상세정보창 뷰들==============================================
+    @BindView(R.id.toolbar_title_tv) TextView toolbarTitleTv;
+    @BindView(R.id.toolbar_right_btn) Button toolbarRightBtn;
     @BindView(R.id.frontLayout) LinearLayout frontLayout;
     @BindView(R.id.days_spin) Spinner spinner;
     @BindView(R.id.previous_btn) Button previousBtn;
@@ -96,7 +92,6 @@ public class SearchingFragment extends Fragment implements OnMapReadyCallback,
     private InputMethodManager inputMethodManager;
     private int index = 1;
     private int tripNo;
-    private String startDate, endDate;
     private GoogleMap mMap = null;
     private View view;
     private LatLng latlng = null;
@@ -111,16 +106,14 @@ public class SearchingFragment extends Fragment implements OnMapReadyCallback,
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        tripNo = U.getInstance().getTripNo();
-        startDate = U.getInstance().getStartDate();
-        endDate = U.getInstance().getEndDate();
         view = inflater.inflate(R.layout.fragment_searching, container, false);
         unbinder = ButterKnife.bind(this, view);
         inputMethodManager = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        tripNo = U.getInstance().tripDataModel.getTripNo();
+        toolbarInit();
         webViewInit();
         spinnerInit();
         editTextInit(); // 키패드 완료 버튼 처리
-        toolbarInit();
         mapView.getMapAsync(this);
         return view;
     }
@@ -186,25 +179,10 @@ public class SearchingFragment extends Fragment implements OnMapReadyCallback,
     }
 
     private void spinnerInit() {
-        Date start = null;
-        Date end = null;
-        try {
-            start = U.getInstance().getDateFormat().parse(startDate);
-            end = U.getInstance().getDateFormat().parse(endDate);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(start);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, 0);
-        int n = 1;
-        while (true){
-            adapter.add(n + "일차(" + U.getInstance().getDateFormat().format(calendar.getTime()).replace("-",".") + ")");
-            n++;
-            calendar.add(Calendar.DATE, 1);
-            if(calendar.getTime().after(end)) break;
+        for (int i = 0; i < U.getInstance().tripDataModel.getDateList().size(); i++) {
+            adapter.add(U.getInstance().tripDataModel.getDateSpinnerList().get(i));
         }
-        adapter.notifyDataSetChanged();
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
     }
@@ -215,11 +193,6 @@ public class SearchingFragment extends Fragment implements OnMapReadyCallback,
             onClickSearchUrlBtn();
             return true;
         });
-    }
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
     }
 
     @OnClick(R.id.search_url_btn) // URL주소검색 (호출하는 곳이 따로 있어서 따로둠)
@@ -341,7 +314,7 @@ public class SearchingFragment extends Fragment implements OnMapReadyCallback,
                     " item_memo) " +
                     " values(" +
                     "'" + tripNo + "', " +
-                    "'" + U.getInstance().getDate(spinner.getSelectedItem().toString()).replace(".","-") + "', " +
+                    "'" + U.getInstance().tripDataModel.getDateList().get(spinner.getSelectedItemPosition()) + "', " +
                     "'" + urlEt.getText() + "', " +
                     "'" + getIntCateNo(rbStr) + "', " +
                     "'" + lat + "', " +
@@ -504,6 +477,10 @@ public class SearchingFragment extends Fragment implements OnMapReadyCallback,
     }
 
     // 구글맵 사용에 필요한 프레그먼트의 오버라이드 메소드들
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+    }
     @Override
     public void onStart() {
         super.onStart();

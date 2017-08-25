@@ -53,6 +53,7 @@ public class ScheduleInfoActivity extends AppCompatActivity
     @BindView(R.id.time_tv) TextView timeTv;
     private ScheduleModel scheduleModel;
     private GoogleApiClient mGoogleApiClient;
+    int position = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +61,7 @@ public class ScheduleInfoActivity extends AppCompatActivity
         setContentView(R.layout.activity_schedule_info);
         ButterKnife.bind(this);
         scheduleModel = (ScheduleModel) getIntent().getSerializableExtra("scheduleModel");
+        position = getIntent().getIntExtra("position", 0);
         getScheduleData();
         toolbarInit();
         uiInit();
@@ -85,7 +87,6 @@ public class ScheduleInfoActivity extends AppCompatActivity
                     csr.getString(11)
             );
         }
-        csr.close();
     }
 
     private void toolbarInit(){
@@ -106,7 +107,7 @@ public class ScheduleInfoActivity extends AppCompatActivity
         if(scheduleModel.getCate_no() == 1) rb1.setChecked(true);
         if(scheduleModel.getCate_no() == 2) rb2.setChecked(true);
         // 날짜입력
-        scheduleDateTv.setText(U.getInstance().getSpinnerDate());
+        scheduleDateTv.setText(U.getInstance().tripDataModel.getDateSpinnerList().get(position));
         // 메모입력
         memo.setText(scheduleModel.getItem_memo());
         // url입력
@@ -150,6 +151,7 @@ public class ScheduleInfoActivity extends AppCompatActivity
             case R.id.toolbar_right_btn: //수정페이지로
                 Intent intent = new Intent(ScheduleInfoActivity.this, ModifyScheduleActivity.class);
                 intent.putExtra("scheduleModel", scheduleModel);
+                intent.putExtra("position", position);
                 if(getIntent().getBooleanExtra("fin", false)) intent.putExtra("fin", true);
                 startActivityForResult(intent, 2);
                 break;
@@ -216,7 +218,5 @@ public class ScheduleInfoActivity extends AppCompatActivity
         placeImgIv.setImageBitmap(placePhotoResult.getBitmap());
     };
     @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
-    }
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {}
 }

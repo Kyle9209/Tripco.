@@ -33,8 +33,10 @@ import com.tripco.www.tripco.net.NetProcess;
 import com.tripco.www.tripco.util.U;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -52,6 +54,7 @@ public class SetTripActivity extends RootActivity {
     @BindView(R.id.hashTag_gl) GridLayout hashTagGl;
     @BindView(R.id.delete_btn) Button deleteBtn;
     @BindView(R.id.discon_partner_btn) TextView disconPartnerBtn;
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.KOREA);
     private int MAX_TITLE_CNT = 10; // 여행제목 최대 글자수 = 10
     private int trip_no;
     private String startDateString, endDateString;
@@ -370,7 +373,7 @@ public class SetTripActivity extends RootActivity {
                 text.setText("여행종료일을 설정하세요.");
                 try {
                     startDateString = selectedDate;
-                    startDate = U.getInstance().getDateFormat().parse(selectedDate);
+                    startDate = dateFormat.parse(selectedDate);
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
@@ -385,7 +388,7 @@ public class SetTripActivity extends RootActivity {
             } else {
                 try {
                     endDateString = selectedDate;
-                    endDate = U.getInstance().getDateFormat().parse(selectedDate);
+                    endDate = dateFormat.parse(selectedDate);
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
