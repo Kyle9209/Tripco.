@@ -8,7 +8,6 @@ import java.util.ArrayList;
 
 public class TripDataModel {
     int tripNo;
-    ArrayList<String> dateList; // [yyyy-mm-dd] 날짜 리스트
     ArrayList<String> dateSpinnerList; // [n일차(yyyy.mm.dd)] 날짜 리스트
 
     public int getTripNo() {
@@ -17,14 +16,6 @@ public class TripDataModel {
 
     public void setTripNo(int tripNo) {
         this.tripNo = tripNo;
-    }
-
-    public ArrayList<String> getDateList() {
-        return dateList;
-    }
-
-    public void setDateList(ArrayList<String> dateList) {
-        this.dateList = dateList;
     }
 
     public ArrayList<String> getDateSpinnerList() {

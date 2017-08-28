@@ -75,7 +75,7 @@ public class ScheduleInfoActivity extends AppCompatActivity
             scheduleModel = new ScheduleModel(
                     csr.getInt(0),
                     csr.getInt(1),
-                    csr.getString(2),
+                    csr.getInt(2),
                     csr.getString(3),
                     csr.getInt(4),
                     csr.getString(5),

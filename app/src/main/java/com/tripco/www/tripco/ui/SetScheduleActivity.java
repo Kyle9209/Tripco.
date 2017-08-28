@@ -88,7 +88,7 @@ public class SetScheduleActivity extends AppCompatActivity
 
     private void spinnerInit() {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, 0);
-        for (int i = 0; i < U.getInstance().tripDataModel.getDateList().size(); i++) {
+        for (int i = 0; i < U.getInstance().tripDataModel.getDateSpinnerList().size(); i++) {
             adapter.add(U.getInstance().tripDataModel.getDateSpinnerList().get(i));
         }
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -113,7 +113,7 @@ public class SetScheduleActivity extends AppCompatActivity
                 if(!TextUtils.isEmpty(memoEt.getText())) memo = memoEt.getText().toString();
                 intent = new Intent();
                 ScheduleModel scheduleModel = new ScheduleModel(
-                        U.getInstance().tripDataModel.getDateList().get(spinner.getSelectedItemPosition()),
+                        spinner.getSelectedItemPosition(),
                         cateNo,  // 0 or 1,2
                         lat,     // null or string
                         lng,     // null or string

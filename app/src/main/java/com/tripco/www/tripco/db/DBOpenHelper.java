@@ -40,7 +40,7 @@ public class DBOpenHelper extends SQLiteOpenHelper {
         sb.append(" trip_no INTEGER REFERENCES Trip_Table (trip_no) ");
         sb.append(" ON DELETE CASCADE, ");
         sb.append(" schedule_no INTEGER PRIMARY KEY AUTOINCREMENT, ");
-        sb.append(" schedule_date TEXT, ");
+        sb.append(" schedule_date INTEGER, ");
         sb.append(" item_url TEXT, ");
         sb.append(" cate_no INTEGER, ");
         sb.append(" item_lat TEXT, ");

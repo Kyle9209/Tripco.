@@ -173,7 +173,7 @@ public class SearchingFragment extends Fragment implements TripActivity.onKeyBac
         switch (view.getId()) {
             case R.id.short_save_btn: // 즉시저장
                 if (!TextUtils.isEmpty(urlEt.getText())) {
-                    insertSQLite(U.getInstance().tripDataModel.getDateList().get(0), 0, null, null, null, null, null);
+                    insertSQLite(0, 0, null, null, null, null, null);
                 } else {
                     showDialog();
                 }
@@ -225,14 +225,14 @@ public class SearchingFragment extends Fragment implements TripActivity.onKeyBac
                 });
     }
 
-    private void insertSQLite(String scheduleDate, int cateNo, String lat, String lng,
+    private void insertSQLite(int datePosition, int cateNo, String lat, String lng,
                               String placeId, String title, String memo) {
         if(U.getInstance().getBoolean("login")){
             showPD();
             NetProcess.getInstance().netCreateItem(new ScheduleModel(
                     U.getInstance().getUserModel().getUser_id(),
                     tripNo,
-                    scheduleDate,
+                    datePosition,
                     urlEt.getText().toString(),
                     cateNo,
                     lat,
@@ -255,7 +255,7 @@ public class SearchingFragment extends Fragment implements TripActivity.onKeyBac
                         " item_memo) " +
                         " values(" +
                         "'" + tripNo + "', " +
-                        "'" + scheduleDate + "', " + // 초기값 1일차
+                        "'" + datePosition + "', " + // 초기값 0 (1일차)
                         "'" + urlEt.getText().toString() + "', " +
                         "'" + cateNo + "', " + // 초기값 cate_no = 0(관광)
                         "'" + lat + "', " + // 초기값 lat = null

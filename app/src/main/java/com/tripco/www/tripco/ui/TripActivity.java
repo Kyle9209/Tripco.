@@ -77,6 +77,7 @@ public class TripActivity extends RootActivity {
             U.getInstance().setmGoogleApiClient(null);
         }
         U.getInstance().getBus().unregister(this);
+        U.getInstance().setScheduleListModel(null);
         super.onDestroy();
     }
 

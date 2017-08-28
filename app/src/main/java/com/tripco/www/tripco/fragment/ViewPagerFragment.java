@@ -17,6 +17,7 @@ import com.tripco.www.tripco.R;
 import com.tripco.www.tripco.adapter.CanScheduleListAdapter;
 import com.tripco.www.tripco.db.DBOpenHelper;
 import com.tripco.www.tripco.model.ScheduleModel;
+import com.tripco.www.tripco.net.NetProcess;
 import com.tripco.www.tripco.util.U;
 
 import java.util.ArrayList;
@@ -31,9 +32,9 @@ public class ViewPagerFragment extends Fragment {
     private Unbinder unbinder;
     private View view;
     private int tripNo;
-    private String selectDate;
     private int cateNo;
     int position = 0;
+    CanScheduleListAdapter adapter;
 
     public ViewPagerFragment() {}
 
@@ -51,7 +52,6 @@ public class ViewPagerFragment extends Fragment {
     private void getInitData(){
         cateNo = getArguments().getInt("cateNo");
         tripNo = U.getInstance().tripDataModel.getTripNo();
-        selectDate = U.getInstance().tripDataModel.getDateList().get(0);
     }
 
     @Override // 리사이클러뷰 초기화(일부러 늦게함)
@@ -63,10 +63,23 @@ public class ViewPagerFragment extends Fragment {
     @Subscribe
     public void ottoBus(String str){
         if(str.contains("position")){
-            int position = Integer.parseInt(str.split("n")[1]);
-            this.position = position;
-            selectDate = U.getInstance().tripDataModel.getDateList().get(position);
+            position = Integer.parseInt(str.split("n")[1]);
             recViewInit();
+        }
+        if(str.equals("AddCandidateSuccess")){
+            recViewInit();
+        }
+        if(str.equals("ListItemSuccess")){
+            ArrayList<ScheduleModel> list = new ArrayList<>();
+            list.add(null);
+            for(int i=0; i < U.getInstance().getScheduleListModel().size(); i++){
+                if(U.getInstance().getScheduleListModel().get(i).getCate_no() == cateNo){
+                    list.add(U.getInstance().getScheduleListModel().get(i));
+                }
+            }
+            adapter = new CanScheduleListAdapter(getContext(), list, position);
+            recyclerView.setAdapter(adapter);
+            swipeContainer.setRefreshing(false);
         }
     }
 
@@ -90,26 +103,26 @@ public class ViewPagerFragment extends Fragment {
     private void recViewInit(){
         recyclerView.setLayoutManager
                 (new GridLayoutManager(getContext(), 3, GridLayoutManager.VERTICAL, false));
-        CanScheduleListAdapter adapter;
         if(U.getInstance().getBoolean("login")){
-            adapter = new CanScheduleListAdapter(getContext(), null, position);
+            swipeContainer.setRefreshing(true);
+            NetProcess.getInstance().netListItem(new ScheduleModel(tripNo, position));
         } else {
             adapter = new CanScheduleListAdapter(getContext(), setScheduleModel(), position);
+            recyclerView.setAdapter(adapter);
         }
-        recyclerView.setAdapter(adapter);
     }
 
     private ArrayList<ScheduleModel> setScheduleModel(){
         ArrayList<ScheduleModel> list = new ArrayList<>();
         String sql = "select * from ScheduleList_Table where trip_no=" + tripNo +
-                " and schedule_date= '" + selectDate + "' and cate_no = " + cateNo + ";";
+                " and schedule_date= '" + position + "' and cate_no= " + cateNo + ";";
         Cursor csr = DBOpenHelper.dbOpenHelper.getWritableDatabase().rawQuery(sql, null);
         list.add(null);
         while (csr.moveToNext()) {
             list.add(new ScheduleModel(
                     csr.getInt(0),
                     csr.getInt(1),
-                    csr.getString(2),
+                    csr.getInt(2),
                     csr.getString(3),
                     csr.getInt(4),
                     csr.getString(5),

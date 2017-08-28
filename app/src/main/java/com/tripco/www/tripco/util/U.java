@@ -11,6 +11,7 @@ import android.util.Log;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.squareup.otto.Bus;
 import com.tripco.www.tripco.model.MemberModel;
+import com.tripco.www.tripco.model.ScheduleModel;
 import com.tripco.www.tripco.model.TripDataModel;
 import com.tripco.www.tripco.model.TripModel;
 
@@ -150,6 +151,15 @@ public class U {
     }
     public void setTripListModel(ArrayList<TripModel> tripListModel) {
         this.TripListModel = tripListModel;
+    }
+
+    // 유저의 특정 여행 후보지리스트 정보
+    ArrayList<ScheduleModel> scheduleListModel;
+    public ArrayList<ScheduleModel> getScheduleListModel() {
+        return scheduleListModel;
+    }
+    public void setScheduleListModel(ArrayList<ScheduleModel> scheduleListModel) {
+        this.scheduleListModel = scheduleListModel;
     }
 
     // 하나의 여행을 선택했을 때 계속 가지고 있어야하는 여행번호, 기간을 U에서 가지고 있음

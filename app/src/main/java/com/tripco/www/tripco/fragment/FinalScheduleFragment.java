@@ -48,7 +48,6 @@ public class FinalScheduleFragment extends Fragment
     private Unbinder unbinder;
     private View view;
     private int tripNo;
-    private String scheduleDate;
     int position = 0;
 
     public FinalScheduleFragment() {}
@@ -91,15 +90,13 @@ public class FinalScheduleFragment extends Fragment
 
     private void spinnerInit(){
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), R.layout.custom_spinner_item, 0);
-        for (int i = 0; i < U.getInstance().tripDataModel.getDateList().size(); i++) {
+        for (int i = 0; i < U.getInstance().tripDataModel.getDateSpinnerList().size(); i++) {
             adapter.add(U.getInstance().tripDataModel.getDateSpinnerList().get(i));
         }
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
-        scheduleDate = U.getInstance().tripDataModel.getDateList().get(spinner.getSelectedItemPosition());
         // 스피너에서 날짜를 선택하면
         spinner.setOnItemSelectedListener((parent, view1, position, id) -> {
-            scheduleDate = U.getInstance().tripDataModel.getDateList().get(position);
             this.position = position;
             recViewInit();
         });
@@ -108,13 +105,13 @@ public class FinalScheduleFragment extends Fragment
     private ArrayList<ScheduleModel> setScheduleModel(){
         ArrayList<ScheduleModel> list = new ArrayList<>();
         String sql = "select * from ScheduleList_Table where trip_no=" +tripNo +
-                " and schedule_date= '" + scheduleDate + "' and item_check = 1 order by item_time;";
+                " and schedule_date= '" + position + "' and item_check = 1 order by item_time;";
         Cursor csr = DBOpenHelper.dbOpenHelper.getWritableDatabase().rawQuery(sql, null);
         while (csr.moveToNext()) {
             list.add(new ScheduleModel(
                     csr.getInt(0),
                     csr.getInt(1),
-                    csr.getString(2),
+                    csr.getInt(2),
                     csr.getString(3),
                     csr.getInt(4),
                     csr.getString(5),

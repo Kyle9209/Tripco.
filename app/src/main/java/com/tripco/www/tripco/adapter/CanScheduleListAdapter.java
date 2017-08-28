@@ -62,9 +62,9 @@ public class CanScheduleListAdapter extends RecyclerView.Adapter<ScheduleListVie
         } else {
             if (scheduleModel.getItem_check() == 1) holder.check.isChecked();
             // 위치명 확인 > 널이면 제목확인 > 널이면 제목없음
-            if (scheduleModel.getItem_placeid().equals("null")) {
+            if (scheduleModel.getItem_placeid() == null) {
                 holder.loadingImgPb.setVisibility(View.GONE);
-                if (scheduleModel.getItem_title().equals("")) holder.title.setText("제목없음");
+                if (scheduleModel.getItem_title() == null) holder.title.setText("제목없음");
                 else holder.title.setText(scheduleModel.getItem_title());
             } else {
                 // placeid로 위치명 가져오기
@@ -112,7 +112,7 @@ public class CanScheduleListAdapter extends RecyclerView.Adapter<ScheduleListVie
             });
             // 체크버튼
             if (scheduleModel.getItem_check() == 1) holder.check.setChecked(true);
-            holder.check.setOnCheckedChangeListener((ompoundButton, b) -> {
+            holder.check.setOnCheckedChangeListener((compoundButton, b) -> {
                 if (b) {
                     updateSQLite(scheduleModel.getTrip_no(),
                             scheduleModel.getSchedule_no(),

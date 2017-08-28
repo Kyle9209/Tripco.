@@ -62,8 +62,7 @@ public class TripListAdapter extends RecyclerView.Adapter<TripListViewHolder> {
         holder.itemView.setOnClickListener(view -> { // 짧게누르면 후보지리스트로
             // U에 있는 tripDataModel에 번호, 기간 2종류 저장
             U.getInstance().tripDataModel.setTripNo(tripModel.getTrip_no());
-            // 디비에서 쓰는 날짜 리스트, 스피너에서 쓰는 날짜 리스트도 U에 저장
-            ArrayList<String> dateList = new ArrayList<>();
+            // 스피너에서 쓰는 날짜 리스트도 U에 저장
             ArrayList<String> dateSpinnerList = new ArrayList<>();
             Date start = null;
             Date end   = null;
@@ -78,15 +77,12 @@ public class TripListAdapter extends RecyclerView.Adapter<TripListViewHolder> {
             int n = 1;
             while (true){
                 String date = dateFormat.format(calendar.getTime());
-                dateList.add(date);
                 dateSpinnerList.add(n + "일차(" + date.replace("-",".") + ")");
                 n++;
                 calendar.add(Calendar.DATE, 1);
                 if(calendar.getTime().after(end)) break;
             }
-            U.getInstance().tripDataModel.setDateList(dateList);
             U.getInstance().tripDataModel.setDateSpinnerList(dateSpinnerList);
-
             context.startActivity(new Intent(context, TripActivity.class));
         });
 

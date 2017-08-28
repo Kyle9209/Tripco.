@@ -144,7 +144,7 @@ public class ModifyScheduleActivity extends AppCompatActivity implements GoogleA
     private void updateSQLite(int trip_no, int s_no, String str) {
         try {
             String sql = "update ScheduleList_Table set" +
-                    " schedule_date = '"+U.getInstance().tripDataModel.getDateList().get(spinner.getSelectedItemPosition())+"', "+
+                    " schedule_date = '"+spinner.getSelectedItemPosition()+"', "+
                     " item_url = '"+openUrlTv.getText()+"', "+
                     " cate_no = "+getCategoryNum()+", "+
                     " item_lat = '"+lat+"', "+
@@ -207,7 +207,7 @@ public class ModifyScheduleActivity extends AppCompatActivity implements GoogleA
 
     public void spinnerInit() {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, 0);
-        for (int i = 0; i < U.getInstance().tripDataModel.getDateList().size(); i++) {
+        for (int i = 0; i < U.getInstance().tripDataModel.getDateSpinnerList().size(); i++) {
             adapter.add(U.getInstance().tripDataModel.getDateSpinnerList().get(i));
         }
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);

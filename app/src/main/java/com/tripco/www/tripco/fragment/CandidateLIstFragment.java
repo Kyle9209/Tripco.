@@ -87,7 +87,7 @@ public class CandidateLIstFragment extends Fragment
 
     private void spinnerInit(){
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), R.layout.custom_spinner_item, 0);
-        for (int i = 0; i < U.getInstance().tripDataModel.getDateList().size(); i++) {
+        for (int i = 0; i < U.getInstance().tripDataModel.getDateSpinnerList().size(); i++) {
             adapter.add(U.getInstance().tripDataModel.getDateSpinnerList().get(i));
         }
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -105,17 +105,15 @@ public class CandidateLIstFragment extends Fragment
         ArrayList<LatLng> latLng = new ArrayList<>();
         String lat, lng;
         ArrayList<ScheduleModel> list = new ArrayList<>();
-        String sql = "select * from ScheduleList_Table where trip_no="
-                + U.getInstance().tripDataModel.getTripNo() +
-                " and schedule_date='"
-                + U.getInstance().tripDataModel.getDateList().get(spinner.getSelectedItemPosition()) + "';";
+        String sql = "select * from ScheduleList_Table where trip_no=" + U.getInstance().tripDataModel.getTripNo() +
+                " and schedule_date='" + spinner.getSelectedItemPosition() + "';";
         Cursor csr = DBOpenHelper.dbOpenHelper.getWritableDatabase().rawQuery(sql, null);
         int n = 0;
         while (csr.moveToNext()) {
             list.add(new ScheduleModel(
                     csr.getInt(0),
                     csr.getInt(1),
-                    csr.getString(2),
+                    csr.getInt(2),
                     csr.getString(3),
                     csr.getInt(4),
                     csr.getString(5),
@@ -229,7 +227,7 @@ public class CandidateLIstFragment extends Fragment
                     " item_memo) " +
                     " values(" +
                     "'" + U.getInstance().tripDataModel.getTripNo() + "', " +
-                    "'" + U.getInstance().tripDataModel.getDateList().get(spinner.getSelectedItemPosition()) + "', " +
+                    "'" + spinner.getSelectedItemPosition() + "', " +
                     "'', " + // item_url == ""
                     "0, " +  // cate_no == 0
                     "'" + lat + "', " +
@@ -240,7 +238,7 @@ public class CandidateLIstFragment extends Fragment
             DBOpenHelper.dbOpenHelper.getWritableDatabase().execSQL(sql);
             Toast.makeText(getContext(), addCandidate, Toast.LENGTH_SHORT).show();
             mViewPager.setCurrentItem(0);
-            //U.getInstance().getBus().post("");
+            U.getInstance().getBus().post("AddCandidateSuccess");
         } catch (SQLException e) {
             e.printStackTrace();
         }

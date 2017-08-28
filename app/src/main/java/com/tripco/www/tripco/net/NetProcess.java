@@ -263,4 +263,45 @@ public class NetProcess {
             }
         });
     }
+
+    public void netListItem(ScheduleModel req){
+        Call<ResponseArrayModel<ScheduleModel>> res = Net.getInstance().getApiIm().list_item(req);
+
+        res.enqueue(new Callback<ResponseArrayModel<ScheduleModel>>() {
+            @Override
+            public void onResponse(Call<ResponseArrayModel<ScheduleModel>> call, Response<ResponseArrayModel<ScheduleModel>> response) {
+                if(response.isSuccessful()){
+                    if(response.body().getCode() == 1) {
+                        ArrayList<ScheduleModel> list = new ArrayList<>();
+                        for(int i = 0; i < response.body().getResult().size(); i++){
+                            list.add(new ScheduleModel(
+                                    response.body().getResult().get(i).getItem_url(),
+                                    response.body().getResult().get(i).getCate_no(),
+                                    response.body().getResult().get(i).getItem_lat(),
+                                    response.body().getResult().get(i).getItem_long(),
+                                    response.body().getResult().get(i).getItem_placeid(),
+                                    response.body().getResult().get(i).getItem_title(),
+                                    response.body().getResult().get(i).getItem_memo(),
+                                    response.body().getResult().get(i).getItem_check(),
+                                    response.body().getResult().get(i).getItem_time()
+                            ));
+                        }
+                        U.getInstance().setScheduleListModel(list);
+                        U.getInstance().getBus().post("ListItemSuccess");
+                    } else {
+                        Toast.makeText(U.getInstance().getContext(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                        U.getInstance().getBus().post("ListItemFailed");
+                    }
+                } else {
+                    Toast.makeText(U.getInstance().getContext(), "서버통신 실패-1", Toast.LENGTH_SHORT).show();
+                    U.getInstance().getBus().post("ListItemFailed");
+                }
+            }
+            @Override
+            public void onFailure(Call<ResponseArrayModel<ScheduleModel>> call, Throwable t) {
+                Toast.makeText(U.getInstance().getContext(), "서버통신 실패-2", Toast.LENGTH_SHORT).show();
+                U.getInstance().getBus().post("ListItemFailed");
+            }
+        });
+    }
 }
