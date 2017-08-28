@@ -5,7 +5,6 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -24,6 +23,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.rey.material.widget.Spinner;
 import com.squareup.otto.Subscribe;
 import com.tripco.www.tripco.R;
+import com.tripco.www.tripco.RootFragment;
 import com.tripco.www.tripco.adapter.FinScheduleListAdapter;
 import com.tripco.www.tripco.db.DBOpenHelper;
 import com.tripco.www.tripco.model.ScheduleModel;
@@ -37,7 +37,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 
-public class FinalScheduleFragment extends Fragment
+public class FinalScheduleFragment extends RootFragment
         implements OnMapReadyCallback, TripActivity.onKeyBackPressedListener  {
     @BindView(R.id.days_spin) Spinner spinner;
     @BindView(R.id.map) MapView mapView;
@@ -166,7 +166,6 @@ public class FinalScheduleFragment extends Fragment
         super.onAttach(activity);
         ((TripActivity) activity).setOnKeyBackPressedListener(this);
     }
-
 
     // 구글맵 사용에 필요한 오버라이드 메소드들 ====================================================
     @Override

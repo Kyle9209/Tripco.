@@ -17,7 +17,6 @@ import com.tripco.www.tripco.R;
 import com.tripco.www.tripco.adapter.CanScheduleListAdapter;
 import com.tripco.www.tripco.db.DBOpenHelper;
 import com.tripco.www.tripco.model.ScheduleModel;
-import com.tripco.www.tripco.net.NetProcess;
 import com.tripco.www.tripco.util.U;
 
 import java.util.ArrayList;
@@ -49,7 +48,7 @@ public class ViewPagerFragment extends Fragment {
     }
 
     // 날짜, 번호, 유형 초기화
-    private void getInitData(){
+    private void getInitData() {
         cateNo = getArguments().getInt("cateNo");
         tripNo = U.getInstance().tripDataModel.getTripNo();
     }
@@ -69,17 +68,8 @@ public class ViewPagerFragment extends Fragment {
         if(str.equals("AddCandidateSuccess")){
             recViewInit();
         }
-        if(str.equals("ListItemSuccess")){
-            ArrayList<ScheduleModel> list = new ArrayList<>();
-            list.add(null);
-            for(int i=0; i < U.getInstance().getScheduleListModel().size(); i++){
-                if(U.getInstance().getScheduleListModel().get(i).getCate_no() == cateNo){
-                    list.add(U.getInstance().getScheduleListModel().get(i));
-                }
-            }
-            adapter = new CanScheduleListAdapter(getContext(), list, position);
-            recyclerView.setAdapter(adapter);
-            swipeContainer.setRefreshing(false);
+        if(str.equals("refreshTrue")){
+            swipeContainer.setRefreshing(true);
         }
     }
 
@@ -96,43 +86,48 @@ public class ViewPagerFragment extends Fragment {
                 recViewInit();
                 swipeContainer.setRefreshing(false);
             }, 3000);
-            //recyclerView.getAdapter().notifyDataSetChanged();
         });
     }
 
     private void recViewInit(){
         recyclerView.setLayoutManager
                 (new GridLayoutManager(getContext(), 3, GridLayoutManager.VERTICAL, false));
-        if(U.getInstance().getBoolean("login")){
-            swipeContainer.setRefreshing(true);
-            NetProcess.getInstance().netListItem(new ScheduleModel(tripNo, position));
-        } else {
-            adapter = new CanScheduleListAdapter(getContext(), setScheduleModel(), position);
-            recyclerView.setAdapter(adapter);
-        }
+        adapter = new CanScheduleListAdapter(getContext(), setScheduleModel(), position);
+        recyclerView.setAdapter(adapter);
     }
 
     private ArrayList<ScheduleModel> setScheduleModel(){
         ArrayList<ScheduleModel> list = new ArrayList<>();
-        String sql = "select * from ScheduleList_Table where trip_no=" + tripNo +
-                " and schedule_date= '" + position + "' and cate_no= " + cateNo + ";";
-        Cursor csr = DBOpenHelper.dbOpenHelper.getWritableDatabase().rawQuery(sql, null);
         list.add(null);
-        while (csr.moveToNext()) {
-            list.add(new ScheduleModel(
-                    csr.getInt(0),
-                    csr.getInt(1),
-                    csr.getInt(2),
-                    csr.getString(3),
-                    csr.getInt(4),
-                    csr.getString(5),
-                    csr.getString(6),
-                    csr.getString(7),
-                    csr.getString(8),
-                    csr.getString(9),
-                    csr.getInt(10),
-                    csr.getString(11)
-            ));
+        if(U.getInstance().getBoolean("login")){
+            if(U.getInstance().getScheduleListModel() != null) {
+                for (int i = 0; i < U.getInstance().getScheduleListModel().size(); i++) {
+                    if (U.getInstance().getScheduleListModel().get(i).getCate_no() == cateNo)
+                        list.add(U.getInstance().getScheduleListModel().get(i));
+                }
+            }
+            swipeContainer.setRefreshing(false);
+        } else {
+            String sql = "select * from ScheduleList_Table where trip_no=" + tripNo +
+                    " and schedule_date= '" + position + "' and cate_no= " + cateNo + ";";
+            Cursor csr = DBOpenHelper.dbOpenHelper.getWritableDatabase().rawQuery(sql, null);
+
+            while (csr.moveToNext()) {
+                list.add(new ScheduleModel(
+                        csr.getInt(0),
+                        csr.getInt(1),
+                        csr.getInt(2),
+                        csr.getString(3),
+                        csr.getInt(4),
+                        csr.getString(5),
+                        csr.getString(6),
+                        csr.getString(7),
+                        csr.getString(8),
+                        csr.getString(9),
+                        csr.getInt(10),
+                        csr.getString(11)
+                ));
+            }
         }
         return list;
     }

@@ -1,7 +1,6 @@
 package com.tripco.www.tripco.fragment;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.SQLException;
@@ -9,7 +8,6 @@ import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,6 +26,7 @@ import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
 import com.tripco.www.tripco.R;
+import com.tripco.www.tripco.RootFragment;
 import com.tripco.www.tripco.db.DBOpenHelper;
 import com.tripco.www.tripco.model.ScheduleModel;
 import com.tripco.www.tripco.net.NetProcess;
@@ -42,7 +41,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 
-public class SearchingFragment extends Fragment implements TripActivity.onKeyBackPressedListener {
+public class SearchingFragment extends RootFragment implements TripActivity.onKeyBackPressedListener {
     @BindView(R.id.url_et) EditText urlEt;
     @BindView(R.id.webview) WebView webView;
     @BindView(R.id.webview_pb) ProgressBar webViewPb;
@@ -51,7 +50,6 @@ public class SearchingFragment extends Fragment implements TripActivity.onKeyBac
     @BindColor(R.color.colorAccent) int webViewPbColor;
     public final static int SET_SCHEDULE_REQUEST_CODE = 1000;
     public final static int SET_SCHEDULE_RESPONSE_CODE = 1001;
-    ProgressDialog progressDialog;
     private Unbinder unbinder;
     private InputMethodManager imm;
     private int tripNo;
@@ -270,21 +268,6 @@ public class SearchingFragment extends Fragment implements TripActivity.onKeyBac
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-        }
-    }
-
-    // 로딩중 알림창
-    public void showPD(){
-        if(progressDialog == null){
-            progressDialog = new ProgressDialog(getContext());
-            progressDialog.setCancelable(false);
-            progressDialog.setMessage("잠시만 기다려주세요.");
-        }
-        progressDialog.show();
-    }
-    public void stopPD(){
-        if(progressDialog != null && progressDialog.isShowing()){
-            progressDialog.dismiss();
         }
     }
 

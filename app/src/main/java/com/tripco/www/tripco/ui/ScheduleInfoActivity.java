@@ -96,10 +96,10 @@ public class ScheduleInfoActivity extends AppCompatActivity
 
     private void uiInit(){
         // placeId가 있으면 이미지, 위치명, 주소 입력 없으면 로딩끝
-        if(!scheduleModel.getItem_placeid().equals("null")) getPlaceData();
+        if(scheduleModel.getItem_placeid() != null) getPlaceData();
         else loadingImgPb.setVisibility(View.GONE);
-        // 제목없으면 타이틀 없애기
-        if(scheduleModel.getItem_title().equals("")) tripTitle.setVisibility(View.GONE);
+        // 제목없으면 "제목없음"으로
+        if(scheduleModel.getItem_title() == null) tripTitle.setText("제목없음");
         else tripTitle.setText(scheduleModel.getItem_title());
         // 유형체크
         if(scheduleModel.getItem_check() == 1) checkCb.isChecked();
@@ -109,9 +109,9 @@ public class ScheduleInfoActivity extends AppCompatActivity
         // 날짜입력
         scheduleDateTv.setText(U.getInstance().tripDataModel.getDateSpinnerList().get(position));
         // 메모입력
-        memo.setText(scheduleModel.getItem_memo());
+        if(scheduleModel.getItem_memo() != null) memo.setText(scheduleModel.getItem_memo());
         // url입력
-        openUrlTv.setText(scheduleModel.getItem_url());
+        if(scheduleModel.getItem_url() != null) openUrlTv.setText(scheduleModel.getItem_url());
         // 최종일정에서 들어오면 시간보이기
         if(getIntent().getBooleanExtra("fin", false)){
             if(scheduleModel.getItem_time() != null) timeTv.setText(scheduleModel.getItem_time());

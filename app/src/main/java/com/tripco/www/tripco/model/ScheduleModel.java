@@ -8,17 +8,18 @@ import java.io.Serializable;
 
 public class ScheduleModel implements Serializable {
     String user_id;
-    int trip_no;
-    int schedule_no;
-    int schedule_date;
+    int    trip_no;
+    int    schedule_date; // position 값 0,1,2...
+    int    schedule_no; // 로컬용
+    String _id; // 서버용
     String item_url;
-    int cate_no;
+    int    cate_no;
     String item_lat;
     String item_long;
     String item_placeid;
     String item_title;
     String item_memo;
-    int item_check;
+    int    item_check;
     String item_time;
 
     // 서버용 보내는 그릇
@@ -36,7 +37,8 @@ public class ScheduleModel implements Serializable {
     }
 
     // 서버용 받는 그릇
-    public ScheduleModel(String item_url, int cate_no, String item_lat, String item_long, String item_placeid, String item_title, String item_memo, int item_check, String item_time) {
+    public ScheduleModel(String _id, String item_url, int cate_no, String item_lat, String item_long, String item_placeid, String item_title, String item_memo, int item_check, String item_time) {
+        this._id = _id;
         this.item_url = item_url;
         this.cate_no = cate_no;
         this.item_lat = item_lat;
@@ -49,9 +51,9 @@ public class ScheduleModel implements Serializable {
     }
 
     // 서버용 리스트받을때 보내는 그릇
-    public ScheduleModel(int trip_no, int schedule_no) {
+    public ScheduleModel(int trip_no, int schedule_date) {
         this.trip_no = trip_no;
-        this.schedule_no = schedule_no;
+        this.schedule_date = schedule_date;
     }
 
     // 로컬 디비용 그릇
@@ -184,5 +186,13 @@ public class ScheduleModel implements Serializable {
 
     public void setItem_time(String item_time) {
         this.item_time = item_time;
+    }
+
+    public String get_id() {
+        return _id;
+    }
+
+    public void set_id(String _id) {
+        this._id = _id;
     }
 }

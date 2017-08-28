@@ -275,6 +275,7 @@ public class NetProcess {
                         ArrayList<ScheduleModel> list = new ArrayList<>();
                         for(int i = 0; i < response.body().getResult().size(); i++){
                             list.add(new ScheduleModel(
+                                    response.body().getResult().get(i).get_id(),
                                     response.body().getResult().get(i).getItem_url(),
                                     response.body().getResult().get(i).getCate_no(),
                                     response.body().getResult().get(i).getItem_lat(),
@@ -287,7 +288,7 @@ public class NetProcess {
                             ));
                         }
                         U.getInstance().setScheduleListModel(list);
-                        U.getInstance().getBus().post("ListItemSuccess");
+                        U.getInstance().getBus().post("position"+req.getSchedule_date());
                     } else {
                         Toast.makeText(U.getInstance().getContext(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
                         U.getInstance().getBus().post("ListItemFailed");
