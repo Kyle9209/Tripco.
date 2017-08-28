@@ -87,8 +87,13 @@ public class CandidateLIstFragment extends RootFragment
         stopPD();
         if(str.equals("CreateItemSuccess")){
             Toast.makeText(getContext(), addCandidateText, Toast.LENGTH_SHORT).show();
+            NetProcess.getInstance().netListItem(new ScheduleModel(U.getInstance().tripDataModel.getTripNo(), 0));
             mViewPager.setCurrentItem(0);
             spinner.setSelection(0);
+        }
+        if(str.equals("ResponseItemSuccess")){
+            NetProcess.getInstance().netListItem(
+                    new ScheduleModel(U.getInstance().tripDataModel.getTripNo(), spinner.getSelectedItemPosition()));
         }
     }
 
@@ -239,18 +244,18 @@ public class CandidateLIstFragment extends RootFragment
     private void insertSQLite(Double lat, Double lng, String placeId, String placeName) {
         if(U.getInstance().getBoolean("login")){
             showPD();
-            NetProcess.getInstance().netCreateItem(new ScheduleModel(
+            NetProcess.getInstance().netCrUpDeItem(new ScheduleModel(
                     U.getInstance().getUserModel().getUser_id(),
                     U.getInstance().tripDataModel.getTripNo(),
                     0,
-                    null,
+                    "",
                     0,
                     String.valueOf(lat),
                     String.valueOf(lng),
                     placeId,
                     placeName,
-                    null
-            ));
+                    "메모없음"
+            ), "create");
         } else {
             try {
                 String sql = "insert into ScheduleList_Table(" +
@@ -266,13 +271,13 @@ public class CandidateLIstFragment extends RootFragment
                         " values(" +
                         "'" + U.getInstance().tripDataModel.getTripNo() + "', " +
                         "0, " + // position == 1 (1일차)
-                        "'" + null + "', " + // item_url == null
+                        "'', " + // item_url == ""
                         "0, " +  // cate_no == 0 (관광)
                         "'" + lat + "', " +
                         "'" + lng + "', " +
                         "'" + placeId + "', " +
                         "'" + placeName + "', " +
-                        "'" + null + "');"; // memo == null
+                        "'메모없음');"; // memo == 메모없음
                 DBOpenHelper.dbOpenHelper.getWritableDatabase().execSQL(sql);
                 Toast.makeText(getContext(), addCandidateText, Toast.LENGTH_SHORT).show();
                 mViewPager.setCurrentItem(0);

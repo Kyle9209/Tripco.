@@ -71,6 +71,9 @@ public class ViewPagerFragment extends Fragment {
         if(str.equals("refreshTrue")){
             swipeContainer.setRefreshing(true);
         }
+        if(str.equals("ViewPagerListUpdate")){
+            recViewInit();
+        }
     }
 
     public void swipeRefreshInit(){
@@ -102,8 +105,10 @@ public class ViewPagerFragment extends Fragment {
         if(U.getInstance().getBoolean("login")){
             if(U.getInstance().getScheduleListModel() != null) {
                 for (int i = 0; i < U.getInstance().getScheduleListModel().size(); i++) {
-                    if (U.getInstance().getScheduleListModel().get(i).getCate_no() == cateNo)
+                    if (U.getInstance().getScheduleListModel().get(i).getCate_no() == cateNo) {
                         list.add(U.getInstance().getScheduleListModel().get(i));
+                        U.getInstance().log(U.getInstance().getScheduleListModel().toString());
+                    }
                 }
             }
             swipeContainer.setRefreshing(false);
@@ -111,7 +116,6 @@ public class ViewPagerFragment extends Fragment {
             String sql = "select * from ScheduleList_Table where trip_no=" + tripNo +
                     " and schedule_date= '" + position + "' and cate_no= " + cateNo + ";";
             Cursor csr = DBOpenHelper.dbOpenHelper.getWritableDatabase().rawQuery(sql, null);
-
             while (csr.moveToNext()) {
                 list.add(new ScheduleModel(
                         csr.getInt(0),

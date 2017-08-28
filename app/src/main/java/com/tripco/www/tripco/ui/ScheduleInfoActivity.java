@@ -1,12 +1,10 @@
 package com.tripco.www.tripco.ui;
 
 import android.content.Intent;
-import android.database.Cursor;
 import android.database.SQLException;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -24,16 +22,19 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.PlacePhotoMetadataBuffer;
 import com.google.android.gms.location.places.PlacePhotoResult;
 import com.google.android.gms.location.places.Places;
+import com.squareup.otto.Subscribe;
 import com.tripco.www.tripco.R;
+import com.tripco.www.tripco.RootActivity;
 import com.tripco.www.tripco.db.DBOpenHelper;
 import com.tripco.www.tripco.model.ScheduleModel;
+import com.tripco.www.tripco.net.NetProcess;
 import com.tripco.www.tripco.util.U;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class ScheduleInfoActivity extends AppCompatActivity
+public class ScheduleInfoActivity extends RootActivity
         implements GoogleApiClient.OnConnectionFailedListener {
     @BindView(R.id.toolbar_title_tv) TextView toolbarTitleTv;
     @BindView(R.id.toolbar_right_btn) Button toolbarRightBtn;
@@ -53,21 +54,34 @@ public class ScheduleInfoActivity extends AppCompatActivity
     @BindView(R.id.time_tv) TextView timeTv;
     private ScheduleModel scheduleModel;
     private GoogleApiClient mGoogleApiClient;
-    int position = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_schedule_info);
         ButterKnife.bind(this);
+        U.getInstance().getBus().register(this);
         scheduleModel = (ScheduleModel) getIntent().getSerializableExtra("scheduleModel");
-        position = getIntent().getIntExtra("position", 0);
-        getScheduleData();
         toolbarInit();
         uiInit();
     }
 
-    private void getScheduleData(){
+    @Subscribe
+    public void ottoBus(String str){
+        if(str.equals("ResponseItemSuccess")){
+            stopPD();
+            Toast.makeText(this, "삭제되었습니다.", Toast.LENGTH_SHORT).show();
+            finish();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        U.getInstance().getBus().unregister(this);
+        super.onDestroy();
+    }
+
+    /*private void getScheduleData(){
         String sql = "select * from ScheduleList_Table where trip_no=" + scheduleModel.getTrip_no() +
                 " and schedule_no="+ scheduleModel.getSchedule_no()+";";
         Cursor csr = DBOpenHelper.dbOpenHelper.getWritableDatabase().rawQuery(sql, null);
@@ -87,7 +101,7 @@ public class ScheduleInfoActivity extends AppCompatActivity
                     csr.getString(11)
             );
         }
-    }
+    }*/
 
     private void toolbarInit(){
         toolbarTitleTv.setText(scheduleModel.getItem_title());
@@ -96,22 +110,30 @@ public class ScheduleInfoActivity extends AppCompatActivity
 
     private void uiInit(){
         // placeId가 있으면 이미지, 위치명, 주소 입력 없으면 로딩끝
-        if(scheduleModel.getItem_placeid() != null) getPlaceData();
-        else loadingImgPb.setVisibility(View.GONE);
+        if(scheduleModel.getItem_placeid() != null && !scheduleModel.getItem_placeid().equals("null"))
+            getPlaceData();
+        else
+            loadingImgPb.setVisibility(View.GONE);
         // 제목없으면 "제목없음"으로
-        if(scheduleModel.getItem_title() == null) tripTitle.setText("제목없음");
-        else tripTitle.setText(scheduleModel.getItem_title());
+        if(scheduleModel.getItem_title() == null || scheduleModel.getItem_title().equals("null")) {
+            toolbarTitleTv.setText("제목없음");
+            tripTitle.setText("제목없음");
+        }else {
+            tripTitle.setText(scheduleModel.getItem_title());
+        }
         // 유형체크
         if(scheduleModel.getItem_check() == 1) checkCb.isChecked();
         if(scheduleModel.getCate_no() == 0) rb0.setChecked(true);
         if(scheduleModel.getCate_no() == 1) rb1.setChecked(true);
         if(scheduleModel.getCate_no() == 2) rb2.setChecked(true);
         // 날짜입력
-        scheduleDateTv.setText(U.getInstance().tripDataModel.getDateSpinnerList().get(position));
+        scheduleDateTv.setText(U.getInstance().tripDataModel.getDateSpinnerList().get(scheduleModel.getSchedule_date()));
         // 메모입력
-        if(scheduleModel.getItem_memo() != null) memo.setText(scheduleModel.getItem_memo());
+        if(scheduleModel.getItem_memo() != null && !scheduleModel.getItem_memo().equals("null"))
+            memo.setText(scheduleModel.getItem_memo());
         // url입력
-        if(scheduleModel.getItem_url() != null) openUrlTv.setText(scheduleModel.getItem_url());
+        if(scheduleModel.getItem_url() != null && !scheduleModel.getItem_url().equals("null"))
+            openUrlTv.setText(scheduleModel.getItem_url());
         // 최종일정에서 들어오면 시간보이기
         if(getIntent().getBooleanExtra("fin", false)){
             if(scheduleModel.getItem_time() != null) timeTv.setText(scheduleModel.getItem_time());
@@ -151,11 +173,10 @@ public class ScheduleInfoActivity extends AppCompatActivity
             case R.id.toolbar_right_btn: //수정페이지로
                 Intent intent = new Intent(ScheduleInfoActivity.this, ModifyScheduleActivity.class);
                 intent.putExtra("scheduleModel", scheduleModel);
-                intent.putExtra("position", position);
                 if(getIntent().getBooleanExtra("fin", false)) intent.putExtra("fin", true);
                 startActivityForResult(intent, 2);
                 break;
-            case R.id.open_url_line:
+            case R.id.open_url_line: // 웹에서 url주소로 열기
                 try {
                     startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(openUrlTv.getText().toString())));
                 } catch (Exception e) {
@@ -167,19 +188,29 @@ public class ScheduleInfoActivity extends AppCompatActivity
                 U.getInstance().showAlertDialog(this, "주의!", "해당 정보를 삭제하시겠습니까?",
                         "예", (dialogInterface, i) -> {
                             dialogInterface.dismiss();
-                            try {
-                                DBOpenHelper.dbOpenHelper.getWritableDatabase().execSQL(
-                                        "delete from ScheduleList_Table " +
-                                                "where trip_no="+scheduleModel.getTrip_no()+" and " +
-                                                "schedule_no="+scheduleModel.getSchedule_no()
-                                );
-                                U.getInstance().getBus().post("DELETE_CHECK");
-                                Toast.makeText(this, "삭제되었습니다.", Toast.LENGTH_SHORT).show();
-                            } catch (SQLException e) {
-                                e.printStackTrace();
-                                Toast.makeText(this, "DB Error", Toast.LENGTH_SHORT).show();
+                            if(U.getInstance().getBoolean("login")){
+                                showPD();
+                                NetProcess.getInstance().netCrUpDeItem(new ScheduleModel(
+                                        U.getInstance().getUserModel().getUser_id(),
+                                        U.getInstance().tripDataModel.getTripNo(),
+                                        scheduleModel.getSchedule_date(),
+                                        scheduleModel.get_id()
+                                ), "delete");
+                            } else {
+                                try {
+                                    DBOpenHelper.dbOpenHelper.getWritableDatabase().execSQL(
+                                            "delete from ScheduleList_Table " +
+                                                    "where trip_no=" + scheduleModel.getTrip_no() + " and " +
+                                                    "schedule_no=" + scheduleModel.getSchedule_no()
+                                    );
+                                    U.getInstance().getBus().post("ViewPagerListUpdate");
+                                    Toast.makeText(this, "삭제되었습니다.", Toast.LENGTH_SHORT).show();
+                                } catch (SQLException e) {
+                                    e.printStackTrace();
+                                    Toast.makeText(this, "DB Error", Toast.LENGTH_SHORT).show();
+                                }
+                                finish();
                             }
-                            finish();
                         },
                         "아니오", (dialogInterface, i) -> dialogInterface.dismiss());
                 break;
@@ -190,10 +221,9 @@ public class ScheduleInfoActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == 2 && data != null){
-            getScheduleData();
+            scheduleModel = (ScheduleModel) data.getSerializableExtra("scheduleModel");
             toolbarInit();
             uiInit();
-            scheduleDateTv.setText(data.getStringExtra("selectDate"));
         }
     }
 

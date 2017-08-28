@@ -26,4 +26,6 @@
     <string name="second_title">위치를 알려주세요!</string>
     <string name="third_title">언제 방문하면 좋을까요?</string>
     <string name="fourth_title">제목&amp;메모를 입력해주세요!</string>
+    <string name="add_final_list">최종일정에 추가되었습니다.</string>
+    <string name="remove_final_list">최종일정에서 삭제되었습니다.</string>
 </resources>

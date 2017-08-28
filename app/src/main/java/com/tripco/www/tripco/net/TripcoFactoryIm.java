@@ -59,8 +59,20 @@ public interface TripcoFactoryIm {
     @POST("/create_item")
     Call<ResponseModel> create_item(@Body ScheduleModel req);
 
+    // 일정 삭제
+    @POST("/delete_item")
+    Call<ResponseModel> delete_item(@Body ScheduleModel req);
+
+    // 일정 수정
+    @POST("/update_item")
+    Call<ResponseModel> update_item(@Body ScheduleModel req);
+
     // 일정 리스트
     @POST("/list_item")
     Call<ResponseArrayModel<ScheduleModel>> list_item(@Body ScheduleModel req);
+
+    // 최종 일정 추가/삭제
+    @POST("/check_item")
+    Call<ResponseModel> check_item(@Body ScheduleModel req);
 }
 

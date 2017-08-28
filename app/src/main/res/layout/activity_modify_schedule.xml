@@ -18,7 +18,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <!-- 이미지 영역 -->
@@ -55,11 +55,11 @@
                     android:layout_alignParentEnd="true" />
 
                 <EditText
+                    android:background="#99000000"
                     android:paddingRight="5dp"
                     android:paddingLeft="5dp"
                     android:layout_centerHorizontal="true"
                     android:layout_centerVertical="true"
-                    android:background="#99000000"
                     android:id="@+id/trip_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -86,7 +86,7 @@
                         android:ellipsize="end"
                         android:id="@+id/open_url_tv"
                         android:textColor="#303f9f"
-                        android:text="url"
+                        android:text="URL"
                         android:textSize="18sp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
@@ -124,6 +124,8 @@
                     android:orientation="horizontal">
 
                     <TextView
+                        android:textColor="#000"
+                        android:textStyle="bold"
                         android:gravity="center"
                         android:layout_weight="0"
                         android:layout_marginRight="15dp"
@@ -174,24 +176,42 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:paddingRight="15dp"
+                    android:paddingLeft="15dp"
+                    android:background="?android:attr/selectableItemBackground"
                     android:id="@+id/place_info_line"
-                    android:padding="15dp"
-                    android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
-                    <TextView
-                        android:id="@+id/place_name_tv"
+                    <LinearLayout
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="위치명"
-                        android:textSize="20sp" />
+                        android:layout_height="wrap_content">
 
-                    <TextView
-                        android:id="@+id/place_address_tv"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="주소" />
+                        <TextView
+                            android:textColor="#000"
+                            android:id="@+id/place_name_tv"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="위치명"
+                            android:textSize="20sp" />
+
+                        <TextView
+                            android:textColor="#000"
+                            android:id="@+id/place_address_tv"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="주소" />
+
+                    </LinearLayout>
+
+                    <ImageView
+                        android:src="@drawable/right_next_btn"
+                        android:layout_weight="0"
+                        android:layout_width="35dp"
+                        android:layout_height="wrap_content" />
 
                 </LinearLayout>
 
@@ -220,6 +240,8 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:textColor="#000"
+                        android:textStyle="bold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="20sp"
@@ -229,7 +251,7 @@
                         android:id="@+id/memo"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="-메모없음" />
+                        android:hint="-메모를 입력하세요!" />
 
                 </LinearLayout>
 

@@ -238,15 +238,19 @@ public class NetProcess {
         });
     }
 
-    public void netCreateItem(ScheduleModel req){
-        Call<ResponseModel> res = Net.getInstance().getApiIm().create_item(req);
+    public void netCrUpDeItem(ScheduleModel req, String str){
+        Call<ResponseModel> res = null;
+        if(str.equals("create")) res = Net.getInstance().getApiIm().create_item(req);
+        else if(str.equals("update")) res = Net.getInstance().getApiIm().update_item(req);
+        else if(str.equals("delete")) res = Net.getInstance().getApiIm().delete_item(req);
 
         res.enqueue(new Callback<ResponseModel>() {
             @Override
             public void onResponse(Call<ResponseModel> call, Response<ResponseModel> response) {
                 if(response.isSuccessful()){
                     if(response.body().getCode() == 1){
-                        U.getInstance().getBus().post("CreateItemSuccess");
+                        if(str.equals("create")) U.getInstance().getBus().post("CreateItemSuccess");
+                        else U.getInstance().getBus().post("ResponseItemSuccess");
                     } else {
                         Toast.makeText(U.getInstance().getContext(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
                         U.getInstance().getBus().post("CreateItemFailed");
@@ -275,6 +279,7 @@ public class NetProcess {
                         ArrayList<ScheduleModel> list = new ArrayList<>();
                         for(int i = 0; i < response.body().getResult().size(); i++){
                             list.add(new ScheduleModel(
+                                    req.getSchedule_date(),
                                     response.body().getResult().get(i).get_id(),
                                     response.body().getResult().get(i).getItem_url(),
                                     response.body().getResult().get(i).getCate_no(),
@@ -302,6 +307,32 @@ public class NetProcess {
             public void onFailure(Call<ResponseArrayModel<ScheduleModel>> call, Throwable t) {
                 Toast.makeText(U.getInstance().getContext(), "서버통신 실패-2", Toast.LENGTH_SHORT).show();
                 U.getInstance().getBus().post("ListItemFailed");
+            }
+        });
+    }
+
+    public void netCheckItem(ScheduleModel req){
+        Call<ResponseModel> res = Net.getInstance().getApiIm().check_item(req);
+        res.enqueue(new Callback<ResponseModel>() {
+            @Override
+            public void onResponse(Call<ResponseModel> call, Response<ResponseModel> response) {
+                if(response.isSuccessful()){
+                    if(response.body().getCode() == 1) {
+                        Toast.makeText(U.getInstance().getContext(), "변경되었습니다.", Toast.LENGTH_SHORT).show();
+                        U.getInstance().getBus().post("check_item success");
+                    } else {
+                        Toast.makeText(U.getInstance().getContext(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                        U.getInstance().getBus().post("check_item failed");
+                    }
+                } else {
+                    Toast.makeText(U.getInstance().getContext(), "서버통신 실패-1", Toast.LENGTH_SHORT).show();
+                    U.getInstance().getBus().post("check_item failed");
+                }
+            }
+            @Override
+            public void onFailure(Call<ResponseModel> call, Throwable t) {
+                Toast.makeText(U.getInstance().getContext(), "서버통신 실패-2", Toast.LENGTH_SHORT).show();
+                U.getInstance().getBus().post("check_item failed");
             }
         });
     }

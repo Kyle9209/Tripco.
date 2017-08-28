@@ -68,8 +68,8 @@ public class SetScheduleActivity extends AppCompatActivity
     int cateNo;
     String lat = null;
     String lng = null;
-    String title = null;
-    String memo = null;
+    String title = "제목없음";
+    String memo = "메모없음";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,8 +118,8 @@ public class SetScheduleActivity extends AppCompatActivity
                         lat,     // null or string
                         lng,     // null or string
                         placeId, // null or string
-                        title,   // null or string
-                        memo     // null or string
+                        title,   // 제목없음 or string
+                        memo     // 메모없음 or string
                 );
                 intent.putExtra("data", scheduleModel);
                 setResult(SearchingFragment.SET_SCHEDULE_RESPONSE_CODE, intent);

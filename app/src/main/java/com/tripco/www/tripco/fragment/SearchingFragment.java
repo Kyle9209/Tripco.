@@ -171,7 +171,7 @@ public class SearchingFragment extends RootFragment implements TripActivity.onKe
         switch (view.getId()) {
             case R.id.short_save_btn: // 즉시저장
                 if (!TextUtils.isEmpty(urlEt.getText())) {
-                    insertSQLite(0, 0, null, null, null, null, null);
+                    insertSQLite(0, 0, null, null, null, "제목없음", "메모없음");
                 } else {
                     showDialog();
                 }
@@ -227,7 +227,7 @@ public class SearchingFragment extends RootFragment implements TripActivity.onKe
                               String placeId, String title, String memo) {
         if(U.getInstance().getBoolean("login")){
             showPD();
-            NetProcess.getInstance().netCreateItem(new ScheduleModel(
+            NetProcess.getInstance().netCrUpDeItem(new ScheduleModel(
                     U.getInstance().getUserModel().getUser_id(),
                     tripNo,
                     datePosition,
@@ -238,7 +238,7 @@ public class SearchingFragment extends RootFragment implements TripActivity.onKe
                     placeId,
                     title,
                     memo
-            ));
+            ), "create");
         } else {
             try {
                 String sql = "insert into ScheduleList_Table(" +

@@ -24,6 +24,7 @@ import com.tripco.www.tripco.R;
 import com.tripco.www.tripco.db.DBOpenHelper;
 import com.tripco.www.tripco.holder.ScheduleListViewHolder;
 import com.tripco.www.tripco.model.ScheduleModel;
+import com.tripco.www.tripco.net.NetProcess;
 import com.tripco.www.tripco.ui.ScheduleInfoActivity;
 import com.tripco.www.tripco.util.U;
 
@@ -62,10 +63,12 @@ public class CanScheduleListAdapter extends RecyclerView.Adapter<ScheduleListVie
         } else {
             if (scheduleModel.getItem_check() == 1) holder.check.isChecked();
             // 위치명 확인 > 널이면 제목확인 > 널이면 제목없음
-            if (scheduleModel.getItem_placeid() == null) {
+            if (scheduleModel.getItem_placeid() == null || scheduleModel.getItem_placeid().equals("null")) {
                 holder.loadingImgPb.setVisibility(View.GONE);
-                if (scheduleModel.getItem_title() == null) holder.title.setText("제목없음");
-                else holder.title.setText(scheduleModel.getItem_title());
+                if (scheduleModel.getItem_title() == null || scheduleModel.getItem_title().equals("null"))
+                    holder.title.setText("제목없음");
+                else
+                    holder.title.setText(scheduleModel.getItem_title());
             } else {
                 // placeid로 위치명 가져오기
                 String placeId = scheduleModel.getItem_placeid();
@@ -97,6 +100,7 @@ public class CanScheduleListAdapter extends RecyclerView.Adapter<ScheduleListVie
             // 클릭하면 정보페이지로
             holder.itemView.setOnClickListener(view -> {
                 Intent intent = new Intent(context, ScheduleInfoActivity.class);
+                U.getInstance().log(scheduleModel.toString());
                 intent.putExtra("scheduleModel", scheduleModel);
                 intent.putExtra("position", pos);
                 context.startActivity(intent);
@@ -113,16 +117,25 @@ public class CanScheduleListAdapter extends RecyclerView.Adapter<ScheduleListVie
             // 체크버튼
             if (scheduleModel.getItem_check() == 1) holder.check.setChecked(true);
             holder.check.setOnCheckedChangeListener((compoundButton, b) -> {
-                if (b) {
-                    updateSQLite(scheduleModel.getTrip_no(),
-                            scheduleModel.getSchedule_no(),
-                            1,
-                            "최종일정에 추가되었습니다.");
+                if(U.getInstance().getBoolean("login")) {
+                    NetProcess.getInstance().netCheckItem(new ScheduleModel(
+                            U.getInstance().getUserModel().getUser_id(),
+                            U.getInstance().tripDataModel.getTripNo(),
+                            scheduleModel.getSchedule_date(),
+                            scheduleModel.get_id()
+                    ));
                 } else {
-                    updateSQLite(scheduleModel.getTrip_no(),
-                            scheduleModel.getSchedule_no(),
-                            0,
-                            "최종일정에서 삭제되었습니다.");
+                    if (b) {
+                        updateSQLite(scheduleModel.getTrip_no(),
+                                scheduleModel.getSchedule_no(),
+                                1,
+                                "최종일정에 추가되었습니다.");
+                    } else {
+                        updateSQLite(scheduleModel.getTrip_no(),
+                                scheduleModel.getSchedule_no(),
+                                0,
+                                "최종일정에서 삭제되었습니다.");
+                    }
                 }
             });
         }

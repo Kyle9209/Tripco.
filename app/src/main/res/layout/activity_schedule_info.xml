@@ -86,7 +86,7 @@
                         android:ellipsize="end"
                         android:id="@+id/open_url_tv"
                         android:textColor="#303f9f"
-                        android:text="url"
+                        android:text="URL"
                         android:textSize="18sp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
@@ -124,6 +124,8 @@
                     android:orientation="horizontal">
 
                     <TextView
+                        android:textStyle="bold"
+                        android:textColor="#000"
                         android:gravity="center"
                         android:layout_weight="0"
                         android:layout_marginRight="15dp"
@@ -183,6 +185,7 @@
                     android:layout_height="wrap_content">
 
                     <TextView
+                        android:textColor="#000"
                         android:id="@+id/place_name_tv"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -190,6 +193,7 @@
                         android:textSize="20sp" />
 
                     <TextView
+                        android:textColor="#000"
                         android:id="@+id/place_address_tv"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -198,6 +202,8 @@
                 </LinearLayout>
 
                 <TextView
+                    android:textStyle="bold"
+                    android:textColor="#000"
                     android:id="@+id/schedule_date_tv"
                     android:textSize="20sp"
                     android:padding="15dp"
@@ -206,6 +212,8 @@
                     android:layout_height="wrap_content" />
 
                 <TextView
+                    android:textStyle="bold"
+                    android:textColor="#000"
                     android:visibility="gone"
                     android:id="@+id/time_tv"
                     android:textSize="20sp"
@@ -221,6 +229,8 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:textStyle="bold"
+                        android:textColor="#000"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="20sp"

@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.database.SQLException;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -30,16 +29,19 @@ import com.google.android.gms.location.places.PlacePhotoResult;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.rey.material.widget.Spinner;
+import com.squareup.otto.Subscribe;
 import com.tripco.www.tripco.R;
+import com.tripco.www.tripco.RootActivity;
 import com.tripco.www.tripco.db.DBOpenHelper;
 import com.tripco.www.tripco.model.ScheduleModel;
+import com.tripco.www.tripco.net.NetProcess;
 import com.tripco.www.tripco.util.U;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class ModifyScheduleActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
+public class ModifyScheduleActivity extends RootActivity implements GoogleApiClient.OnConnectionFailedListener {
     @BindView(R.id.toolbar_title_tv) TextView toolbarTitleTv;
     @BindView(R.id.toolbar_right_btn) Button toolbarRightBtn;
     @BindView(R.id.place_img_iv) ImageView placeImgIv;
@@ -60,18 +62,31 @@ public class ModifyScheduleActivity extends AppCompatActivity implements GoogleA
     private GoogleApiClient mGoogleApiClient;
     private String placeId;
     private String lat, lng;
-    int position = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_modify_schedule);
         ButterKnife.bind(this);
+        U.getInstance().getBus().register(this);
         scheduleModel = (ScheduleModel) getIntent().getSerializableExtra("scheduleModel");
-        position = getIntent().getIntExtra("position", 0);
         toolbarInit();
         uiInit();
         spinnerInit();
+    }
+
+    @Subscribe
+    public void ottoBus(String str){
+        if(str.equals("ResponseItemSuccess")) {
+            stopPD();
+            finishSetResult();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        U.getInstance().getBus().unregister(this);
+        super.onDestroy();
     }
 
     private void toolbarInit(){
@@ -81,7 +96,7 @@ public class ModifyScheduleActivity extends AppCompatActivity implements GoogleA
 
     private void uiInit(){
         // placeId가 있으면 이미지, 위치명, 주소 입력 없으면 로딩끝
-        if(!scheduleModel.getItem_placeid().equals("null")) {
+        if(scheduleModel.getItem_placeid() != null && !scheduleModel.getItem_placeid().equals("null")) {
             placeId = scheduleModel.getItem_placeid();
             getPlaceData();
         }
@@ -98,7 +113,8 @@ public class ModifyScheduleActivity extends AppCompatActivity implements GoogleA
         if(scheduleModel.getCate_no() == 1) rb1.setChecked(true);
         if(scheduleModel.getCate_no() == 2) rb2.setChecked(true);
         // 메모입력
-        memo.setText(scheduleModel.getItem_memo());
+        if(scheduleModel.getItem_memo() != null && !scheduleModel.getItem_memo().equals("null"))
+            memo.setText(scheduleModel.getItem_memo());
         // url입력
         openUrlTv.setText(scheduleModel.getItem_url());
         // 최종일정에서 들어오면 시간보이기
@@ -127,11 +143,6 @@ public class ModifyScheduleActivity extends AppCompatActivity implements GoogleA
                 U.getInstance().showAlertDialog(this, "알림", "변경된 내용을 저장하시겠습니까?",
                         "예", (dialogInterface, i) -> {
                             updateSQLite(scheduleModel.getTrip_no(), scheduleModel.getSchedule_no(), "저장되었습니다.");
-                            U.getInstance().getBus().post("ChangeSelectDate");
-                            Intent intent = new Intent();
-                            intent.putExtra("selectDate", spinner.getSelectedItem().toString());
-                            setResult(2, intent);
-                            finish();
                         },
                         "아니오", (dialogInterface, i) -> dialogInterface.dismiss());
                 break;
@@ -142,6 +153,24 @@ public class ModifyScheduleActivity extends AppCompatActivity implements GoogleA
     }
 
     private void updateSQLite(int trip_no, int s_no, String str) {
+        if(U.getInstance().getBoolean("login")){
+            showPD();
+            NetProcess.getInstance().netCrUpDeItem(new ScheduleModel(
+                    U.getInstance().getUserModel().getUser_id(),
+                    U.getInstance().tripDataModel.getTripNo(),
+                    scheduleModel.getSchedule_date(),
+                    scheduleModel.get_id(),
+                    openUrlTv.getText().toString(),
+                    getCategoryNum(),
+                    lat,
+                    lng,
+                    placeId,
+                    tripTitle.getText().toString(),
+                    memo.getText().toString(),
+                    getCheckNum(),
+                    null
+            ), "update");
+        }
         try {
             String sql = "update ScheduleList_Table set" +
                     " schedule_date = '"+spinner.getSelectedItemPosition()+"', "+
@@ -156,11 +185,32 @@ public class ModifyScheduleActivity extends AppCompatActivity implements GoogleA
                     " item_time = '"+timeTv.getText()+"' "+
                     " where trip_no = " + trip_no + " and schedule_no = " + s_no + " ;";
             DBOpenHelper.dbOpenHelper.getWritableDatabase().execSQL(sql);
-            U.getInstance().log(sql);
+            U.getInstance().getBus().post("ViewPagerListUpdate");
             Toast.makeText(this, str, Toast.LENGTH_SHORT).show();
+            finishSetResult();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    private void finishSetResult(){
+        Intent intent = new Intent();
+        intent.putExtra("scheduleModel", new ScheduleModel(
+                U.getInstance().tripDataModel.getTripNo(),
+                scheduleModel.getSchedule_no(),
+                spinner.getSelectedItemPosition(),
+                openUrlTv.getText().toString(),
+                getCategoryNum(),
+                lat,
+                lng,
+                placeId,
+                tripTitle.getText().toString(),
+                memo.getText().toString(),
+                getCheckNum(),
+                timeTv.getText().toString()
+        ));
+        setResult(2, intent);
+        finish();
     }
 
     private int getCheckNum(){
@@ -212,7 +262,7 @@ public class ModifyScheduleActivity extends AppCompatActivity implements GoogleA
         }
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
-        spinner.setSelection(position);
+        spinner.setSelection(scheduleModel.getSchedule_date());
     }
 
     private void getPlaceData() {
