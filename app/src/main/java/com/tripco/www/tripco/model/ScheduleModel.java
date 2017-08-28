@@ -7,6 +7,7 @@ import java.io.Serializable;
  */
 
 public class ScheduleModel implements Serializable {
+    String user_id;
     int trip_no;
     int schedule_no;
     String schedule_date;
@@ -20,6 +21,21 @@ public class ScheduleModel implements Serializable {
     int item_check;
     String item_time;
 
+    // 서버용 보내는 그릇
+    public ScheduleModel(String user_id, int trip_no, String schedule_date, String item_url, int cate_no, String item_lat, String item_long, String item_placeid, String item_title, String item_memo) {
+        this.user_id = user_id;
+        this.trip_no = trip_no;
+        this.schedule_date = schedule_date;
+        this.item_url = item_url;
+        this.cate_no = cate_no;
+        this.item_lat = item_lat;
+        this.item_long = item_long;
+        this.item_placeid = item_placeid;
+        this.item_title = item_title;
+        this.item_memo = item_memo;
+    }
+
+    // 로컬 디비용 그릇
     public ScheduleModel(int trip_no, int schedule_no, String schedule_date, String item_url, int cate_no, String item_lat, String item_long, String item_placeid, String item_title, String item_memo, int item_check, String item_time) {
         this.trip_no = trip_no;
         this.schedule_no = schedule_no;
@@ -33,6 +49,17 @@ public class ScheduleModel implements Serializable {
         this.item_memo = item_memo;
         this.item_check = item_check;
         this.item_time = item_time;
+    }
+
+    // 상세저장 데이터 전달 용 그릇
+    public ScheduleModel(String schedule_date, int cate_no, String item_lat, String item_long, String item_placeid, String item_title, String item_memo) {
+        this.schedule_date = schedule_date;
+        this.cate_no = cate_no;
+        this.item_lat = item_lat;
+        this.item_long = item_long;
+        this.item_placeid = item_placeid;
+        this.item_title = item_title;
+        this.item_memo = item_memo;
     }
 
     public int getTrip_no() {

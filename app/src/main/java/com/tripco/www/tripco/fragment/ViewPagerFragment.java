@@ -90,8 +90,12 @@ public class ViewPagerFragment extends Fragment {
     private void recViewInit(){
         recyclerView.setLayoutManager
                 (new GridLayoutManager(getContext(), 3, GridLayoutManager.VERTICAL, false));
-        CanScheduleListAdapter adapter =
-                new CanScheduleListAdapter(getContext(), setScheduleModel(), position);
+        CanScheduleListAdapter adapter;
+        if(U.getInstance().getBoolean("login")){
+            adapter = new CanScheduleListAdapter(getContext(), null, position);
+        } else {
+            adapter = new CanScheduleListAdapter(getContext(), setScheduleModel(), position);
+        }
         recyclerView.setAdapter(adapter);
     }
 

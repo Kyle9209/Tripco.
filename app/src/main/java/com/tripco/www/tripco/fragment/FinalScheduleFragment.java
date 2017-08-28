@@ -80,7 +80,12 @@ public class FinalScheduleFragment extends Fragment
     private void recViewInit(){
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         ArrayList<ScheduleModel> scheduleModels = setScheduleModel();
-        FinScheduleListAdapter adapter = new FinScheduleListAdapter(getContext(), scheduleModels, position);
+        FinScheduleListAdapter adapter;
+        if(U.getInstance().getBoolean("login")){
+            adapter = new FinScheduleListAdapter(getContext(), null, position);
+        } else {
+            adapter = new FinScheduleListAdapter(getContext(), scheduleModels, position);
+        }
         recyclerView.setAdapter(adapter);
     }
 

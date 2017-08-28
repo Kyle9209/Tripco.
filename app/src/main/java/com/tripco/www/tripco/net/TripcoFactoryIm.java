@@ -3,6 +3,8 @@ package com.tripco.www.tripco.net;
 import com.tripco.www.tripco.model.MemberModel;
 import com.tripco.www.tripco.model.ResponseArrayModel;
 import com.tripco.www.tripco.model.ResponseModel;
+import com.tripco.www.tripco.model.ScheduleModel;
+import com.tripco.www.tripco.model.ServerScheduleModel;
 import com.tripco.www.tripco.model.TripModel;
 
 import retrofit2.Call;
@@ -53,5 +55,13 @@ public interface TripcoFactoryIm {
     // 여행 삭제
     @POST("/delete_trip")
     Call<ResponseModel> delete_trip(@Body TripModel req);
+
+    // 일정 생성
+    @POST("/create_item")
+    Call<ResponseModel> create_item(@Body ScheduleModel req);
+
+    // 일정 리스트
+    @POST("/list_item")
+    Call<ResponseModel<ServerScheduleModel<ScheduleModel>>> list_item(@Body ScheduleModel req);
 }
 

@@ -1,6 +1,7 @@
 package com.tripco.www.tripco.fragment;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.SQLException;
@@ -25,8 +26,11 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.squareup.otto.Subscribe;
 import com.tripco.www.tripco.R;
 import com.tripco.www.tripco.db.DBOpenHelper;
+import com.tripco.www.tripco.model.ScheduleModel;
+import com.tripco.www.tripco.net.NetProcess;
 import com.tripco.www.tripco.ui.SetScheduleActivity;
 import com.tripco.www.tripco.ui.TripActivity;
 import com.tripco.www.tripco.util.U;
@@ -45,17 +49,12 @@ public class SearchingFragment extends Fragment implements TripActivity.onKeyBac
     @BindString(R.string.add_candidate) String addCandidateText;
     @BindString(R.string.url_search) String searchUrlText;
     @BindColor(R.color.colorAccent) int webViewPbColor;
-    public final static int SET_SCHEDULE_REQUEST_CODE = 1001;
+    public final static int SET_SCHEDULE_REQUEST_CODE = 1000;
+    public final static int SET_SCHEDULE_RESPONSE_CODE = 1001;
+    ProgressDialog progressDialog;
     private Unbinder unbinder;
     private InputMethodManager imm;
     private int tripNo;
-    int cateNo = 0;
-    String scheduleDate = U.getInstance().tripDataModel.getDateList().get(0);
-    String lat = null;
-    String lng = null;
-    String placeid = null;
-    String title = null;
-    String memo = null;
 
     public SearchingFragment() {} // 생성자
 
@@ -63,6 +62,7 @@ public class SearchingFragment extends Fragment implements TripActivity.onKeyBac
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_searching, container, false);
         unbinder = ButterKnife.bind(this, view);
+        U.getInstance().getBus().register(this);
         imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         tripNo = U.getInstance().tripDataModel.getTripNo();
         webViewInit();
@@ -70,7 +70,17 @@ public class SearchingFragment extends Fragment implements TripActivity.onKeyBac
         return view;
     }
 
-    private void webViewInit(){
+    @Subscribe
+    public void ottoBus(String str){
+        stopPD();
+        if(str.equals("CreateItemSuccess")){
+            U.getInstance().showAlertDialog(getContext(), "알림", addCandidateText + "\n후보지로 이동하시겠습니까?",
+                    "예", (dialogInterface, i) -> U.getInstance().getBus().post("moveToCandidate"),
+                    "아니오", (dialogInterface, i) -> dialogInterface.dismiss());
+        }
+    }
+
+    private void webViewInit() {
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
         webSettings.setSupportZoom(true);
@@ -84,17 +94,19 @@ public class SearchingFragment extends Fragment implements TripActivity.onKeyBac
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
             webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
         else webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-        webView.setWebViewClient(new WebViewClient(){
+        webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 view.loadUrl(url);
                 return true;
             }
+
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 super.onPageStarted(view, url, favicon);
                 webViewPb.setVisibility(View.VISIBLE);
             }
+
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
@@ -107,15 +119,18 @@ public class SearchingFragment extends Fragment implements TripActivity.onKeyBac
             public void onProgressChanged(WebView view, int newProgress) {
                 webViewPb.setProgress(newProgress);
             }
+
             // 메소드 내부에서 재정의하여 팝업 자체 상단에 보이는 url을 숨김==================================
             @Override
             public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
                 return super.onJsAlert(view, url, message, result);
             }
+
             @Override
             public boolean onJsConfirm(WebView view, String url, String message, JsResult result) {
                 return super.onJsConfirm(view, url, message, result);
             }
+
             @Override
             public boolean onJsPrompt(WebView view, String url, String message, String defaultValue, JsPromptResult result) {
                 return super.onJsPrompt(view, url, message, defaultValue, result);
@@ -125,7 +140,7 @@ public class SearchingFragment extends Fragment implements TripActivity.onKeyBac
         webViewPb.getProgressDrawable().setColorFilter(webViewPbColor, PorterDuff.Mode.SRC_IN);
     }
 
-    private void editTextInit(){
+    private void editTextInit() {
         urlEt.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
         urlEt.setOnEditorActionListener((textView, i, keyEvent) -> {
             onClickSearchUrlBtn();
@@ -134,7 +149,7 @@ public class SearchingFragment extends Fragment implements TripActivity.onKeyBac
     }
 
     @OnClick(R.id.search_url_btn) // URL주소검색 (호출하는 곳이 따로 있어서 따로둠)
-    public void onClickSearchUrlBtn(){
+    public void onClickSearchUrlBtn() {
         webView.setVisibility(View.VISIBLE);
         String inputAddrStr = urlEt.getText().toString();
         if (!TextUtils.isEmpty(inputAddrStr)) {
@@ -157,14 +172,14 @@ public class SearchingFragment extends Fragment implements TripActivity.onKeyBac
     public void onClickBtn(View view) {
         switch (view.getId()) {
             case R.id.short_save_btn: // 즉시저장
-                if(!TextUtils.isEmpty(urlEt.getText())) {
-                    insertSQLite();
+                if (!TextUtils.isEmpty(urlEt.getText())) {
+                    insertSQLite(U.getInstance().tripDataModel.getDateList().get(0), 0, null, null, null, null, null);
                 } else {
                     showDialog();
                 }
                 break;
             case R.id.show_detail_btn: // 상세페이지 열기 / 초기화
-                if(!TextUtils.isEmpty(urlEt.getText())) {
+                if (!TextUtils.isEmpty(urlEt.getText())) {
                     imm.hideSoftInputFromWindow(urlEt.getWindowToken(), 0);
                     Intent intent = new Intent(getContext(), SetScheduleActivity.class);
                     startActivityForResult(intent, SET_SCHEDULE_REQUEST_CODE);
@@ -175,7 +190,27 @@ public class SearchingFragment extends Fragment implements TripActivity.onKeyBac
         }
     }
 
-    public void showDialog(){
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == SET_SCHEDULE_REQUEST_CODE) {
+            if (resultCode == SET_SCHEDULE_RESPONSE_CODE) {
+                ScheduleModel scheduleModel = (ScheduleModel) data.getSerializableExtra("data");
+
+                insertSQLite(
+                        scheduleModel.getSchedule_date(),
+                        scheduleModel.getCate_no(),
+                        scheduleModel.getItem_lat(),
+                        scheduleModel.getItem_long(),
+                        scheduleModel.getItem_placeid(),
+                        scheduleModel.getItem_title(),
+                        scheduleModel.getItem_memo()
+                );
+            }
+        }
+    }
+
+    public void showDialog() {
         U.getInstance().showAlertDialog(getContext(), "알림", "URL을 입력한 뒤 이용해주세요. " +
                         "URL없이 저장은 후보지 > 위치검색을 통해 가능합니다.",
                 "URL 입력", (dialogInterface, i) -> {
@@ -190,34 +225,66 @@ public class SearchingFragment extends Fragment implements TripActivity.onKeyBac
                 });
     }
 
-    private void insertSQLite() {
-        try {
-            String sql = "insert into ScheduleList_Table(" +
-                    " trip_no, " +
-                    " schedule_date, " +
-                    " item_url, " +
-                    " cate_no, " +
-                    " item_lat, " +
-                    " item_long, " +
-                    " item_placeid, " +
-                    " item_title, " +
-                    " item_memo) " +
-                    " values(" +
-                    "'" + tripNo + "', " +
-                    "'" + scheduleDate + "', " + // 초기값 1일차
-                    "'" + urlEt.getText() + "', " +
-                    "'" + cateNo + "', " + // 초기값 cate_no = 0(관광)
-                    "'" + lat + "', " + // 초기값 lat = null
-                    "'" + lng + "', " + // 초기값 lng = null
-                    "'" + placeid+ "', " + // 초기값 placeid = null
-                    "'" + title + "', " + // 초기값 title = null
-                    "'" + memo + "');"; // 초기값 memo = null;
-            DBOpenHelper.dbOpenHelper.getWritableDatabase().execSQL(sql);
-            U.getInstance().showAlertDialog(getContext(), "알림", addCandidateText + "\n후보지로 이동하시겠습니까?",
-                    "예", (dialogInterface, i) -> U.getInstance().getBus().post("moveToCandidate"),
-                    "아니오", (dialogInterface, i) -> dialogInterface.dismiss());
-        } catch (SQLException e) {
-            e.printStackTrace();
+    private void insertSQLite(String scheduleDate, int cateNo, String lat, String lng,
+                              String placeId, String title, String memo) {
+        if(U.getInstance().getBoolean("login")){
+            showPD();
+            NetProcess.getInstance().netCreateItem(new ScheduleModel(
+                    U.getInstance().getUserModel().getUser_id(),
+                    tripNo,
+                    scheduleDate,
+                    urlEt.getText().toString(),
+                    cateNo,
+                    lat,
+                    lng,
+                    placeId,
+                    title,
+                    memo
+            ));
+        } else {
+            try {
+                String sql = "insert into ScheduleList_Table(" +
+                        " trip_no, " +
+                        " schedule_date, " +
+                        " item_url, " +
+                        " cate_no, " +
+                        " item_lat, " +
+                        " item_long, " +
+                        " item_placeid, " +
+                        " item_title, " +
+                        " item_memo) " +
+                        " values(" +
+                        "'" + tripNo + "', " +
+                        "'" + scheduleDate + "', " + // 초기값 1일차
+                        "'" + urlEt.getText().toString() + "', " +
+                        "'" + cateNo + "', " + // 초기값 cate_no = 0(관광)
+                        "'" + lat + "', " + // 초기값 lat = null
+                        "'" + lng + "', " + // 초기값 lng = null
+                        "'" + placeId + "', " + // 초기값 placeId = null
+                        "'" + title + "', " + // 초기값 title = null
+                        "'" + memo + "');"; // 초기값 memo = null;
+                DBOpenHelper.dbOpenHelper.getWritableDatabase().execSQL(sql);
+                U.getInstance().showAlertDialog(getContext(), "알림", addCandidateText + "\n후보지로 이동하시겠습니까?",
+                        "예", (dialogInterface, i) -> U.getInstance().getBus().post("moveToCandidate"),
+                        "아니오", (dialogInterface, i) -> dialogInterface.dismiss());
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    // 로딩중 알림창
+    public void showPD(){
+        if(progressDialog == null){
+            progressDialog = new ProgressDialog(getContext());
+            progressDialog.setCancelable(false);
+            progressDialog.setMessage("잠시만 기다려주세요.");
+        }
+        progressDialog.show();
+    }
+    public void stopPD(){
+        if(progressDialog != null && progressDialog.isShowing()){
+            progressDialog.dismiss();
         }
     }
 
@@ -237,9 +304,10 @@ public class SearchingFragment extends Fragment implements TripActivity.onKeyBac
         ((TripActivity) activity).setOnKeyBackPressedListener(this);
     }
 
-    @Override // 버터나이프 사용에 필요한 프레그먼트의 오버라이드 메소드
+    @Override // 버터나이프, 오토버스
     public void onDestroyView() {
         unbinder.unbind();
+        U.getInstance().getBus().unregister(this);
         super.onDestroyView();
     }
 }

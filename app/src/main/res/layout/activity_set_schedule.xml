@@ -37,6 +37,7 @@
 
                 <!-- 관광 -->
                 <RadioButton
+                    android:id="@+id/category0"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
@@ -54,6 +55,7 @@
 
                 <!-- 맛집 -->
                 <RadioButton
+                    android:id="@+id/category1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
@@ -71,6 +73,7 @@
 
                 <!-- 숙소 -->
                 <RadioButton
+                    android:id="@+id/category2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"

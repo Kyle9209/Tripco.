@@ -5,6 +5,7 @@ import android.widget.Toast;
 import com.tripco.www.tripco.model.MemberModel;
 import com.tripco.www.tripco.model.ResponseArrayModel;
 import com.tripco.www.tripco.model.ResponseModel;
+import com.tripco.www.tripco.model.ScheduleModel;
 import com.tripco.www.tripco.model.TripModel;
 import com.tripco.www.tripco.util.U;
 
@@ -233,6 +234,32 @@ public class NetProcess {
             public void onFailure(Call<ResponseArrayModel<TripModel>> call, Throwable t) {
                 Toast.makeText(U.getInstance().getContext(), "서버통신 실패-2", Toast.LENGTH_SHORT).show();
                 U.getInstance().getBus().post("tripListFailed");
+            }
+        });
+    }
+
+    public void netCreateItem(ScheduleModel req){
+        Call<ResponseModel> res = Net.getInstance().getApiIm().create_item(req);
+
+        res.enqueue(new Callback<ResponseModel>() {
+            @Override
+            public void onResponse(Call<ResponseModel> call, Response<ResponseModel> response) {
+                if(response.isSuccessful()){
+                    if(response.body().getCode() == 1){
+                        U.getInstance().getBus().post("CreateItemSuccess");
+                    } else {
+                        Toast.makeText(U.getInstance().getContext(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                        U.getInstance().getBus().post("CreateItemFailed");
+                    }
+                } else {
+                    Toast.makeText(U.getInstance().getContext(), "서버통신 실패-1", Toast.LENGTH_SHORT).show();
+                    U.getInstance().getBus().post("CreateItemFailed");
+                }
+            }
+            @Override
+            public void onFailure(Call<ResponseModel> call, Throwable t) {
+                Toast.makeText(U.getInstance().getContext(), "서버통신 실패-2", Toast.LENGTH_SHORT).show();
+                U.getInstance().getBus().post("CreateItemFailed");
             }
         });
     }
