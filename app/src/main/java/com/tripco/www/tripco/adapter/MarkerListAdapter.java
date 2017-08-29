@@ -18,6 +18,7 @@ import com.tripco.www.tripco.R;
 import com.tripco.www.tripco.db.DBOpenHelper;
 import com.tripco.www.tripco.holder.MarkerListViewHolder;
 import com.tripco.www.tripco.model.ScheduleModel;
+import com.tripco.www.tripco.net.NetProcess;
 import com.tripco.www.tripco.util.U;
 
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ import java.util.ArrayList;
 public class MarkerListAdapter extends RecyclerView.Adapter<MarkerListViewHolder> implements GoogleApiClient.OnConnectionFailedListener {
     private ArrayList<ScheduleModel> scheduleModels;
     Context context = U.getInstance().getContext();
-    int n = 1;
+
     public MarkerListAdapter(ArrayList<ScheduleModel> scheduleModel){
         this.scheduleModels = scheduleModel;
     }
@@ -39,20 +40,29 @@ public class MarkerListAdapter extends RecyclerView.Adapter<MarkerListViewHolder
     @Override
     public void onBindViewHolder(MarkerListViewHolder holder, int position) {
         final ScheduleModel scheduleModel = scheduleModels.get(position);
-        holder.indexTv.setText(""+(n++));
+        holder.indexTv.setText(""+(position+1));
         // 체크박스 상태 찍어주고 최종 < - > 후보지
         if(scheduleModel.getItem_check() == 1) holder.checkCb.setChecked(true);
         holder.checkCb.setOnCheckedChangeListener((compoundButton, b) -> {
-            if(b) {
-                updateSQLite(scheduleModel.getTrip_no(),
-                        scheduleModel.getSchedule_no(),
-                        1,
-                        "최종일정에 추가되었습니다.");
+            if(U.getInstance().getBoolean("login")){
+                NetProcess.getInstance().netCheckItem(new ScheduleModel(
+                        U.getInstance().getUserModel().getUser_id(),
+                        U.getInstance().tripDataModel.getTripNo(),
+                        scheduleModel.getSchedule_date(),
+                        scheduleModel.get_id()
+                ));
             } else {
-                updateSQLite(scheduleModel.getTrip_no(),
-                        scheduleModel.getSchedule_no(),
-                        0,
-                        "최종일정에서 삭제되었습니다.");
+                if (b) {
+                    updateSQLite(scheduleModel.getTrip_no(),
+                            scheduleModel.getSchedule_no(),
+                            1,
+                            "최종일정에 추가되었습니다.");
+                } else {
+                    updateSQLite(scheduleModel.getTrip_no(),
+                            scheduleModel.getSchedule_no(),
+                            0,
+                            "최종일정에서 삭제되었습니다.");
+                }
             }
         });
         // 유형체크해서 이미지 변경
@@ -95,15 +105,15 @@ public class MarkerListAdapter extends RecyclerView.Adapter<MarkerListViewHolder
 
     private void updateSQLite(int trip_no, int s_no, int check, String str) {
         try {
-            String sql = "update ScheduleList_Table set" +
-                    " item_check = '" + check + "'" +
-                    " where trip_no = " + trip_no + " and schedule_no = " + s_no + " ;";
-            DBOpenHelper.dbOpenHelper.getWritableDatabase().execSQL(sql);
-            Toast.makeText(context, str, Toast.LENGTH_SHORT).show();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        String sql = "update ScheduleList_Table set" +
+                " item_check = '" + check + "'" +
+                " where trip_no = " + trip_no + " and schedule_no = " + s_no + " ;";
+        DBOpenHelper.dbOpenHelper.getWritableDatabase().execSQL(sql);
+        Toast.makeText(context, str, Toast.LENGTH_SHORT).show();
+    } catch (SQLException e) {
+        e.printStackTrace();
     }
+}
 
     @Override
     public int getItemCount() {
@@ -111,7 +121,5 @@ public class MarkerListAdapter extends RecyclerView.Adapter<MarkerListViewHolder
     }
 
     @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
-    }
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {}
 }

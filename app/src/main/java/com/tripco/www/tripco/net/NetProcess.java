@@ -77,6 +77,34 @@ public class NetProcess {
         });
     }
 
+    public void netStop(MemberModel req) {
+        Call<ResponseModel> res = Net.getInstance().getApiIm().stop(req);
+        res.enqueue(new Callback<ResponseModel>() {
+            @Override
+            public void onResponse(Call<ResponseModel> call, Response<ResponseModel> response) {
+                if (response.isSuccessful()) {
+                    if (response.body().getCode() == 1) {
+                        Toast.makeText(U.getInstance().getContext(), "탈퇴가 완료되었습니다.", Toast.LENGTH_SHORT).show();
+                        U.getInstance().getBus().post("StopSuccess");
+
+                    } else {
+                        Toast.makeText(U.getInstance().getContext(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                        U.getInstance().getBus().post("stop failed");
+                    }
+                } else {
+                    Toast.makeText(U.getInstance().getContext(), "서버통신 실패-1", Toast.LENGTH_SHORT).show();
+                    U.getInstance().getBus().post("stop failed");
+                }
+            }
+            @Override
+            public void onFailure(Call<ResponseModel> call, Throwable t) {
+                Toast.makeText(U.getInstance().getContext(), "서버통신 실패-2", Toast.LENGTH_SHORT).show();
+                U.getInstance().getBus().post("stop failed");
+            }
+        });
+
+    }
+
     public void netNick(MemberModel req){
         Call<ResponseModel> res = Net.getInstance().getApiIm().nick(req);
         res.enqueue(new Callback<ResponseModel>() {
@@ -250,7 +278,8 @@ public class NetProcess {
                 if(response.isSuccessful()){
                     if(response.body().getCode() == 1){
                         if(str.equals("create")) U.getInstance().getBus().post("CreateItemSuccess");
-                        else U.getInstance().getBus().post("ResponseItemSuccess");
+                        else if(str.equals("update")) U.getInstance().getBus().post("UpdateItemSuccess");
+                        else if(str.equals("delete")) U.getInstance().getBus().post("DeleteItemSuccess");
                     } else {
                         Toast.makeText(U.getInstance().getContext(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
                         U.getInstance().getBus().post("CreateItemFailed");
@@ -319,7 +348,7 @@ public class NetProcess {
                 if(response.isSuccessful()){
                     if(response.body().getCode() == 1) {
                         Toast.makeText(U.getInstance().getContext(), "변경되었습니다.", Toast.LENGTH_SHORT).show();
-                        U.getInstance().getBus().post("check_item success");
+                        U.getInstance().getBus().post("checkItemSuccess");
                     } else {
                         Toast.makeText(U.getInstance().getContext(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
                         U.getInstance().getBus().post("check_item failed");
@@ -333,6 +362,33 @@ public class NetProcess {
             public void onFailure(Call<ResponseModel> call, Throwable t) {
                 Toast.makeText(U.getInstance().getContext(), "서버통신 실패-2", Toast.LENGTH_SHORT).show();
                 U.getInstance().getBus().post("check_item failed");
+            }
+        });
+    }
+
+    public void netTimeFinal(ScheduleModel req){
+        Call<ResponseModel> res = Net.getInstance().getApiIm().time_final(req);
+
+        res.enqueue(new Callback<ResponseModel>() {
+            @Override
+            public void onResponse(Call<ResponseModel> call, Response<ResponseModel> response) {
+                if(response.isSuccessful()){
+                    if(response.body().getCode() == 1) {
+                        Toast.makeText(U.getInstance().getContext(), "시간이 변경되었습니다.", Toast.LENGTH_SHORT).show();
+                        U.getInstance().getBus().post("netTimeSuccess");
+                    } else {
+                        Toast.makeText(U.getInstance().getContext(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                        U.getInstance().getBus().post("netTimeFailed");
+                    }
+                } else {
+                    Toast.makeText(U.getInstance().getContext(), "서버통신 실패-1", Toast.LENGTH_SHORT).show();
+                    U.getInstance().getBus().post("netTimeFailed");
+                }
+            }
+            @Override
+            public void onFailure(Call<ResponseModel> call, Throwable t) {
+                Toast.makeText(U.getInstance().getContext(), "서버통신 실패-2", Toast.LENGTH_SHORT).show();
+                U.getInstance().getBus().post("netTimeFailed");
             }
         });
     }

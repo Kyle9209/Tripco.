@@ -68,7 +68,7 @@ public class ScheduleInfoActivity extends RootActivity
 
     @Subscribe
     public void ottoBus(String str){
-        if(str.equals("ResponseItemSuccess")){
+        if(str.equals("DeleteItemSuccess")){
             stopPD();
             Toast.makeText(this, "삭제되었습니다.", Toast.LENGTH_SHORT).show();
             finish();
@@ -80,28 +80,6 @@ public class ScheduleInfoActivity extends RootActivity
         U.getInstance().getBus().unregister(this);
         super.onDestroy();
     }
-
-    /*private void getScheduleData(){
-        String sql = "select * from ScheduleList_Table where trip_no=" + scheduleModel.getTrip_no() +
-                " and schedule_no="+ scheduleModel.getSchedule_no()+";";
-        Cursor csr = DBOpenHelper.dbOpenHelper.getWritableDatabase().rawQuery(sql, null);
-        while (csr.moveToNext()) {
-            scheduleModel = new ScheduleModel(
-                    csr.getInt(0),
-                    csr.getInt(1),
-                    csr.getInt(2),
-                    csr.getString(3),
-                    csr.getInt(4),
-                    csr.getString(5),
-                    csr.getString(6),
-                    csr.getString(7),
-                    csr.getString(8),
-                    csr.getString(9),
-                    csr.getInt(10),
-                    csr.getString(11)
-            );
-        }
-    }*/
 
     private void toolbarInit(){
         toolbarTitleTv.setText(scheduleModel.getItem_title());

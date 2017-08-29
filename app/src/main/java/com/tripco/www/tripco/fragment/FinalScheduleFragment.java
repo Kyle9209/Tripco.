@@ -27,6 +27,7 @@ import com.tripco.www.tripco.RootFragment;
 import com.tripco.www.tripco.adapter.FinScheduleListAdapter;
 import com.tripco.www.tripco.db.DBOpenHelper;
 import com.tripco.www.tripco.model.ScheduleModel;
+import com.tripco.www.tripco.net.NetProcess;
 import com.tripco.www.tripco.ui.TripActivity;
 import com.tripco.www.tripco.util.U;
 
@@ -48,7 +49,7 @@ public class FinalScheduleFragment extends RootFragment
     private Unbinder unbinder;
     private View view;
     private int tripNo;
-    int position = 0;
+    ArrayList<ScheduleModel> list = new ArrayList<>();
 
     public FinalScheduleFragment() {}
 
@@ -61,13 +62,29 @@ public class FinalScheduleFragment extends RootFragment
         spinnerInit();
         recViewInit();
         swipeRefreshInit();
+        getServerData(); // 로그인 되어있다면 서버에서 데이터 가져옴
         return view;
+    }
+
+    private void getServerData(){ // 데이터 가져와서 ottoBus 에 position 날림
+        if(U.getInstance().getBoolean("login")) {
+            swipeContainer.setRefreshing(true);
+            NetProcess.getInstance().netListItem(new ScheduleModel(tripNo, spinner.getSelectedItemPosition()));
+        }
     }
 
     @Subscribe
     public void ottoBus(String str){
-        if(str.equals("ChangeSelectDate")) recViewInit();
-        if(str.equals("DELETE_CHECK")) recViewInit();
+        if(str.contains("position")){ // 서버에서 데이터 가져오고 나서
+            recViewInit();
+        }
+        if(str.equals("UpdateItemSuccess") || str.equals("DeleteItemSuccess")) { // 삭제, 수정
+            if(U.getInstance().getBoolean("login")) getServerData();
+            else recViewInit();
+        }
+        if(str.equals("checkItemSuccess")){
+            NetProcess.getInstance().netListItem(new ScheduleModel(tripNo, spinner.getSelectedItemPosition()));
+        }
     }
 
     @Override
@@ -78,14 +95,22 @@ public class FinalScheduleFragment extends RootFragment
 
     private void recViewInit(){
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        ArrayList<ScheduleModel> scheduleModels = setScheduleModel();
         FinScheduleListAdapter adapter;
         if(U.getInstance().getBoolean("login")){
-            adapter = new FinScheduleListAdapter(getContext(), null, position);
+            list.clear();
+            if(U.getInstance().getScheduleListModel() != null) {
+                for (int i = 0; i < U.getInstance().getScheduleListModel().size(); i++) {
+                    if (U.getInstance().getScheduleListModel().get(i).getItem_check() == 1) {
+                        list.add(U.getInstance().getScheduleListModel().get(i));
+                    }
+                }
+            }
+            adapter = new FinScheduleListAdapter(getContext(), list, spinner.getSelectedItemPosition());
         } else {
-            adapter = new FinScheduleListAdapter(getContext(), scheduleModels, position);
+            adapter = new FinScheduleListAdapter(getContext(), setScheduleModel(), spinner.getSelectedItemPosition());
         }
         recyclerView.setAdapter(adapter);
+        swipeContainer.setRefreshing(false);
     }
 
     private void spinnerInit(){
@@ -97,15 +122,20 @@ public class FinalScheduleFragment extends RootFragment
         spinner.setAdapter(adapter);
         // 스피너에서 날짜를 선택하면
         spinner.setOnItemSelectedListener((parent, view1, position, id) -> {
-            this.position = position;
-            recViewInit();
+            if(U.getInstance().getBoolean("login")){
+                swipeContainer.setRefreshing(true);
+                NetProcess.getInstance().netListItem(new ScheduleModel(tripNo, position));
+            } else {
+                recViewInit();
+            }
         });
     }
 
     private ArrayList<ScheduleModel> setScheduleModel(){
-        ArrayList<ScheduleModel> list = new ArrayList<>();
+        list.clear();
         String sql = "select * from ScheduleList_Table where trip_no=" +tripNo +
-                " and schedule_date= '" + position + "' and item_check = 1 order by item_time;";
+                " and schedule_date= '" + spinner.getSelectedItemPosition() +
+                "' and item_check = 1 order by item_time;";
         Cursor csr = DBOpenHelper.dbOpenHelper.getWritableDatabase().rawQuery(sql, null);
         while (csr.moveToNext()) {
             list.add(new ScheduleModel(

@@ -114,7 +114,7 @@ public class ViewPagerFragment extends Fragment {
             swipeContainer.setRefreshing(false);
         } else {
             String sql = "select * from ScheduleList_Table where trip_no=" + tripNo +
-                    " and schedule_date= '" + position + "' and cate_no= " + cateNo + ";";
+                    " and schedule_date= '" + position + "' and cate_no= " + cateNo + " order by schedule_no desc;";
             Cursor csr = DBOpenHelper.dbOpenHelper.getWritableDatabase().rawQuery(sql, null);
             while (csr.moveToNext()) {
                 list.add(new ScheduleModel(

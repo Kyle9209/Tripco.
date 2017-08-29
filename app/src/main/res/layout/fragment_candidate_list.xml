@@ -92,7 +92,6 @@
                 android:layout_height="match_parent" />
 
             <android.support.v7.widget.RecyclerView
-                android:layout_marginBottom="60dp"
                 android:layout_alignParentBottom="true"
                 tools:listitem="@layout/cell_candi_marker_layout"
                 android:id="@+id/recyclerview"

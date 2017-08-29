@@ -171,7 +171,7 @@ public class SearchingFragment extends RootFragment implements TripActivity.onKe
         switch (view.getId()) {
             case R.id.short_save_btn: // 즉시저장
                 if (!TextUtils.isEmpty(urlEt.getText())) {
-                    insertSQLite(0, 0, null, null, null, "제목없음", "메모없음");
+                    insertSQLite(0, 0, "null", "null", "null", "제목없음", "메모없음");
                 } else {
                     showDialog();
                 }
@@ -260,7 +260,7 @@ public class SearchingFragment extends RootFragment implements TripActivity.onKe
                         "'" + lng + "', " + // 초기값 lng = null
                         "'" + placeId + "', " + // 초기값 placeId = null
                         "'" + title + "', " + // 초기값 title = null
-                        "'" + memo + "');"; // 초기값 memo = null;
+                        "'" + memo + "');"; // 초기값 memo = null
                 DBOpenHelper.dbOpenHelper.getWritableDatabase().execSQL(sql);
                 U.getInstance().showAlertDialog(getContext(), "알림", addCandidateText + "\n후보지로 이동하시겠습니까?",
                         "예", (dialogInterface, i) -> U.getInstance().getBus().post("moveToCandidate"),

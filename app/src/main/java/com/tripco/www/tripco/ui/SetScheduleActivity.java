@@ -64,10 +64,10 @@ public class SetScheduleActivity extends AppCompatActivity
     private GoogleMap mMap = null;
     private boolean mapFlag = false;
     private int index = 1;
-    private String placeId = null;
+    private String placeId = "null";
     int cateNo;
-    String lat = null;
-    String lng = null;
+    String lat = "null";
+    String lng = "null";
     String title = "제목없음";
     String memo = "메모없음";
 

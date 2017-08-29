@@ -100,7 +100,6 @@ public class CanScheduleListAdapter extends RecyclerView.Adapter<ScheduleListVie
             // 클릭하면 정보페이지로
             holder.itemView.setOnClickListener(view -> {
                 Intent intent = new Intent(context, ScheduleInfoActivity.class);
-                U.getInstance().log(scheduleModel.toString());
                 intent.putExtra("scheduleModel", scheduleModel);
                 intent.putExtra("position", pos);
                 context.startActivity(intent);

@@ -23,6 +23,10 @@ public interface TripcoFactoryIm {
     @POST("/join")
     Call<ResponseModel<MemberModel>> join(@Body MemberModel req);
 
+    // 회원탈퇴
+    @POST("/stop")
+    Call<ResponseModel> stop(@Body MemberModel req);
+
     // 닉네임 변경
     @POST("/nick")
     Call<ResponseModel> nick(@Body MemberModel req);
@@ -74,5 +78,9 @@ public interface TripcoFactoryIm {
     // 최종 일정 추가/삭제
     @POST("/check_item")
     Call<ResponseModel> check_item(@Body ScheduleModel req);
+
+    // 최종일정 시간변경
+    @POST("/time_final")
+    Call<ResponseModel> time_final(@Body ScheduleModel req);
 }
 

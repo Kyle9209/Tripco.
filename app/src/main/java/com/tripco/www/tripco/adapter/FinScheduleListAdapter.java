@@ -24,6 +24,7 @@ import com.tripco.www.tripco.R;
 import com.tripco.www.tripco.db.DBOpenHelper;
 import com.tripco.www.tripco.holder.ScheduleListViewHolder;
 import com.tripco.www.tripco.model.ScheduleModel;
+import com.tripco.www.tripco.net.NetProcess;
 import com.tripco.www.tripco.ui.ScheduleInfoActivity;
 import com.tripco.www.tripco.util.U;
 
@@ -33,8 +34,7 @@ public class FinScheduleListAdapter extends RecyclerView.Adapter<ScheduleListVie
         implements GoogleApiClient.OnConnectionFailedListener {
     private Context context;
     private ArrayList<ScheduleModel> scheduleModels;
-    int pos = 0;
-
+    private int pos;
 
     public FinScheduleListAdapter(Context context, ArrayList<ScheduleModel> scheduleModels, int pos) {
         this.context = context;
@@ -55,10 +55,12 @@ public class FinScheduleListAdapter extends RecyclerView.Adapter<ScheduleListVie
         // 체크확인
         if(scheduleModel.getItem_check() == 1) holder.check.isChecked();
         // placeId 확인  > 널이면 title 확인 > ""이면 제목없음
-        if(scheduleModel.getItem_placeid().equals("null")){
+        if(scheduleModel.getItem_placeid() == null || scheduleModel.getItem_placeid().equals("null")){
             holder.loadingImgPb.setVisibility(View.GONE);
-            if(scheduleModel.getItem_title().equals("")) holder.title.setText("제목없음");
-            else holder.title.setText(scheduleModel.getItem_title());
+            if (scheduleModel.getItem_title() == null || scheduleModel.getItem_title().equals("null"))
+                holder.title.setText("제목없음");
+            else
+                holder.title.setText(scheduleModel.getItem_title());
         } else {
             // placeid로 위치명, 사진 가져오기
             String placeId = scheduleModel.getItem_placeid();
@@ -110,16 +112,27 @@ public class FinScheduleListAdapter extends RecyclerView.Adapter<ScheduleListVie
         // 체크풀면 최종일정에서 삭제
         holder.check.setOnCheckedChangeListener((compoundButton, b) -> {
             if(!b) {
-                updateSQLite(scheduleModel.getTrip_no(),
-                        scheduleModel.getSchedule_no(),
-                        0,
-                        "최종일정에서 삭제되었습니다.");
-                U.getInstance().getBus().post("DELETE_CHECK");
+                if(U.getInstance().getBoolean("login")) {
+                    NetProcess.getInstance().netCheckItem(new ScheduleModel(
+                            U.getInstance().getUserModel().getUser_id(),
+                            U.getInstance().tripDataModel.getTripNo(),
+                            scheduleModel.getSchedule_date(),
+                            scheduleModel.get_id()
+                    ));
+                } else {
+                    updateSQLite(scheduleModel.getTrip_no(),
+                            scheduleModel.getSchedule_no(),
+                            0,
+                            "최종일정에서 삭제되었습니다.");
+                    U.getInstance().getBus().post("DeleteItemSuccess");
+                }
             }
         });
         // 시간 가져오기
-        if(scheduleModel.getItem_time() == null) holder.timeTv.setText("00:00");
-        else holder.timeTv.setText(scheduleModel.getItem_time());
+        if(scheduleModel.getItem_time() == null || scheduleModel.getItem_time().equals("null"))
+            holder.timeTv.setText("00:00");
+        else
+            holder.timeTv.setText(scheduleModel.getItem_time());
         // 시간 클릭하면 시계뜸
         holder.timeTv.setOnClickListener(view ->
                 new TimePickerDialog(context, (timePicker, i, i1) -> {
@@ -130,11 +143,20 @@ public class FinScheduleListAdapter extends RecyclerView.Adapter<ScheduleListVie
                     if(i1<10) minute = "0" + i1;
                     else minute = "" + i1;
                     holder.timeTv.setText(hour + ":" + minute);
-                    updateSQLite(scheduleModel.getTrip_no(),
-                            scheduleModel.getSchedule_no(),
-                            holder.timeTv.getText().toString(),
-                            "시간이 변경되었습니다."
-                    );
+                    if(U.getInstance().getBoolean("login")) {
+                        NetProcess.getInstance().netTimeFinal(new ScheduleModel(
+                                U.getInstance().tripDataModel.getTripNo(),
+                                scheduleModel.getSchedule_date(),
+                                scheduleModel.get_id(),
+                                scheduleModel.getItem_time()
+                        ));
+                    } else {
+                        updateSQLite(scheduleModel.getTrip_no(),
+                                scheduleModel.getSchedule_no(),
+                                holder.timeTv.getText().toString(),
+                                "시간이 변경되었습니다."
+                        );
+                    }
                 }, 0, 0, false).show()
         );
     }
@@ -179,7 +201,5 @@ public class FinScheduleListAdapter extends RecyclerView.Adapter<ScheduleListVie
     }
 
     @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
-    }
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {}
 }

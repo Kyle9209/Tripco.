@@ -12,6 +12,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -56,7 +57,7 @@ import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 
 public class CandidateLIstFragment extends RootFragment
-        implements OnMapReadyCallback, TripActivity.onKeyBackPressedListener  {
+        implements OnMapReadyCallback, TripActivity.onKeyBackPressedListener{
     @BindView(R.id.tabs) TabLayout tabLayout;
     @BindView(R.id.container) ViewPager mViewPager;
     @BindView(R.id.days_spin) Spinner spinner;
@@ -68,6 +69,7 @@ public class CandidateLIstFragment extends RootFragment
     private GoogleMap mMap = null;
     private Unbinder unbinder;
     private View view;
+    private int TripNo;
 
     public CandidateLIstFragment() {}
 
@@ -76,6 +78,7 @@ public class CandidateLIstFragment extends RootFragment
         view = inflater.inflate(R.layout.fragment_candidate_list, container, false);
         unbinder = ButterKnife.bind(this, view);
         U.getInstance().getBus().register(this);
+        TripNo = U.getInstance().tripDataModel.getTripNo();
         uiInit();
         spinnerInit();
         if(getArguments() != null && getArguments().getInt("i", 0) == 1) onGooglePlaces();
@@ -87,13 +90,13 @@ public class CandidateLIstFragment extends RootFragment
         stopPD();
         if(str.equals("CreateItemSuccess")){
             Toast.makeText(getContext(), addCandidateText, Toast.LENGTH_SHORT).show();
-            NetProcess.getInstance().netListItem(new ScheduleModel(U.getInstance().tripDataModel.getTripNo(), 0));
+            NetProcess.getInstance().netListItem(new ScheduleModel(TripNo, 0));
             mViewPager.setCurrentItem(0);
             spinner.setSelection(0);
         }
-        if(str.equals("ResponseItemSuccess")){
+        if(str.equals("UpdateItemSuccess") || str.equals("DeleteItemSuccess")){
             NetProcess.getInstance().netListItem(
-                    new ScheduleModel(U.getInstance().tripDataModel.getTripNo(), spinner.getSelectedItemPosition()));
+                    new ScheduleModel(TripNo, spinner.getSelectedItemPosition()));
         }
     }
 
@@ -113,14 +116,14 @@ public class CandidateLIstFragment extends RootFragment
         spinner.setAdapter(adapter);
         // 로그인 되어있으면 초기화 - 1일차 데이터 가져옴
         if(U.getInstance().getBoolean("login")) {
-            NetProcess.getInstance().netListItem(new ScheduleModel(U.getInstance().tripDataModel.getTripNo(), 0));
+            NetProcess.getInstance().netListItem(new ScheduleModel(TripNo, 0));
         }
         // 스피너에서 날짜를 선택하면
         spinner.setOnItemSelectedListener((parent, view1, position, id) -> {
             // 뷰페이저에 날짜를 바꿧다고 알려줌
             if (U.getInstance().getBoolean("login")) {
                 U.getInstance().getBus().post("refreshTrue");
-                NetProcess.getInstance().netListItem(new ScheduleModel(U.getInstance().tripDataModel.getTripNo(), position));
+                NetProcess.getInstance().netListItem(new ScheduleModel(TripNo, position));
             } else {
                 U.getInstance().getBus().post("position" + position);
             }
@@ -128,65 +131,84 @@ public class CandidateLIstFragment extends RootFragment
         });
     }
 
-    private void onMapMarker(){
+    private void onMapMarker() {
         mMap.clear();
-        ArrayList<LatLng> latLng = new ArrayList<>();
-        String lat, lng;
-        ArrayList<ScheduleModel> list = new ArrayList<>();
-        String sql = "select * from ScheduleList_Table where trip_no=" + U.getInstance().tripDataModel.getTripNo() +
-                " and schedule_date='" + spinner.getSelectedItemPosition() + "';";
-        Cursor csr = DBOpenHelper.dbOpenHelper.getWritableDatabase().rawQuery(sql, null);
-        int n = 0;
-        while (csr.moveToNext()) {
-            list.add(new ScheduleModel(
-                    csr.getInt(0),
-                    csr.getInt(1),
-                    csr.getInt(2),
-                    csr.getString(3),
-                    csr.getInt(4),
-                    csr.getString(5),
-                    csr.getString(6),
-                    csr.getString(7),
-                    csr.getString(8),
-                    csr.getString(9),
-                    csr.getInt(10),
-                    csr.getString(11)
-            ));
-            lat = csr.getString(5);
-            lng = csr.getString(6);
-            if(!lat.equals("null") && !lng.equals("null")) {
-                latLng.add(new LatLng(Double.parseDouble(lat), Double.parseDouble(lng)));
-                if(n == 0) {
-                    mMap.addMarker(new MarkerOptions()
-                            .position(latLng.get(n))
-                            .title(csr.getString(8))
-                    ).showInfoWindow();
-                } else {
-                    mMap.addMarker(new MarkerOptions()
-                            .position(latLng.get(n))
-                            .title(csr.getString(8))
-                    );
+        if (U.getInstance().getBoolean("login")) {
+
+        } else {
+            ArrayList<LatLng> latLng = new ArrayList<>();
+            ArrayList<ScheduleModel> list = new ArrayList<>();
+            String sql = "select * from ScheduleList_Table where trip_no=" + TripNo +
+                    " and schedule_date='" + spinner.getSelectedItemPosition() + "';";
+            Cursor csr = DBOpenHelper.dbOpenHelper.getWritableDatabase().rawQuery(sql, null);
+            int position = 0;
+            while (csr.moveToNext()) {
+                if (!csr.getString(7).equals("null") && csr.getString(7) != null) {
+                    list.add(new ScheduleModel(
+                            csr.getInt(0),
+                            csr.getInt(1),
+                            csr.getInt(2),
+                            csr.getString(3),
+                            csr.getInt(4),
+                            csr.getString(5),
+                            csr.getString(6),
+                            csr.getString(7),
+                            csr.getString(8),
+                            csr.getString(9),
+                            csr.getInt(10),
+                            csr.getString(11)
+                    ));
+                    latLng.add(new LatLng(
+                            Double.parseDouble(csr.getString(5)),
+                            Double.parseDouble(csr.getString(6))
+                    ));
+                    if (position == 0) { // 첫번째 마커 말풍선 띄우기
+                        mMap.addMarker(new MarkerOptions()
+                                .position(latLng.get(position))
+                                .title(csr.getString(8))
+                                .zIndex(position)).showInfoWindow();
+                    } else {
+                        mMap.addMarker(new MarkerOptions()
+                                .position(latLng.get(position))
+                                .title(csr.getString(8))
+                                .zIndex(position));
+                    }
+                    position++;
                 }
-                n++;
             }
-        }
 
-        // 리스트뷰 초기화
-        recViewInit(list);
+            // 리스트뷰 초기화
+            recViewInit(list);
 
-        if(latLng.size() > 0 && latLng.get(0) != null) {
-            CameraPosition ani = new CameraPosition.Builder()
-                    .target(latLng.get(0))
-                    .zoom(9)
-                    .build();
-            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(ani));
+            // 첫번째 마커로 이동
+            if (latLng.size() > 0 && latLng.get(0) != null) {
+                CameraPosition ani = new CameraPosition.Builder()
+                        .target(latLng.get(0))
+                        .zoom(9)
+                        .build();
+                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(ani));
+            }
         }
     }
 
+    // 맵에 있는 리스트뷰
     private void recViewInit(ArrayList<ScheduleModel> list){
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         MarkerListAdapter adapter = new MarkerListAdapter(list);
         recyclerView.setAdapter(adapter);
+
+        PagerSnapHelper pagerSnapHelper = new PagerSnapHelper();
+        pagerSnapHelper.attachToRecyclerView(recyclerView);
+
+        recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if(newState == RecyclerView.SCROLL_STATE_SETTLING){
+                    // asdasdasd
+                }
+            }
+        });
     }
 
     @OnClick({R.id.change_view_btn, R.id.search_btn})
@@ -231,7 +253,6 @@ public class CandidateLIstFragment extends RootFragment
                 String placeId = place.getId();
                 String placeName = place.getName().toString();
                 insertSQLite(lat, lng, placeId, placeName);
-                onMapMarker();
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                 Status status = PlaceAutocomplete.getStatus(getContext(), data);
                 U.getInstance().log("RESULT_ERROR 상태 : " + status.getStatusMessage());
@@ -246,9 +267,9 @@ public class CandidateLIstFragment extends RootFragment
             showPD();
             NetProcess.getInstance().netCrUpDeItem(new ScheduleModel(
                     U.getInstance().getUserModel().getUser_id(),
-                    U.getInstance().tripDataModel.getTripNo(),
+                    TripNo,
                     0,
-                    "",
+                    "null",
                     0,
                     String.valueOf(lat),
                     String.valueOf(lng),
@@ -269,15 +290,15 @@ public class CandidateLIstFragment extends RootFragment
                         " item_title, " +
                         " item_memo) " +
                         " values(" +
-                        "'" + U.getInstance().tripDataModel.getTripNo() + "', " +
+                        "'" + TripNo + "', " +
                         "0, " + // position == 1 (1일차)
-                        "'', " + // item_url == ""
+                        "'null', " + // item_url = null
                         "0, " +  // cate_no == 0 (관광)
                         "'" + lat + "', " +
                         "'" + lng + "', " +
                         "'" + placeId + "', " +
                         "'" + placeName + "', " +
-                        "'메모없음');"; // memo == 메모없음
+                        "'메모없음');"; // memo = 메모없음
                 DBOpenHelper.dbOpenHelper.getWritableDatabase().execSQL(sql);
                 Toast.makeText(getContext(), addCandidateText, Toast.LENGTH_SHORT).show();
                 mViewPager.setCurrentItem(0);
@@ -370,5 +391,10 @@ public class CandidateLIstFragment extends RootFragment
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.setOnMarkerClickListener(marker -> {
+            marker.showInfoWindow();
+            recyclerView.smoothScrollToPosition((int) marker.getZIndex());
+            return true;
+        });
     }
 }

@@ -85,6 +85,14 @@ public class ScheduleModel implements Serializable {
         this._id = _id;
     }
 
+    // 서버용 시간 바꿀때 보내는 그릇
+    public ScheduleModel(int trip_no, int schedule_date, String _id, String item_time) {
+        this.trip_no = trip_no;
+        this.schedule_date = schedule_date;
+        this._id = _id;
+        this.item_time = item_time;
+    }
+
     // 서버용 수정할때 보내는 그릇
     public ScheduleModel(String user_id, int trip_no, int schedule_date, String _id, String item_url, int cate_no, String item_lat, String item_long, String item_placeid, String item_title, String item_memo, int item_check, String item_time) {
         this.user_id = user_id;

@@ -77,7 +77,7 @@ public class ModifyScheduleActivity extends RootActivity implements GoogleApiCli
 
     @Subscribe
     public void ottoBus(String str){
-        if(str.equals("ResponseItemSuccess")) {
+        if(str.equals("UpdateItemSuccess")) {
             stopPD();
             finishSetResult();
         }
@@ -158,7 +158,7 @@ public class ModifyScheduleActivity extends RootActivity implements GoogleApiCli
             NetProcess.getInstance().netCrUpDeItem(new ScheduleModel(
                     U.getInstance().getUserModel().getUser_id(),
                     U.getInstance().tripDataModel.getTripNo(),
-                    scheduleModel.getSchedule_date(),
+                    spinner.getSelectedItemPosition(),
                     scheduleModel.get_id(),
                     openUrlTv.getText().toString(),
                     getCategoryNum(),
@@ -168,28 +168,29 @@ public class ModifyScheduleActivity extends RootActivity implements GoogleApiCli
                     tripTitle.getText().toString(),
                     memo.getText().toString(),
                     getCheckNum(),
-                    null
+                    "00:00"
             ), "update");
-        }
-        try {
-            String sql = "update ScheduleList_Table set" +
-                    " schedule_date = '"+spinner.getSelectedItemPosition()+"', "+
-                    " item_url = '"+openUrlTv.getText()+"', "+
-                    " cate_no = "+getCategoryNum()+", "+
-                    " item_lat = '"+lat+"', "+
-                    " item_long = '"+lng+"', "+
-                    " item_placeid = '"+placeId+"', "+
-                    " item_title = '"+tripTitle.getText()+"', "+
-                    " item_memo = '"+memo.getText()+"', "+
-                    " item_check = "+getCheckNum()+", "+
-                    " item_time = '"+timeTv.getText()+"' "+
-                    " where trip_no = " + trip_no + " and schedule_no = " + s_no + " ;";
-            DBOpenHelper.dbOpenHelper.getWritableDatabase().execSQL(sql);
-            U.getInstance().getBus().post("ViewPagerListUpdate");
-            Toast.makeText(this, str, Toast.LENGTH_SHORT).show();
-            finishSetResult();
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } else {
+            try {
+                String sql = "update ScheduleList_Table set" +
+                        " schedule_date = '" + spinner.getSelectedItemPosition() + "', " +
+                        " item_url = '" + openUrlTv.getText() + "', " +
+                        " cate_no = " + getCategoryNum() + ", " +
+                        " item_lat = '" + lat + "', " +
+                        " item_long = '" + lng + "', " +
+                        " item_placeid = '" + placeId + "', " +
+                        " item_title = '" + tripTitle.getText() + "', " +
+                        " item_memo = '" + memo.getText() + "', " +
+                        " item_check = " + getCheckNum() + ", " +
+                        " item_time = '" + timeTv.getText() + "' " +
+                        " where trip_no = " + trip_no + " and schedule_no = " + s_no + " ;";
+                DBOpenHelper.dbOpenHelper.getWritableDatabase().execSQL(sql);
+                U.getInstance().getBus().post("ViewPagerListUpdate");
+                Toast.makeText(this, str, Toast.LENGTH_SHORT).show();
+                finishSetResult();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 

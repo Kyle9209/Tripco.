@@ -7,56 +7,56 @@
     tools:context="com.tripco.www.tripco.ui.MyPageActivity">
 
     <include
-        android:layout_height="wrap_content"
+        layout="@layout/custom_toolbar_layout"
         android:layout_width="match_parent"
-        layout="@layout/custom_toolbar_layout"/>
+        android:layout_height="wrap_content" />
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
             <!-- 프로필 사진 -->
             <de.hdodenhof.circleimageview.CircleImageView
-                android:layout_marginTop="50dp"
-                android:layout_marginBottom="50dp"
                 android:id="@+id/profile_civ"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
+                android:layout_gravity="center"
+                android:layout_marginBottom="50dp"
+                android:layout_marginTop="50dp"
                 android:scaleType="centerCrop"
-                android:src="@drawable/default_my_page_profile"
-                android:layout_gravity="center" />
+                android:src="@drawable/default_my_page_profile" />
 
             <!-- 닉네임 -->
             <LinearLayout
                 android:id="@+id/change_nick_line"
-                android:onClick="onClickView"
-                android:background="?android:attr/selectableItemBackground"
                 android:layout_width="match_parent"
-                android:layout_height="64dp">
+                android:layout_height="64dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:onClick="onClickView">
 
                 <TextView
-                    android:layout_weight="1"
-                    android:textStyle="bold"
-                    android:textColor="#000"
-                    android:textSize="18sp"
-                    android:paddingLeft="30dp"
-                    android:gravity="center_vertical"
                     android:id="@+id/nickName_tv"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:text="닉네임" />
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="30dp"
+                    android:text="닉네임"
+                    android:textColor="#000"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
 
                 <ImageView
-                    android:layout_marginRight="15dp"
-                    android:src="@drawable/right_next_btn"
-                    android:layout_weight="0"
                     android:layout_width="35dp"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="15dp"
+                    android:layout_weight="0"
+                    android:src="@drawable/right_next_btn" />
 
             </LinearLayout>
 
@@ -66,43 +66,71 @@
                 android:layout_height="64dp">
 
                 <TextView
-                    android:textStyle="bold"
-                    android:textColor="#000"
-                    android:textSize="18sp"
-                    android:paddingLeft="30dp"
-                    android:gravity="center_vertical"
                     android:id="@+id/email_tv"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:text="이메일*" />
+                    android:gravity="center_vertical"
+                    android:paddingLeft="30dp"
+                    android:text="이메일*"
+                    android:textColor="#000"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
 
             </LinearLayout>
 
             <!-- 비밀번호 변경 -->
             <LinearLayout
                 android:id="@+id/change_pwd_line"
-                android:onClick="onClickView"
-                android:background="?android:attr/selectableItemBackground"
                 android:layout_width="match_parent"
-                android:layout_height="64dp">
+                android:layout_height="64dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:onClick="onClickView">
 
                 <TextView
-                    android:layout_weight="1"
-                    android:textStyle="bold"
-                    android:textColor="#000"
-                    android:textSize="18sp"
-                    android:paddingLeft="30dp"
-                    android:gravity="center_vertical"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:text="비밀번호 변경" />
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="30dp"
+                    android:text="비밀번호 변경"
+                    android:textColor="#000"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
 
                 <ImageView
-                    android:layout_marginRight="15dp"
-                    android:src="@drawable/right_next_btn"
-                    android:layout_weight="0"
                     android:layout_width="35dp"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="15dp"
+                    android:layout_weight="0"
+                    android:src="@drawable/right_next_btn" />
+
+            </LinearLayout>
+
+            <!-- 비밀번호 변경 -->
+            <LinearLayout
+                android:id="@+id/stop_member_line"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:onClick="onClickView">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="30dp"
+                    android:text="회원탈퇴"
+                    android:textColor="#000"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:layout_width="35dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="15dp"
+                    android:layout_weight="0"
+                    android:src="@drawable/right_next_btn" />
 
             </LinearLayout>
 

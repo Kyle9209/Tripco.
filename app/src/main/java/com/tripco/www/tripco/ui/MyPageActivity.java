@@ -3,15 +3,18 @@ package com.tripco.www.tripco.ui;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import com.miguelbcr.ui.rx_paparazzo2.RxPaparazzo;
 import com.miguelbcr.ui.rx_paparazzo2.entities.FileData;
+import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 import com.tripco.www.tripco.R;
+import com.tripco.www.tripco.RootActivity;
+import com.tripco.www.tripco.model.MemberModel;
+import com.tripco.www.tripco.net.NetProcess;
 import com.tripco.www.tripco.util.U;
 import com.yalantis.ucrop.UCrop;
 
@@ -24,7 +27,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
-public class MyPageActivity extends AppCompatActivity {
+public class MyPageActivity extends RootActivity {
     @BindView(R.id.toolbar_title_tv) TextView toolbarTitleTv;
     @BindView(R.id.toolbar_right_btn) Button toolbarRightBtn;
     @BindView(R.id.profile_civ) CircleImageView profile;
@@ -36,10 +39,26 @@ public class MyPageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_page);
         ButterKnife.bind(this);
+        U.getInstance().getBus().register(this);
         toolbarInit();
 
         nickNameTv.setText(U.getInstance().getUserModel().getUser_nick());
         emailTv.setText(U.getInstance().getUserModel().getUser_id());
+    }
+
+    @Subscribe
+    public void ottoBus(String str){
+        if(str.equals("StopSuccess")){
+            stopPD();
+            U.getInstance().getBus().post("logout");
+            finish();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        U.getInstance().getBus().unregister(this);
+        super.onDestroy();
     }
 
     private void toolbarInit(){
@@ -85,6 +104,10 @@ public class MyPageActivity extends AppCompatActivity {
                 intent = new Intent(MyPageActivity.this, ModifyNickActivity.class);
                 intent.putExtra("nickName", nickNameTv.getText().toString());
                 startActivityForResult(intent, 2); //값을 가져오기로 위해서
+                break;
+            case R.id.stop_member_line:
+                showPD();
+                NetProcess.getInstance().netStop(new MemberModel(U.getInstance().getUserModel().getUser_id()));
                 break;
         }
     }

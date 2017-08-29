@@ -98,6 +98,9 @@ public class MainActivity extends AppCompatActivity
             userNickTv.setText(U.getInstance().getUserModel().getUser_nick());
         }
         if(BUS_NAME.equals("tripListInit")) recViewInit();
+        if(BUS_NAME.equals("logout")){
+            logout();
+        }
     }
 
     @Override // 디비 클로즈
@@ -272,6 +275,12 @@ public class MainActivity extends AppCompatActivity
         return list;
     }
 
+    private void logout(){
+        U.getInstance().setBoolean("login", false);
+        recViewInit();
+        loginCheck();
+    }
+
     // 로그인, 회원가입 버튼
     public void onClickBtn(View view) {
         switch (view.getId()) {
@@ -279,9 +288,7 @@ public class MainActivity extends AppCompatActivity
                 if(U.getInstance().getBoolean("login")){
                     U.getInstance().showAlertDialog(this, "알림", "로그아웃 하시겠습니까?",
                             "예", (dialogInterface, i) -> {
-                                U.getInstance().setBoolean("login", false);
-                                recViewInit();
-                                loginCheck();
+                                logout();
                                 dialogInterface.dismiss();
                             },
                             "아니오", (dialogInterface, i) -> dialogInterface.dismiss());
