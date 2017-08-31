@@ -22,7 +22,6 @@ public class Net {
         return retrofit;
     }
 
-
     // 팩토리 설정
     private TripcoFactoryIm apiIm;
 

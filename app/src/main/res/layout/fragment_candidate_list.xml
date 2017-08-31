@@ -93,7 +93,7 @@
 
             <android.support.v7.widget.RecyclerView
                 android:layout_alignParentBottom="true"
-                tools:listitem="@layout/cell_candi_marker_layout"
+                tools:listitem="@layout/cell_marker_layout"
                 android:id="@+id/recyclerview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />

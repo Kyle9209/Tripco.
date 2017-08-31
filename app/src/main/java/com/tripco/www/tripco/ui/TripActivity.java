@@ -1,10 +1,14 @@
 package com.tripco.www.tripco.ui;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.places.Places;
 import com.squareup.otto.Subscribe;
 import com.tripco.www.tripco.R;
 import com.tripco.www.tripco.RootActivity;
@@ -16,7 +20,7 @@ import com.tripco.www.tripco.util.U;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class TripActivity extends RootActivity {
+public class TripActivity extends RootActivity implements GoogleApiClient.OnConnectionFailedListener {
     @BindView(R.id.navigation) BottomNavigationView navigation;
     private FragmentTransaction ft;
     private boolean flag = true; // 탐색창 유지 플래그
@@ -52,6 +56,14 @@ public class TripActivity extends RootActivity {
         U.getInstance().getBus().register(this);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         navigation.setSelectedItemId(R.id.candidate); // 초기 화면 -> 후보지리스트
+
+        U.getInstance().setmGoogleApiClient(new GoogleApiClient
+                .Builder(this)
+                .addApi(Places.GEO_DATA_API)
+                .addApi(Places.PLACE_DETECTION_API)
+                .enableAutoManage(this, this)
+                .build()
+        );
     }
 
     @Subscribe
@@ -72,12 +84,10 @@ public class TripActivity extends RootActivity {
 
     @Override
     protected void onDestroy() {
-        if(U.getInstance().getmGoogleApiClient() != null) {
-            U.getInstance().getmGoogleApiClient().disconnect();
-            U.getInstance().setmGoogleApiClient(null);
-        }
         U.getInstance().getBus().unregister(this);
         U.getInstance().setScheduleListModel(null);
+        U.getInstance().getmGoogleApiClient().disconnect();
+        U.getInstance().setmGoogleApiClient(null);
         super.onDestroy();
     }
 
@@ -103,6 +113,12 @@ public class TripActivity extends RootActivity {
 
     // 백키눌렀을때 웹뷰 뒤로가기
     private onKeyBackPressedListener mOnKeyBackPressedListener;
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
     public interface onKeyBackPressedListener {
         void onBack();
     }

@@ -53,7 +53,7 @@ public class ScheduleInfoActivity extends RootActivity
     @BindView(R.id.open_url_tv) TextView openUrlTv;
     @BindView(R.id.time_tv) TextView timeTv;
     private ScheduleModel scheduleModel;
-    private GoogleApiClient mGoogleApiClient;
+    private GoogleApiClient googleApiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +61,14 @@ public class ScheduleInfoActivity extends RootActivity
         setContentView(R.layout.activity_schedule_info);
         ButterKnife.bind(this);
         U.getInstance().getBus().register(this);
+
+        googleApiClient = new GoogleApiClient
+                .Builder(this)
+                .addApi(Places.GEO_DATA_API)
+                .addApi(Places.PLACE_DETECTION_API)
+                .enableAutoManage(this, this)
+                .build();
+
         scheduleModel = (ScheduleModel) getIntent().getSerializableExtra("scheduleModel");
         toolbarInit();
         uiInit();
@@ -78,6 +86,7 @@ public class ScheduleInfoActivity extends RootActivity
     @Override
     protected void onDestroy() {
         U.getInstance().getBus().unregister(this);
+        googleApiClient.disconnect();
         super.onDestroy();
     }
 
@@ -122,16 +131,7 @@ public class ScheduleInfoActivity extends RootActivity
     }
 
     private void getPlaceData(){
-        if(mGoogleApiClient == null) {
-            mGoogleApiClient = new GoogleApiClient
-                    .Builder(this)
-                    .addApi(Places.GEO_DATA_API)
-                    .addApi(Places.PLACE_DETECTION_API)
-                    .enableAutoManage(this, this)
-                    .build();
-        }
-
-        Places.GeoDataApi.getPlaceById(mGoogleApiClient, scheduleModel.getItem_placeid())
+        Places.GeoDataApi.getPlaceById(googleApiClient, scheduleModel.getItem_placeid())
                 .setResultCallback(places -> {
                     if (places.getStatus().isSuccess() && places.getCount() > 0) {
                         final Place myPlace = places.get(0);
@@ -207,13 +207,15 @@ public class ScheduleInfoActivity extends RootActivity
 
     // 구글에서 사진을 비동기로 가져옴
     private void placePhotosAsync() {
-        Places.GeoDataApi.getPlacePhotos(mGoogleApiClient, scheduleModel.getItem_placeid())
+        Places.GeoDataApi.getPlacePhotos(googleApiClient, scheduleModel.getItem_placeid())
                 .setResultCallback(photos -> {
                     if (!photos.getStatus().isSuccess()) return;
                     PlacePhotoMetadataBuffer photoMetadataBuffer = photos.getPhotoMetadata();
                     if (photoMetadataBuffer.getCount() > 0) {
                         photoMetadataBuffer.get(0)
-                                .getScaledPhoto(mGoogleApiClient, placeImgIv.getWidth(), placeImgIv.getHeight())
+                                .getScaledPhoto(googleApiClient,
+                                        placeImgIv.getWidth(),
+                                        placeImgIv.getHeight())
                                 .setResultCallback(mDisplayPhotoResultCallback);
                     }
                     photoMetadataBuffer.release();

@@ -1,101 +1,110 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="100dp"
-    android:layout_margin="5dp">
+    android:layout_height="170dp"
+    android:layout_marginBottom="5dp"
+    android:layout_marginLeft="16dp"
+    android:layout_marginRight="16dp"
+    android:layout_marginTop="5dp">
 
     <LinearLayout
-        android:padding="10dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal">
+        android:background="?android:attr/selectableItemBackground"
+        android:orientation="vertical">
 
-        <TextView
-            android:layout_margin="10dp"
-            android:layout_gravity="center"
-            android:id="@+id/time_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0"
-            android:gravity="center"
-            android:padding="5dp"
-            android:text="00:00"
-            android:textSize="20sp" />
-
-        <LinearLayout
+        <!-- 상단 이미지 부분 -->
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="#dadada"
+            android:layout_weight="1">
+
+            <ImageView
+                android:id="@+id/default_image_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:layout_margin="25dp"
+                android:src="@mipmap/ic_wallpaper_black_48dp" />
+
+            <ImageView
+                android:id="@+id/img_iv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#00000000"
+                android:scaleType="centerCrop" />
+
+            <ProgressBar
+                android:id="@+id/loading_img_pb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true" />
+
+        </RelativeLayout>
+
+        <!-- 하단 부분-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:background="@color/colorPrimary"
+            android:gravity="center"
             android:orientation="horizontal">
 
-            <RelativeLayout
+            <TextView
+                android:id="@+id/time_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_weight="0"
-                android:layout_width="100dp"
-                android:layout_height="match_parent">
+                android:background="?android:attr/selectableItemBackground"
+                android:drawableLeft="@mipmap/ic_hourglass_empty_white_18dp"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:text="00:00"
+                android:textColor="#fff"
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
-                <ImageView
-                    android:layout_margin="25dp"
-                    android:id="@+id/default_image_iv"
-                    android:layout_centerVertical="true"
-                    android:layout_centerHorizontal="true"
-                    android:src="@drawable/default_image_icon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-                <ImageView
-                    android:background="#00000000"
-                    android:scaleType="centerCrop"
-                    android:id="@+id/img_iv"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
-
-                <ProgressBar
-                    android:id="@+id/loading_img_pb"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_centerHorizontal="true" />
-
-                <ImageButton
-                    android:padding="3dp"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/web_btn2"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:layout_weight="0"
-                    android:id="@+id/open_url_btn"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
-                    android:layout_alignParentBottom="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignParentEnd="true"/>
-
-            </RelativeLayout>
-
-            <LinearLayout
+            <TextView
+                android:id="@+id/title_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:gravity="center"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:text="위치명"
+                android:textColor="#fff"
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
-                <TextView
-                    android:textSize="20sp"
-                    android:layout_weight="1"
-                    android:textColor="#000"
-                    android:padding="5dp"
-                    android:id="@+id/title_tv"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text="위치명" />
+            <ImageButton
+                android:id="@+id/open_url_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="0"
+                android:background="?android:attr/selectableItemBackground"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:paddingTop="2dp"
+                android:paddingBottom="2dp"
+                android:scaleType="centerCrop"
+                android:src="@mipmap/ic_language_white_18dp" />
 
-                <CheckBox
-                    android:layout_weight="0"
-                    android:id="@+id/check_cb"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checked="true" />
-
-            </LinearLayout>
+            <ImageView
+                android:id="@+id/check_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="0"
+                android:background="?android:attr/selectableItemBackground"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:paddingTop="2dp"
+                android:paddingBottom="2dp"
+                android:src="@mipmap/ic_check_circle_white_18dp" />
 
         </LinearLayout>
 

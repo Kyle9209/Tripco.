@@ -8,6 +8,7 @@ import android.database.SQLException;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -76,6 +77,7 @@ public class CandidateLIstFragment extends RootFragment
     private Unbinder unbinder;
     private View view;
     private int TripNo;
+    ArrayList<LatLng> latLng = new ArrayList<>();
 
     public CandidateLIstFragment() {}
 
@@ -87,7 +89,7 @@ public class CandidateLIstFragment extends RootFragment
         TripNo = U.getInstance().tripDataModel.getTripNo();
         uiInit();
         spinnerInit();
-        if(getArguments() != null && getArguments().getInt("i", 0) == 1) onGooglePlaces();
+        if(getArguments() != null && getArguments().getInt("i", 0) == 1) onGooglePlaces(); // 탐색->후보지->검색
         return view;
     }
 
@@ -103,6 +105,14 @@ public class CandidateLIstFragment extends RootFragment
         if(str.equals("UpdateItemSuccess") || str.equals("DeleteItemSuccess")){
             NetProcess.getInstance().netListItem(
                     new ScheduleModel(TripNo, spinner.getSelectedItemPosition()));
+        }
+        if(str.contains("moveToMarker")) {
+            int position = Integer.parseInt(str.split("_")[1]);
+            CameraPosition ani = new CameraPosition.Builder()
+                    .target(latLng.get(position))
+                    .zoom(7)
+                    .build();
+            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(ani));
         }
     }
 
@@ -132,24 +142,61 @@ public class CandidateLIstFragment extends RootFragment
             if (U.getInstance().getBoolean("login")) {
                 U.getInstance().getBus().post("refreshTrue");
                 NetProcess.getInstance().netListItem(new ScheduleModel(TripNo, position));
+                showPD();
+                new Handler().postDelayed(() -> {
+                    onMapMarker();
+                    stopPD();
+                }, 1000);
             } else {
                 U.getInstance().getBus().post("position" + position);
+                onMapMarker();
             }
-            onMapMarker();
         });
     }
 
     private void onMapMarker() {
+        latLng.clear();
         mMap.clear();
-        if (U.getInstance().getBoolean("login")) {
+        int position = 0;
+        ArrayList<ScheduleModel> list = new ArrayList<>();
 
+        if (U.getInstance().getBoolean("login")) {
+            ArrayList<ScheduleModel> scheduleModels = U.getInstance().getScheduleListModel();
+            for(int i=0; i<scheduleModels.size(); i++){
+                if(scheduleModels.get(i).getItem_placeid() != null
+                        && !scheduleModels.get(i).getItem_placeid().equals("null")){
+                    list.add(scheduleModels.get(i));
+                    latLng.add(new LatLng(
+                            Double.parseDouble(scheduleModels.get(i).getItem_lat()),
+                            Double.parseDouble(scheduleModels.get(i).getItem_long())
+                    ));
+                    switch (scheduleModels.get(i).getCate_no()) {
+                        case 0:
+                            addMarkerOnMap(
+                                    latLng.get(position),
+                                    scheduleModels.get(i).getItem_title(),
+                                    position);
+                            break;
+                        case 1:
+                            addMarkerOnMap(
+                                    latLng.get(position),
+                                    scheduleModels.get(i).getItem_title(),
+                                    position);
+                            break;
+                        case 2:
+                            addMarkerOnMap(
+                                    latLng.get(position),
+                                    scheduleModels.get(i).getItem_title(),
+                                    position);
+                            break;
+                    }
+                    position++;
+                }
+            }
         } else {
-            ArrayList<LatLng> latLng = new ArrayList<>();
-            ArrayList<ScheduleModel> list = new ArrayList<>();
             String sql = "select * from ScheduleList_Table where trip_no=" + TripNo +
                     " and schedule_date='" + spinner.getSelectedItemPosition() + "';";
             Cursor csr = DBOpenHelper.dbOpenHelper.getWritableDatabase().rawQuery(sql, null);
-            int position = 0;
             while (csr.moveToNext()) {
                 if (!csr.getString(7).equals("null") && csr.getString(7) != null) {
                     list.add(new ScheduleModel(
@@ -175,43 +222,40 @@ public class CandidateLIstFragment extends RootFragment
                             addMarkerOnMap(
                                     latLng.get(position),
                                     csr.getString(8),
-                                    R.layout.custom_marker_layout,
                                     position);
                             break;
                         case 1:
                             addMarkerOnMap(
                                     latLng.get(position),
                                     csr.getString(8),
-                                    R.layout.custom_marker_layout,
                                     position);
                             break;
                         case 2:
                             addMarkerOnMap(
                                     latLng.get(position),
                                     csr.getString(8),
-                                    R.layout.custom_marker_layout,
                                     position);
                             break;
                     }
                     position++;
                 }
             }
+        }
 
-            // 리스트뷰 초기화
-            recViewInit(list);
+        // 리스트뷰 초기화
+        recViewInit(list);
 
-            // 첫번째 마커로 이동
-            if (latLng.size() > 0 && latLng.get(0) != null) {
-                CameraPosition ani = new CameraPosition.Builder()
-                        .target(latLng.get(0))
-                        .zoom(7)
-                        .build();
-                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(ani));
-            }
+        // 첫번째 마커로 이동
+        if (latLng.size() > 0 && latLng.get(0) != null) {
+            CameraPosition ani = new CameraPosition.Builder()
+                    .target(latLng.get(0))
+                    .zoom(7)
+                    .build();
+            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(ani));
         }
     }
 
-    private void addMarkerOnMap(LatLng latLng, String title, int image, int position){
+    private void addMarkerOnMap(LatLng latLng, String title, int position){
         mMap.addMarker(new MarkerOptions()
                 .position(latLng)
                 .title(title)
@@ -231,16 +275,6 @@ public class CandidateLIstFragment extends RootFragment
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         MarkerListAdapter adapter = new MarkerListAdapter(list);
         recyclerView.setAdapter(adapter);
-
-        recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                if(newState == RecyclerView.SCROLL_STATE_SETTLING){
-                    // asdasdasd
-                }
-            }
-        });
     }
 
     @OnClick({R.id.change_view_btn, R.id.search_btn})
@@ -252,6 +286,8 @@ public class CandidateLIstFragment extends RootFragment
                     onMapMarker();
                     mapRela.setVisibility(View.VISIBLE);
                 } else {
+                    NetProcess.getInstance().netListItem(
+                            new ScheduleModel(TripNo, spinner.getSelectedItemPosition()));
                     changeViewBtn.setImageResource(R.drawable.map_icon);
                     mapRela.setVisibility(View.GONE);
                 }

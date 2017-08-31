@@ -1,9 +1,9 @@
 package com.tripco.www.tripco.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.SQLException;
 import android.support.annotation.NonNull;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +19,7 @@ import com.tripco.www.tripco.db.DBOpenHelper;
 import com.tripco.www.tripco.holder.MarkerListViewHolder;
 import com.tripco.www.tripco.model.ScheduleModel;
 import com.tripco.www.tripco.net.NetProcess;
+import com.tripco.www.tripco.ui.ScheduleInfoActivity;
 import com.tripco.www.tripco.util.U;
 
 import java.util.ArrayList;
@@ -34,7 +35,7 @@ public class MarkerListAdapter extends RecyclerView.Adapter<MarkerListViewHolder
 
     @Override
     public MarkerListViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.cell_candi_marker_layout, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.cell_marker_layout, parent, false);
         return new MarkerListViewHolder(view);
     }
 
@@ -42,6 +43,7 @@ public class MarkerListAdapter extends RecyclerView.Adapter<MarkerListViewHolder
     public void onBindViewHolder(MarkerListViewHolder holder, int position) {
         final ScheduleModel scheduleModel = scheduleModels.get(position);
         holder.indexTv.setText(String.valueOf(position+1));
+        holder.indexTv.setOnClickListener(view -> U.getInstance().getBus().post("moveToMarker_"+position));
         // 체크박스 상태 찍어주고 최종 < - > 후보지
         if(scheduleModel.getItem_check() == 1) {
             holder.checkCb.setImageResource(R.drawable.check_after_icon);
@@ -50,6 +52,13 @@ public class MarkerListAdapter extends RecyclerView.Adapter<MarkerListViewHolder
         }
         holder.checkCb.setOnClickListener(view -> {
             if(U.getInstance().getBoolean("login")){
+                if(scheduleModels.get(position).getItem_check() == 1){
+                    scheduleModels.get(position).setItem_check(0);
+                    holder.checkCb.setImageResource(R.drawable.check_before_icon);
+                } else {
+                    scheduleModels.get(position).setItem_check(1);
+                    holder.checkCb.setImageResource(R.drawable.check_after_icon);
+                }
                 NetProcess.getInstance().netCheckItem(new ScheduleModel(
                         U.getInstance().getUserModel().getUser_id(),
                         U.getInstance().tripDataModel.getTripNo(),
@@ -77,21 +86,7 @@ public class MarkerListAdapter extends RecyclerView.Adapter<MarkerListViewHolder
         } else {
             // placeid로 위치명, 사진 가져오기
             String placeId = scheduleModel.getItem_placeid();
-            GoogleApiClient mGoogleApiClient;
-            // ApiClient 확인
-            if(U.getInstance().getmGoogleApiClient() == null) {
-                // 최초 1번
-                mGoogleApiClient = new GoogleApiClient
-                        .Builder(context)
-                        .addApi(Places.GEO_DATA_API)
-                        .addApi(Places.PLACE_DETECTION_API)
-                        .enableAutoManage((FragmentActivity) context, this)
-                        .build();
-                U.getInstance().setmGoogleApiClient(mGoogleApiClient);
-            } else { // 이후엔 U에서 가져옴
-                mGoogleApiClient = U.getInstance().getmGoogleApiClient();
-            }
-            Places.GeoDataApi.getPlaceById(mGoogleApiClient, placeId)
+            Places.GeoDataApi.getPlaceById(U.getInstance().getmGoogleApiClient(), placeId)
                     .setResultCallback(places -> {
                         if (places.getStatus().isSuccess() && places.getCount() > 0) {
                             final Place myPlace = places.get(0);
@@ -104,7 +99,11 @@ public class MarkerListAdapter extends RecyclerView.Adapter<MarkerListViewHolder
                         places.release();
                     });
         }
-        // 주소 입력
+        holder.itemView.setOnClickListener(view -> {
+            Intent intent = new Intent(context, ScheduleInfoActivity.class);
+            intent.putExtra("scheduleModel", scheduleModel);
+            context.startActivity(intent);
+        });
     }
 
     private void updateSQLite(int trip_no, int s_no, int check, String str) {

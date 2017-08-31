@@ -11,6 +11,8 @@ import com.tripco.www.tripco.util.U;
 
 import java.util.ArrayList;
 
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -50,6 +52,7 @@ public class NetProcess {
                                             response.body().getResult().getUser_yn()
                                     )
                             );
+                            U.getInstance().log(response.body().getResult().getUser_image());
                             U.getInstance().getBus().post("getUserInfo");
                         } else {
                             Toast.makeText(U.getInstance().getContext(), response.body().getResult().getUser_nick() + "님 환영합니다.", Toast.LENGTH_SHORT).show();
@@ -103,6 +106,32 @@ public class NetProcess {
             }
         });
 
+    }
+
+    public void netChangeImg(MultipartBody.Part part, RequestBody part2) {
+        Call<ResponseModel<ScheduleModel>> res = Net.getInstance().getApiIm().change_img(part,part2);
+        res.enqueue(new Callback<ResponseModel<ScheduleModel>>() {
+            @Override
+            public void onResponse(Call<ResponseModel<ScheduleModel>> call, Response<ResponseModel<ScheduleModel>> response) {
+                if (response.isSuccessful()) {
+                    if (response.body().getCode() == 1) {
+                        netLoginJoinSimple(new MemberModel(U.getInstance().getUserModel().getUser_id()), "simple");
+                        U.getInstance().getBus().post("ChangeImgSuccess");
+                    } else {
+                        Toast.makeText(U.getInstance().getContext(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                        U.getInstance().getBus().post("stop failed");
+                    }
+                } else {
+                    Toast.makeText(U.getInstance().getContext(), "서버통신 실패-1", Toast.LENGTH_SHORT).show();
+                    U.getInstance().getBus().post("stop failed");
+                }
+            }
+            @Override
+            public void onFailure(Call<ResponseModel<ScheduleModel>> call, Throwable t) {
+                Toast.makeText(U.getInstance().getContext(), "서버통신 실패-2", Toast.LENGTH_SHORT).show();
+                U.getInstance().getBus().post("stop failed");
+            }
+        });
     }
 
     public void netNick(MemberModel req){

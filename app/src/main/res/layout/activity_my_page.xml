@@ -23,8 +23,8 @@
             <!-- 프로필 사진 -->
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/profile_civ"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
                 android:layout_gravity="center"
                 android:layout_marginBottom="50dp"
                 android:layout_marginTop="50dp"

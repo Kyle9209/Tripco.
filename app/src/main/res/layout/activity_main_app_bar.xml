@@ -31,6 +31,6 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         app:fab_iconSize="48dp"
-        app:fab_iconSrc="@drawable/floating_btn"/>
+        app:fab_iconSrc="@mipmap/ic_add_white_48dp"/>
 
 </android.support.design.widget.CoordinatorLayout>

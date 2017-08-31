@@ -3,7 +3,10 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="5dp" >
+    android:layout_marginBottom="5dp"
+    android:layout_marginLeft="16dp"
+    android:layout_marginRight="16dp"
+    android:layout_marginTop="5dp">
 
     <RelativeLayout
         android:background="?android:attr/selectableItemBackground"
@@ -69,9 +72,9 @@
             android:padding="5dp">
 
             <ImageView
-                android:layout_width="13dp"
-                android:layout_height="13dp"
-                android:src="@drawable/edit_icon" />
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/ic_edit_black_18dp" />
 
             <TextView
                 android:layout_width="wrap_content"

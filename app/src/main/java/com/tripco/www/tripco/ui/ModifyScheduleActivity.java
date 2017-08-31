@@ -59,9 +59,9 @@ public class ModifyScheduleActivity extends RootActivity implements GoogleApiCli
     @BindView(R.id.open_url_tv) TextView openUrlTv;
     @BindView(R.id.time_tv) TextView timeTv;
     private ScheduleModel scheduleModel;
-    private GoogleApiClient mGoogleApiClient;
     private String placeId;
     private String lat, lng;
+    private GoogleApiClient googleApiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +69,14 @@ public class ModifyScheduleActivity extends RootActivity implements GoogleApiCli
         setContentView(R.layout.activity_modify_schedule);
         ButterKnife.bind(this);
         U.getInstance().getBus().register(this);
+
+        googleApiClient = new GoogleApiClient
+                .Builder(this)
+                .addApi(Places.GEO_DATA_API)
+                .addApi(Places.PLACE_DETECTION_API)
+                .enableAutoManage(this, this)
+                .build();
+
         scheduleModel = (ScheduleModel) getIntent().getSerializableExtra("scheduleModel");
         toolbarInit();
         uiInit();
@@ -86,6 +94,7 @@ public class ModifyScheduleActivity extends RootActivity implements GoogleApiCli
     @Override
     protected void onDestroy() {
         U.getInstance().getBus().unregister(this);
+        googleApiClient.disconnect();
         super.onDestroy();
     }
 
@@ -268,16 +277,7 @@ public class ModifyScheduleActivity extends RootActivity implements GoogleApiCli
     }
 
     private void getPlaceData() {
-        if(mGoogleApiClient == null) {
-            mGoogleApiClient = new GoogleApiClient
-                    .Builder(this)
-                    .addApi(Places.GEO_DATA_API)
-                    .addApi(Places.PLACE_DETECTION_API)
-                    .enableAutoManage(this, this)
-                    .build();
-        }
-
-        Places.GeoDataApi.getPlaceById(mGoogleApiClient, placeId)
+        Places.GeoDataApi.getPlaceById(googleApiClient, placeId)
                 .setResultCallback(places -> {
                     if (places.getStatus().isSuccess() && places.getCount() > 0) {
                         final Place myPlace = places.get(0);
@@ -295,14 +295,16 @@ public class ModifyScheduleActivity extends RootActivity implements GoogleApiCli
 
     // 구글에서 사진을 비동기로 가져옴
     private void placePhotosAsync() {
-        Places.GeoDataApi.getPlacePhotos(mGoogleApiClient, placeId)
+        Places.GeoDataApi.getPlacePhotos(googleApiClient, placeId)
                 .setResultCallback(photos -> {
                     placeImgIv.setVisibility(View.INVISIBLE);
                     if (!photos.getStatus().isSuccess()) return;
                     PlacePhotoMetadataBuffer photoMetadataBuffer = photos.getPhotoMetadata();
                     if (photoMetadataBuffer.getCount() > 0) {
                         photoMetadataBuffer.get(0)
-                                .getScaledPhoto(mGoogleApiClient, placeImgIv.getWidth(), placeImgIv.getHeight())
+                                .getScaledPhoto(googleApiClient,
+                                        placeImgIv.getWidth(),
+                                        placeImgIv.getHeight())
                                 .setResultCallback(mDisplayPhotoResultCallback);
                     }
                     photoMetadataBuffer.release();

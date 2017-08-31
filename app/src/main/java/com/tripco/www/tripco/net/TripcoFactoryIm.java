@@ -6,9 +6,13 @@ import com.tripco.www.tripco.model.ResponseModel;
 import com.tripco.www.tripco.model.ScheduleModel;
 import com.tripco.www.tripco.model.TripModel;
 
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.Part;
 
 public interface TripcoFactoryIm {
     // 회원데이터 가져오기
@@ -26,6 +30,11 @@ public interface TripcoFactoryIm {
     // 회원탈퇴
     @POST("/stop")
     Call<ResponseModel> stop(@Body MemberModel req);
+
+    //사진 업로드
+    @Multipart
+    @POST("change_img")
+    Call<ResponseModel<ScheduleModel>> change_img(@Part MultipartBody.Part part, @Part("user_id") RequestBody requestBody2);
 
     // 닉네임 변경
     @POST("/nick")

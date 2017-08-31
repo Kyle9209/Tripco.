@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.database.SQLException;
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -52,8 +51,6 @@ public class FinScheduleListAdapter extends RecyclerView.Adapter<ScheduleListVie
     public void onBindViewHolder(ScheduleListViewHolder holder, int position) {
         // 데이터 셋팅
         final ScheduleModel scheduleModel = scheduleModels.get(position);
-        // 체크확인
-        if(scheduleModel.getItem_check() == 1) holder.check.isChecked();
         // placeId 확인  > 널이면 title 확인 > ""이면 제목없음
         if(scheduleModel.getItem_placeid() == null || scheduleModel.getItem_placeid().equals("null")){
             holder.loadingImgPb.setVisibility(View.GONE);
@@ -64,21 +61,7 @@ public class FinScheduleListAdapter extends RecyclerView.Adapter<ScheduleListVie
         } else {
             // placeid로 위치명, 사진 가져오기
             String placeId = scheduleModel.getItem_placeid();
-            GoogleApiClient mGoogleApiClient;
-            // ApiClient 확인
-            if(U.getInstance().getmGoogleApiClient() == null) {
-                // 최초 1번
-                mGoogleApiClient = new GoogleApiClient
-                        .Builder(context)
-                        .addApi(Places.GEO_DATA_API)
-                        .addApi(Places.PLACE_DETECTION_API)
-                        .enableAutoManage((FragmentActivity) context, this)
-                        .build();
-                U.getInstance().setmGoogleApiClient(mGoogleApiClient);
-            } else { // 이후엔 U에서 가져옴
-                mGoogleApiClient = U.getInstance().getmGoogleApiClient();
-            }
-            Places.GeoDataApi.getPlaceById(mGoogleApiClient, placeId)
+            Places.GeoDataApi.getPlaceById(U.getInstance().getmGoogleApiClient(), placeId)
                     .setResultCallback(places -> {
                         if (places.getStatus().isSuccess() && places.getCount() > 0) {
                             final Place myPlace = places.get(0);
@@ -110,22 +93,20 @@ public class FinScheduleListAdapter extends RecyclerView.Adapter<ScheduleListVie
             }
         });
         // 체크풀면 최종일정에서 삭제
-        holder.check.setOnCheckedChangeListener((compoundButton, b) -> {
-            if(!b) {
-                if(U.getInstance().getBoolean("login")) {
-                    NetProcess.getInstance().netCheckItem(new ScheduleModel(
-                            U.getInstance().getUserModel().getUser_id(),
-                            U.getInstance().tripDataModel.getTripNo(),
-                            scheduleModel.getSchedule_date(),
-                            scheduleModel.get_id()
-                    ));
-                } else {
-                    updateSQLite(scheduleModel.getTrip_no(),
-                            scheduleModel.getSchedule_no(),
-                            0,
-                            "최종일정에서 삭제되었습니다.");
-                    U.getInstance().getBus().post("DeleteItemSuccess");
-                }
+        holder.checkIv.setOnClickListener(view -> {
+            if(U.getInstance().getBoolean("login")) {
+                NetProcess.getInstance().netCheckItem(new ScheduleModel(
+                        U.getInstance().getUserModel().getUser_id(),
+                        U.getInstance().tripDataModel.getTripNo(),
+                        scheduleModel.getSchedule_date(),
+                        scheduleModel.get_id()
+                ));
+            } else {
+                updateSQLite(scheduleModel.getTrip_no(),
+                        scheduleModel.getSchedule_no(),
+                        0,
+                        "최종일정에서 삭제되었습니다.");
+                U.getInstance().getBus().post("DeleteItemSuccess");
             }
         });
         // 시간 가져오기

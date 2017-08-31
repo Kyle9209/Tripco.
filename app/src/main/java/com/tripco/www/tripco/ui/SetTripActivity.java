@@ -25,6 +25,7 @@ import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 import com.rey.material.app.BottomSheetDialog;
 import com.squareup.otto.Subscribe;
+import com.squareup.picasso.Picasso;
 import com.tripco.www.tripco.R;
 import com.tripco.www.tripco.RootActivity;
 import com.tripco.www.tripco.db.DBOpenHelper;
@@ -41,6 +42,7 @@ import java.util.Locale;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class SetTripActivity extends RootActivity {
     @BindView(R.id.toolbar_title_tv) TextView toolbarTitleTv;
@@ -92,8 +94,18 @@ public class SetTripActivity extends RootActivity {
             bottomSheetDialog.findViewById(R.id.cardview).setVisibility(View.VISIBLE);
             findWhoFinishBtn.setEnabled(true);
             findWhoFinishBtn.setTextColor(Color.WHITE);
+            // 파트너 이미지
+            CircleImageView partnerProfileCiv = bottomSheetDialog.findViewById(R.id.partner_profile_civ);
+            if(!U.getInstance().getPartnerModel().getUser_image().equals("default.jpg")) {
+                Picasso.with(partnerProfileCiv.getContext())
+                        .load(U.getInstance().getPartnerModel().getUser_image())
+                        .error(R.drawable.default_my_page_profile)
+                        .into(partnerProfileCiv);
+            }
+            // 파트너 이메일
             TextView partnerIdTv = bottomSheetDialog.findViewById(R.id.partner_id_tv);
             partnerIdTv.setText(U.getInstance().getPartnerModel().getUser_id());
+            // 파트너 닉네임
             TextView partnerNickTv = bottomSheetDialog.findViewById(R.id.partner_nick_tv);
             partnerNickTv.setText(U.getInstance().getPartnerModel().getUser_nick());
         }

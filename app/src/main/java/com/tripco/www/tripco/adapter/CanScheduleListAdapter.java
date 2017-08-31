@@ -5,8 +5,6 @@ import android.content.Intent;
 import android.database.SQLException;
 import android.net.Uri;
 import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,8 +13,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.Places;
 import com.tripco.www.tripco.PhotoTask;
@@ -30,8 +26,7 @@ import com.tripco.www.tripco.util.U;
 
 import java.util.ArrayList;
 
-public class CanScheduleListAdapter extends RecyclerView.Adapter<ScheduleListViewHolder>
-        implements GoogleApiClient.OnConnectionFailedListener {
+public class CanScheduleListAdapter extends RecyclerView.Adapter<ScheduleListViewHolder> {
     private Context context;
     private ArrayList<ScheduleModel> scheduleModels;
     private int pos;
@@ -52,7 +47,7 @@ public class CanScheduleListAdapter extends RecyclerView.Adapter<ScheduleListVie
     public void onBindViewHolder(ScheduleListViewHolder holder, int position) {
         final ScheduleModel scheduleModel = scheduleModels.get(position);
         if(scheduleModel == null){
-            holder.check.setVisibility(View.GONE);
+            holder.checkIv.setVisibility(View.GONE);
             holder.loadingImgPb.setVisibility(View.GONE);
             holder.openUrlBtn.setVisibility(View.GONE);
             holder.image.setVisibility(View.GONE);
@@ -61,7 +56,6 @@ public class CanScheduleListAdapter extends RecyclerView.Adapter<ScheduleListVie
             holder.itemView.setOnClickListener(view ->
                 new Handler().postDelayed(() -> U.getInstance().getBus().post("moveToSearching"),200));
         } else {
-            if (scheduleModel.getItem_check() == 1) holder.check.isChecked();
             // 위치명 확인 > 널이면 제목확인 > 널이면 제목없음
             if (scheduleModel.getItem_placeid() == null || scheduleModel.getItem_placeid().equals("null")) {
                 holder.loadingImgPb.setVisibility(View.GONE);
@@ -72,20 +66,7 @@ public class CanScheduleListAdapter extends RecyclerView.Adapter<ScheduleListVie
             } else {
                 // placeid로 위치명 가져오기
                 String placeId = scheduleModel.getItem_placeid();
-                GoogleApiClient mGoogleApiClient;
-                if (U.getInstance().getmGoogleApiClient() == null) {
-                    mGoogleApiClient = new GoogleApiClient
-                            .Builder(context)
-                            .addApi(Places.GEO_DATA_API)
-                            .addApi(Places.PLACE_DETECTION_API)
-                            .enableAutoManage((FragmentActivity) context, this)
-                            .build();
-                    U.getInstance().setmGoogleApiClient(mGoogleApiClient);
-                } else {
-                    mGoogleApiClient = U.getInstance().getmGoogleApiClient();
-                }
-
-                Places.GeoDataApi.getPlaceById(mGoogleApiClient, placeId)
+                Places.GeoDataApi.getPlaceById(U.getInstance().getmGoogleApiClient(), placeId)
                         .setResultCallback(places -> {
                             if (places.getStatus().isSuccess() && places.getCount() > 0) {
                                 final Place myPlace = places.get(0);
@@ -114,9 +95,19 @@ public class CanScheduleListAdapter extends RecyclerView.Adapter<ScheduleListVie
                 }
             });
             // 체크버튼
-            if (scheduleModel.getItem_check() == 1) holder.check.setChecked(true);
-            holder.check.setOnCheckedChangeListener((compoundButton, b) -> {
+            if(scheduleModel.getItem_check() == 1)
+                holder.checkIv.setImageResource(R.mipmap.ic_check_circle_white_18dp);
+            else
+                holder.checkIv.setImageResource(R.mipmap.ic_check_circle_black_18dp);
+            holder.checkIv.setOnClickListener(view -> {
                 if(U.getInstance().getBoolean("login")) {
+                    if(scheduleModels.get(position).getItem_check() == 1){
+                        scheduleModels.get(position).setItem_check(0);
+                        holder.checkIv.setImageResource(R.mipmap.ic_check_circle_black_18dp);
+                    } else {
+                        scheduleModels.get(position).setItem_check(1);
+                        holder.checkIv.setImageResource(R.mipmap.ic_check_circle_white_18dp);
+                    }
                     NetProcess.getInstance().netCheckItem(new ScheduleModel(
                             U.getInstance().getUserModel().getUser_id(),
                             U.getInstance().tripDataModel.getTripNo(),
@@ -124,16 +115,16 @@ public class CanScheduleListAdapter extends RecyclerView.Adapter<ScheduleListVie
                             scheduleModel.get_id()
                     ));
                 } else {
-                    if (b) {
-                        updateSQLite(scheduleModel.getTrip_no(),
-                                scheduleModel.getSchedule_no(),
-                                1,
-                                "최종일정에 추가되었습니다.");
+                    if(scheduleModels.get(position).getItem_check() == 1){
+                        scheduleModels.get(position).setItem_check(0);
+                        holder.checkIv.setImageResource(R.mipmap.ic_check_circle_black_18dp);
+                        updateSQLite(scheduleModel.getTrip_no(), scheduleModel.getSchedule_no(),
+                                0, "최종일정에서 삭제되었습니다.");
                     } else {
-                        updateSQLite(scheduleModel.getTrip_no(),
-                                scheduleModel.getSchedule_no(),
-                                0,
-                                "최종일정에서 삭제되었습니다.");
+                        scheduleModels.get(position).setItem_check(1);
+                        holder.checkIv.setImageResource(R.mipmap.ic_check_circle_white_18dp);
+                        updateSQLite(scheduleModel.getTrip_no(), scheduleModel.getSchedule_no(),
+                                1, "최종일정에 추가되었습니다.");
                     }
                 }
             });
@@ -162,11 +153,9 @@ public class CanScheduleListAdapter extends RecyclerView.Adapter<ScheduleListVie
             @Override
             protected void onPostExecute(AttributedPhoto attributedPhoto) {
                 progressBar.setVisibility(View.GONE);
+                U.getInstance().log("여길 몇번들어오는가");
                 if (attributedPhoto != null) imageView.setImageBitmap(attributedPhoto.bitmap);
             }
         }.execute(placeId);
     }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {}
 }

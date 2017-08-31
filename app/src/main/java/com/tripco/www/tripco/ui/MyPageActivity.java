@@ -1,8 +1,10 @@
 package com.tripco.www.tripco.ui;
 
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.AppCompatDrawableManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -26,6 +28,9 @@ import butterknife.OnClick;
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 
 public class MyPageActivity extends RootActivity {
     @BindView(R.id.toolbar_title_tv) TextView toolbarTitleTv;
@@ -33,6 +38,7 @@ public class MyPageActivity extends RootActivity {
     @BindView(R.id.profile_civ) CircleImageView profile;
     @BindView(R.id.nickName_tv) TextView nickNameTv;
     @BindView(R.id.email_tv) TextView emailTv;
+    File file;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +48,12 @@ public class MyPageActivity extends RootActivity {
         U.getInstance().getBus().register(this);
         toolbarInit();
 
+        if(U.getInstance().getUserModel().getUser_image() != null) {
+            Picasso.with(profile.getContext())
+                    .load(U.getInstance().getUserModel().getUser_image())
+                    .error(R.drawable.default_my_page_profile)
+                    .into(profile);
+        }
         nickNameTv.setText(U.getInstance().getUserModel().getUser_nick());
         emailTv.setText(U.getInstance().getUserModel().getUser_id());
     }
@@ -52,6 +64,13 @@ public class MyPageActivity extends RootActivity {
             stopPD();
             U.getInstance().getBus().post("logout");
             finish();
+        }
+        if(str.equals("getUserInfo")){
+            stopPD();
+            Picasso.with(profile.getContext())
+                    .load(file)
+                    .error(R.drawable.default_my_page_profile)
+                    .into(profile);
         }
     }
 
@@ -124,7 +143,6 @@ public class MyPageActivity extends RootActivity {
                 .subscribe(response -> {
                     // See response.resultCode() doc
                     if (response.resultCode() != RESULT_OK) {
-
                         return;
                     }
                     bind(response.data());
@@ -143,7 +161,6 @@ public class MyPageActivity extends RootActivity {
                 .subscribe(response -> {
                     // See response.resultCode() doc
                     if (response.resultCode() != RESULT_OK) {
-
                         return;
                     }
                     bind(response.data());
@@ -152,17 +169,18 @@ public class MyPageActivity extends RootActivity {
 
     void bind(FileData fileData) {
         //이미지를 서버로 전송 ->
-        File file = fileData.getFile();
+        file = fileData.getFile();
         if (file != null && file.exists()) {
-            Picasso.with(profile.getContext())
-                    .load(file)
-                    .error(R.mipmap.ic_launcher_round)
-                    .into(profile);
-        } /*else {
-             실패하면 원래사진 그대로
-            Drawable drawable = AppCompatDrawableManager.get().getDrawable(profile.getContext(), R.mipmap.ic_launcher_round);
+            RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"),file);
+            MultipartBody.Part multipartBodyPart = MultipartBody.Part.createFormData("user_image",file.getName(),requestBody);
+            RequestBody requestBody2 = RequestBody.create(MediaType.parse("text/plain"), U.getInstance().getUserModel().getUser_id());
+
+            showPD();
+            NetProcess.getInstance().netChangeImg(multipartBodyPart, requestBody2);
+        } else {
+            Drawable drawable = AppCompatDrawableManager.get().getDrawable(profile.getContext(), R.drawable.default_my_page_profile);
             profile.setImageDrawable(drawable);
-        }*/
+        }
     }
     //==============================================================================================
 }

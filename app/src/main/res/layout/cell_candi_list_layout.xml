@@ -28,7 +28,7 @@
                     android:id="@+id/default_image_iv"
                     android:layout_centerVertical="true"
                     android:layout_centerHorizontal="true"
-                    android:src="@drawable/default_image_icon"
+                    android:src="@mipmap/ic_wallpaper_black_48dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
@@ -72,20 +72,23 @@
                 <ImageButton
                     android:padding="3dp"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/web_btn2"
+                    android:src="@mipmap/ic_language_white_18dp"
                     android:background="?android:attr/selectableItemBackground"
                     android:layout_weight="0"
                     android:id="@+id/open_url_btn"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp" />
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
 
             </LinearLayout>
 
         </LinearLayout>
 
         <!-- 최종일정 선택 체크박스 -->
-        <CheckBox
-            android:id="@+id/check_cb"
+        <ImageView
+            android:background="?android:attr/selectableItemBackground"
+            android:padding="5dp"
+            android:src="@mipmap/ic_check_circle_black_18dp"
+            android:id="@+id/check_iv"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
             android:layout_width="wrap_content"

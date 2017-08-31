@@ -29,6 +29,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import com.rey.material.widget.FloatingActionButton;
 import com.squareup.otto.Subscribe;
+import com.squareup.picasso.Picasso;
 import com.tripco.www.tripco.BuildConfig;
 import com.tripco.www.tripco.R;
 import com.tripco.www.tripco.adapter.TripListAdapter;
@@ -42,6 +43,7 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -54,6 +56,7 @@ public class MainActivity extends AppCompatActivity
     private Button loginBtn, joinBtn;
     private LinearLayout userInfo;
     private TextView userEmailTv, userNickTv;
+    private CircleImageView userProfileCiv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,6 +93,12 @@ public class MainActivity extends AppCompatActivity
     public void ottoBus(String BUS_NAME) {
         if(BUS_NAME.equals("loginSuccess")) loginCheck();
         if(BUS_NAME.equals("getUserInfo")) {
+            if(U.getInstance().getUserModel().getUser_image() != null) {
+                Picasso.with(userProfileCiv.getContext())
+                        .load(U.getInstance().getUserModel().getUser_image())
+                        .error(R.drawable.default_my_page_profile)
+                        .into(userProfileCiv);
+            }
             userEmailTv.setText(U.getInstance().getUserModel().getUser_id());
             userNickTv.setText(U.getInstance().getUserModel().getUser_nick());
             NetProcess.getInstance().netListTrip(new MemberModel(U.getInstance().getUserModel().getUser_id()));
@@ -218,6 +227,7 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
 
+        userProfileCiv = navigationView.getHeaderView(0).findViewById(R.id.user_profile_civ);
         loginBtn = navigationView.getHeaderView(0).findViewById(R.id.login_btn);
         joinBtn = navigationView.getHeaderView(0).findViewById(R.id.join_btn);
         userInfo = navigationView.getHeaderView(0).findViewById(R.id.user_info_line);
@@ -276,6 +286,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void logout(){
+        userProfileCiv.setImageResource(R.drawable.default_profile);
         U.getInstance().setBoolean("login", false);
         recViewInit();
         loginCheck();

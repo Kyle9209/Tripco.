@@ -27,8 +27,8 @@ public class RootActivity extends AppCompatActivity {
         progressDialog.show();
     }
 
-    public void stopPD(){
-        if(progressDialog != null && progressDialog.isShowing()){
+    public void stopPD() {
+        if (progressDialog != null && progressDialog.isShowing()) {
             progressDialog.dismiss();
         }
     }
