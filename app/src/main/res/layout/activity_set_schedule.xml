@@ -16,11 +16,12 @@
     <!-- body -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="120dp"
         android:orientation="vertical">
 
         <!-- line1 -->
         <LinearLayout
+            android:gravity="center"
             android:id="@+id/line1"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -43,7 +44,7 @@
                     android:layout_margin="5dp"
                     android:background="@drawable/category"
                     android:button="@null"
-                    android:drawableTop="@drawable/category0"
+                    android:drawableTop="@mipmap/category0"
                     android:gravity="center"
                     android:paddingBottom="10dp"
                     android:paddingLeft="20dp"
@@ -61,7 +62,7 @@
                     android:layout_margin="5dp"
                     android:background="@drawable/category"
                     android:button="@null"
-                    android:drawableTop="@drawable/category1"
+                    android:drawableTop="@mipmap/category1"
                     android:gravity="center"
                     android:paddingBottom="10dp"
                     android:paddingLeft="20dp"
@@ -79,7 +80,7 @@
                     android:layout_margin="5dp"
                     android:background="@drawable/category"
                     android:button="@null"
-                    android:drawableTop="@drawable/category2"
+                    android:drawableTop="@mipmap/category2"
                     android:gravity="center"
                     android:paddingBottom="10dp"
                     android:paddingLeft="20dp"
@@ -99,7 +100,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#fff"
-            android:orientation="vertical"
+            android:gravity="center"
             android:padding="10dp"
             android:visibility="gone">
 
@@ -147,8 +148,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#fff"
-            android:orientation="vertical"
             android:padding="10dp"
+            android:gravity="center"
             android:visibility="gone">
 
             <com.rey.material.widget.Spinner
@@ -158,7 +159,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 app:spn_arrowSwitchMode="true"
-                app:spn_label="날짜를 선택해주세요."
+                app:spn_label="날짜를 선택해주세요"
                 app:spn_labelEnable="true"
                 app:spn_labelTextColor="#000" />
 
@@ -170,6 +171,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#fff"
+            android:gravity="center"
             android:orientation="vertical"
             android:padding="10dp"
             android:visibility="gone">

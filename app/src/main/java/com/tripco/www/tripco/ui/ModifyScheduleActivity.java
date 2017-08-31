@@ -136,6 +136,16 @@ public class ModifyScheduleActivity extends RootActivity implements GoogleApiCli
         if(scheduleModel.getItem_check() == 1) checkCb.setChecked(true);
     }
 
+    public void spinnerInit() {
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, 0);
+        for (int i = 0; i < U.getInstance().tripDataModel.getDateSpinnerList().size(); i++) {
+            adapter.add(U.getInstance().tripDataModel.getDateSpinnerList().get(i));
+        }
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+        spinner.setSelection(scheduleModel.getSchedule_date());
+    }
+
     @OnClick({R.id.toolbar_right_btn, R.id.place_info_line})
     public void onViewClicked(View view) {
         switch (view.getId()){
@@ -158,7 +168,7 @@ public class ModifyScheduleActivity extends RootActivity implements GoogleApiCli
             NetProcess.getInstance().netCrUpDeItem(new ScheduleModel(
                     U.getInstance().getUserModel().getUser_id(),
                     U.getInstance().tripDataModel.getTripNo(),
-                    spinner.getSelectedItemPosition(),
+                    scheduleModel.getSchedule_date(),
                     scheduleModel.get_id(),
                     openUrlTv.getText().toString(),
                     getCategoryNum(),
@@ -168,7 +178,8 @@ public class ModifyScheduleActivity extends RootActivity implements GoogleApiCli
                     tripTitle.getText().toString(),
                     memo.getText().toString(),
                     getCheckNum(),
-                    "00:00"
+                    "00:00",
+                    spinner.getSelectedItemPosition()
             ), "update");
         } else {
             try {
@@ -254,16 +265,6 @@ public class ModifyScheduleActivity extends RootActivity implements GoogleApiCli
                 U.getInstance().log("RESULT_CANCELED 상태");
             }
         }
-    }
-
-    public void spinnerInit() {
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, 0);
-        for (int i = 0; i < U.getInstance().tripDataModel.getDateSpinnerList().size(); i++) {
-            adapter.add(U.getInstance().tripDataModel.getDateSpinnerList().get(i));
-        }
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-        spinner.setSelection(scheduleModel.getSchedule_date());
     }
 
     private void getPlaceData() {

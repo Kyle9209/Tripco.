@@ -1,9 +1,12 @@
 package com.tripco.www.tripco.fragment;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
@@ -14,12 +17,14 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
@@ -31,6 +36,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -105,6 +111,8 @@ public class CandidateLIstFragment extends RootFragment
         mViewPager.setAdapter(spAdapter);
         tabLayout.setupWithViewPager(mViewPager);
         mViewPager.setOffscreenPageLimit(3);
+        PagerSnapHelper pagerSnapHelper = new PagerSnapHelper();
+        pagerSnapHelper.attachToRecyclerView(recyclerView);
     }
 
     private void spinnerInit(){
@@ -162,16 +170,28 @@ public class CandidateLIstFragment extends RootFragment
                             Double.parseDouble(csr.getString(5)),
                             Double.parseDouble(csr.getString(6))
                     ));
-                    if (position == 0) { // 첫번째 마커 말풍선 띄우기
-                        mMap.addMarker(new MarkerOptions()
-                                .position(latLng.get(position))
-                                .title(csr.getString(8))
-                                .zIndex(position)).showInfoWindow();
-                    } else {
-                        mMap.addMarker(new MarkerOptions()
-                                .position(latLng.get(position))
-                                .title(csr.getString(8))
-                                .zIndex(position));
+                    switch (csr.getInt(4)) {
+                        case 0:
+                            addMarkerOnMap(
+                                    latLng.get(position),
+                                    csr.getString(8),
+                                    R.layout.custom_marker_layout,
+                                    position);
+                            break;
+                        case 1:
+                            addMarkerOnMap(
+                                    latLng.get(position),
+                                    csr.getString(8),
+                                    R.layout.custom_marker_layout,
+                                    position);
+                            break;
+                        case 2:
+                            addMarkerOnMap(
+                                    latLng.get(position),
+                                    csr.getString(8),
+                                    R.layout.custom_marker_layout,
+                                    position);
+                            break;
                     }
                     position++;
                 }
@@ -184,11 +204,26 @@ public class CandidateLIstFragment extends RootFragment
             if (latLng.size() > 0 && latLng.get(0) != null) {
                 CameraPosition ani = new CameraPosition.Builder()
                         .target(latLng.get(0))
-                        .zoom(9)
+                        .zoom(7)
                         .build();
                 mMap.animateCamera(CameraUpdateFactory.newCameraPosition(ani));
             }
         }
+    }
+
+    private void addMarkerOnMap(LatLng latLng, String title, int image, int position){
+        mMap.addMarker(new MarkerOptions()
+                .position(latLng)
+                .title(title)
+                .icon(BitmapDescriptorFactory.fromBitmap(createDrawableFromView(getContext(), getMarkerView(position))))
+                .zIndex(position));
+    }
+
+    public View getMarkerView(int position){
+        View view =  LayoutInflater.from(getContext()).inflate(R.layout.custom_marker_layout, null);
+        TextView markerIdxTv = view.findViewById(R.id.marker_index_tv);
+        markerIdxTv.setText(String.valueOf(position+1));
+        return view;
     }
 
     // 맵에 있는 리스트뷰
@@ -196,9 +231,6 @@ public class CandidateLIstFragment extends RootFragment
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         MarkerListAdapter adapter = new MarkerListAdapter(list);
         recyclerView.setAdapter(adapter);
-
-        PagerSnapHelper pagerSnapHelper = new PagerSnapHelper();
-        pagerSnapHelper.attachToRecyclerView(recyclerView);
 
         recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -337,11 +369,11 @@ public class CandidateLIstFragment extends RootFragment
         public CharSequence getPageTitle(int position) {
             switch (position) {
                 case 0:
-                    return U.getInstance().category0;
+                    return U.category0;
                 case 1:
-                    return U.getInstance().category1;
+                    return U.category1;
                 case 2:
-                    return U.getInstance().category2;
+                    return U.category2;
             }
             return null;
         }
@@ -352,6 +384,23 @@ public class CandidateLIstFragment extends RootFragment
         bundle.putInt("cateNo", cateNo);
         fragment.setArguments(bundle);
         return fragment;
+    }
+
+    // View를 Bitmap으로 변환
+    private Bitmap createDrawableFromView(Context context, View view) {
+
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        ((Activity) context).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        view.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        view.measure(displayMetrics.widthPixels, displayMetrics.heightPixels);
+        view.layout(0, 0, displayMetrics.widthPixels, displayMetrics.heightPixels);
+        view.buildDrawingCache();
+        Bitmap bitmap = Bitmap.createBitmap(view.getMeasuredWidth(), view.getMeasuredHeight(), Bitmap.Config.ARGB_8888);
+
+        Canvas canvas = new Canvas(bitmap);
+        view.draw(canvas);
+
+        return bitmap;
     }
 
     // 백키눌렀을때 메인으로

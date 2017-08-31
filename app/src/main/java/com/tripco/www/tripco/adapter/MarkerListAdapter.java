@@ -23,9 +23,10 @@ import com.tripco.www.tripco.util.U;
 
 import java.util.ArrayList;
 
-public class MarkerListAdapter extends RecyclerView.Adapter<MarkerListViewHolder> implements GoogleApiClient.OnConnectionFailedListener {
+public class MarkerListAdapter extends RecyclerView.Adapter<MarkerListViewHolder>
+        implements GoogleApiClient.OnConnectionFailedListener {
     private ArrayList<ScheduleModel> scheduleModels;
-    Context context = U.getInstance().getContext();
+    private Context context = U.getInstance().getContext();
 
     public MarkerListAdapter(ArrayList<ScheduleModel> scheduleModel){
         this.scheduleModels = scheduleModel;
@@ -40,28 +41,31 @@ public class MarkerListAdapter extends RecyclerView.Adapter<MarkerListViewHolder
     @Override
     public void onBindViewHolder(MarkerListViewHolder holder, int position) {
         final ScheduleModel scheduleModel = scheduleModels.get(position);
-        holder.indexTv.setText(""+(position+1));
+        holder.indexTv.setText(String.valueOf(position+1));
         // 체크박스 상태 찍어주고 최종 < - > 후보지
-        if(scheduleModel.getItem_check() == 1) holder.checkCb.setChecked(true);
-        holder.checkCb.setOnCheckedChangeListener((compoundButton, b) -> {
+        if(scheduleModel.getItem_check() == 1) {
+            holder.checkCb.setImageResource(R.drawable.check_after_icon);
+        } else {
+            holder.checkCb.setImageResource(R.drawable.check_before_icon);
+        }
+        holder.checkCb.setOnClickListener(view -> {
             if(U.getInstance().getBoolean("login")){
                 NetProcess.getInstance().netCheckItem(new ScheduleModel(
                         U.getInstance().getUserModel().getUser_id(),
                         U.getInstance().tripDataModel.getTripNo(),
                         scheduleModel.getSchedule_date(),
-                        scheduleModel.get_id()
-                ));
+                        scheduleModel.get_id()));
             } else {
-                if (b) {
-                    updateSQLite(scheduleModel.getTrip_no(),
-                            scheduleModel.getSchedule_no(),
-                            1,
-                            "최종일정에 추가되었습니다.");
+                if(scheduleModels.get(position).getItem_check() == 1){
+                    scheduleModels.get(position).setItem_check(0);
+                    holder.checkCb.setImageResource(R.drawable.check_before_icon);
+                    updateSQLite(scheduleModel.getTrip_no(), scheduleModel.getSchedule_no(),
+                            0, "최종일정에서 삭제되었습니다.");
                 } else {
-                    updateSQLite(scheduleModel.getTrip_no(),
-                            scheduleModel.getSchedule_no(),
-                            0,
-                            "최종일정에서 삭제되었습니다.");
+                    scheduleModels.get(position).setItem_check(1);
+                    holder.checkCb.setImageResource(R.drawable.check_after_icon);
+                    updateSQLite(scheduleModel.getTrip_no(), scheduleModel.getSchedule_no(),
+                            1, "최종일정에 추가되었습니다.");
                 }
             }
         });
@@ -105,15 +109,15 @@ public class MarkerListAdapter extends RecyclerView.Adapter<MarkerListViewHolder
 
     private void updateSQLite(int trip_no, int s_no, int check, String str) {
         try {
-        String sql = "update ScheduleList_Table set" +
-                " item_check = '" + check + "'" +
-                " where trip_no = " + trip_no + " and schedule_no = " + s_no + " ;";
-        DBOpenHelper.dbOpenHelper.getWritableDatabase().execSQL(sql);
-        Toast.makeText(context, str, Toast.LENGTH_SHORT).show();
-    } catch (SQLException e) {
-        e.printStackTrace();
+            String sql = "update ScheduleList_Table set item_check = '" + check + "'" +
+                    " where trip_no = " + trip_no + " and schedule_no = " + s_no + ";";
+            DBOpenHelper.dbOpenHelper.getWritableDatabase().execSQL(sql);
+            Toast.makeText(context, str, Toast.LENGTH_SHORT).show();
+            U.getInstance().getBus().post("ViewPagerListUpdate");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
-}
 
     @Override
     public int getItemCount() {

@@ -21,6 +21,7 @@ public class ScheduleModel implements Serializable {
     String item_memo;
     int    item_check;
     String item_time;
+    int update_schedule_date;
 
     @Override
     public String toString() {
@@ -94,7 +95,7 @@ public class ScheduleModel implements Serializable {
     }
 
     // 서버용 수정할때 보내는 그릇
-    public ScheduleModel(String user_id, int trip_no, int schedule_date, String _id, String item_url, int cate_no, String item_lat, String item_long, String item_placeid, String item_title, String item_memo, int item_check, String item_time) {
+    public ScheduleModel(String user_id, int trip_no, int schedule_date, String _id, String item_url, int cate_no, String item_lat, String item_long, String item_placeid, String item_title, String item_memo, int item_check, String item_time, int update_schedule_date) {
         this.user_id = user_id;
         this.trip_no = trip_no;
         this.schedule_date = schedule_date;
@@ -108,6 +109,7 @@ public class ScheduleModel implements Serializable {
         this.item_memo = item_memo;
         this.item_check = item_check;
         this.item_time = item_time;
+        this.update_schedule_date = update_schedule_date;
     }
 
     // 로컬 디비용 그릇
@@ -248,5 +250,13 @@ public class ScheduleModel implements Serializable {
 
     public void set_id(String _id) {
         this._id = _id;
+    }
+
+    public int getUpdate_schedule_date() {
+        return update_schedule_date;
+    }
+
+    public void setUpdate_schedule_date(int update_schedule_date) {
+        this.update_schedule_date = update_schedule_date;
     }
 }
