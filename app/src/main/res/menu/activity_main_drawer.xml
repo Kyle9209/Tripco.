@@ -2,18 +2,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/nav_alarm"
-        android:icon="@drawable/alarm"
+        android:icon="@mipmap/ic_notifications_none_white_24dp"
         android:title="알림" />
     <item
-        android:icon="@drawable/intro"
+        android:icon="@mipmap/ic_hdr_strong_white_24dp"
         android:title="Tripco.소개" />
     <item
-        android:icon="@drawable/request"
+        android:icon="@mipmap/ic_mail_outline_white_24dp"
         android:title="문의" />
     <item
-        android:icon="@drawable/version"
+        android:icon="@mipmap/ic_info_outline_white_24dp"
         android:title="버전정보" />
     <item
-        android:icon="@drawable/use"
+        android:icon="@mipmap/ic_help_outline_white_24dp"
         android:title="이용약관" />
 </menu>

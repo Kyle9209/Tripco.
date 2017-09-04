@@ -3,17 +3,17 @@
 
     <item
         android:id="@+id/searching"
-        android:icon="@drawable/search_icon"
+        android:icon="@mipmap/ic_search_white_24dp"
         android:title="@string/searching" />
 
     <item
         android:id="@+id/candidate"
-        android:icon="@drawable/list_icon"
+        android:icon="@mipmap/ic_format_list_bulleted_white_24dp"
         android:title="@string/candidate" />
 
     <item
         android:id="@+id/final_schedule"
-        android:icon="@drawable/finalschedule"
+        android:icon="@mipmap/ic_event_note_white_24dp"
         android:title="@string/final_schedule" />
 
 </menu>

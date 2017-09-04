@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.SQLException;
 import android.net.Uri;
-import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,8 +13,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.Places;
 import com.tripco.www.tripco.PhotoTask;
@@ -29,8 +26,7 @@ import com.tripco.www.tripco.util.U;
 
 import java.util.ArrayList;
 
-public class FinScheduleListAdapter extends RecyclerView.Adapter<ScheduleListViewHolder>
-        implements GoogleApiClient.OnConnectionFailedListener {
+public class FinScheduleListAdapter extends RecyclerView.Adapter<ScheduleListViewHolder> {
     private Context context;
     private ArrayList<ScheduleModel> scheduleModels;
     private int pos;
@@ -129,7 +125,7 @@ public class FinScheduleListAdapter extends RecyclerView.Adapter<ScheduleListVie
                                 U.getInstance().tripDataModel.getTripNo(),
                                 scheduleModel.getSchedule_date(),
                                 scheduleModel.get_id(),
-                                scheduleModel.getItem_time()
+                                holder.timeTv.getText().toString()
                         ));
                     } else {
                         updateSQLite(scheduleModel.getTrip_no(),
@@ -137,6 +133,7 @@ public class FinScheduleListAdapter extends RecyclerView.Adapter<ScheduleListVie
                                 holder.timeTv.getText().toString(),
                                 "시간이 변경되었습니다."
                         );
+                        U.getInstance().getBus().post("DeleteItemSuccess");
                     }
                 }, 0, 0, false).show()
         );
@@ -180,7 +177,4 @@ public class FinScheduleListAdapter extends RecyclerView.Adapter<ScheduleListVie
             }
         }.execute(placeId);
     }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {}
 }

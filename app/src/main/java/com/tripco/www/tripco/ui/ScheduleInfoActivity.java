@@ -42,9 +42,9 @@ public class ScheduleInfoActivity extends RootActivity
     @BindView(R.id.trip_title) TextView tripTitle;
     @BindView(R.id.check_cb) CheckBox checkCb;
     @BindView(R.id.rbs_rg) RadioGroup rbsGroup;
-    @BindView(R.id.rb0) RadioButton rb0;
-    @BindView(R.id.rb1) RadioButton rb1;
-    @BindView(R.id.rb2) RadioButton rb2;
+    @BindView(R.id.category0) RadioButton rb0;
+    @BindView(R.id.category1) RadioButton rb1;
+    @BindView(R.id.category2) RadioButton rb2;
     @BindView(R.id.place_name_tv) TextView locationName;
     @BindView(R.id.place_address_tv) TextView address;
     @BindView(R.id.schedule_date_tv) TextView scheduleDateTv;

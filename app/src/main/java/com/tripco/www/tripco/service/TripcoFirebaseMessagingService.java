@@ -11,6 +11,7 @@ import com.google.firebase.messaging.RemoteMessage;
 import com.tripco.www.tripco.R;
 import com.tripco.www.tripco.model.ResPushModel;
 import com.tripco.www.tripco.ui.MainActivity;
+import com.tripco.www.tripco.util.U;
 
 /**
  * Created by kkmnb on 2017-07-07.
@@ -23,11 +24,12 @@ public class TripcoFirebaseMessagingService extends com.google.firebase.messagin
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
-
-        ResPushModel res = new ResPushModel();
-        res.setTitle(remoteMessage.getNotification().getTitle().toString());
-        res.setBody(remoteMessage.getNotification().getBody().toString());
-        showNotification(res);
+        if(U.getInstance().getBoolean("login")) {
+            ResPushModel res = new ResPushModel();
+            res.setTitle(remoteMessage.getNotification().getTitle().toString());
+            res.setBody(remoteMessage.getNotification().getBody().toString());
+            showNotification(res);
+        }
     }
 
     // 상단 알림바 푸시알림

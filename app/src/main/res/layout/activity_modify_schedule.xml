@@ -120,12 +120,12 @@
                 <LinearLayout
                     android:padding="15dp"
                     android:layout_width="match_parent"
-                    android:layout_height="80dp"
+                    android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
                     <TextView
-                        android:textColor="#000"
                         android:textStyle="bold"
+                        android:textColor="#000"
                         android:gravity="center"
                         android:layout_weight="0"
                         android:layout_marginRight="15dp"
@@ -134,42 +134,71 @@
                         android:text="정보유형"
                         android:textSize="20sp" />
 
+                    <!-- 유형 -->
                     <RadioGroup
-                        android:id="@+id/rbs_rg"
-                        android:orientation="horizontal"
+                        android:weightSum="3"
                         android:layout_weight="1"
+                        android:id="@+id/rbs_rg"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent">
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:orientation="horizontal">
 
+                        <!-- 관광 -->
                         <RadioButton
-                            android:id="@+id/rb0"
-                            android:background="@drawable/hashtag"
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
                             android:layout_weight="1"
+                            android:id="@+id/category0"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/category"
                             android:button="@null"
+                            android:drawableTop="@mipmap/category0"
                             android:gravity="center"
-                            android:text="@string/category0" />
+                            android:paddingBottom="5dp"
+                            android:paddingLeft="15dp"
+                            android:paddingRight="15dp"
+                            android:paddingTop="5dp"
+                            android:text="@string/category0"
+                            android:textColor="#fff"
+                            android:textStyle="bold" />
 
+                        <!-- 맛집 -->
                         <RadioButton
-                            android:id="@+id/rb1"
-                            android:background="@drawable/hashtag"
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
                             android:layout_weight="1"
+                            android:id="@+id/category1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginRight="5dp"
+                            android:background="@drawable/category"
                             android:button="@null"
+                            android:drawableTop="@mipmap/category1"
                             android:gravity="center"
-                            android:text="@string/category1" />
+                            android:paddingBottom="5dp"
+                            android:paddingLeft="15dp"
+                            android:paddingRight="15dp"
+                            android:paddingTop="5dp"
+                            android:text="@string/category1"
+                            android:textColor="#fff"
+                            android:textStyle="bold" />
 
+                        <!-- 숙소 -->
                         <RadioButton
-                            android:id="@+id/rb2"
-                            android:background="@drawable/hashtag"
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
                             android:layout_weight="1"
+                            android:id="@+id/category2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/category"
                             android:button="@null"
+                            android:drawableTop="@mipmap/category2"
                             android:gravity="center"
-                            android:text="@string/category2" />
+                            android:paddingBottom="5dp"
+                            android:paddingLeft="15dp"
+                            android:paddingRight="15dp"
+                            android:paddingTop="5dp"
+                            android:text="@string/category2"
+                            android:textColor="#fff"
+                            android:textStyle="bold" />
 
                     </RadioGroup>
 

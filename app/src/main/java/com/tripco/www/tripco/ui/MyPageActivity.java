@@ -82,6 +82,8 @@ public class MyPageActivity extends RootActivity {
 
     private void toolbarInit(){
         toolbarTitleTv.setText("프로필");
+        toolbarTitleTv.setCompoundDrawablesWithIntrinsicBounds(R.mipmap.ic_person_outline_white_24dp, 0, 0, 0);
+        toolbarTitleTv.setCompoundDrawablePadding(20);
         toolbarRightBtn.setVisibility(View.INVISIBLE);
     }
 

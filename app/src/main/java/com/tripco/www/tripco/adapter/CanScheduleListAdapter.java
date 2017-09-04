@@ -153,7 +153,6 @@ public class CanScheduleListAdapter extends RecyclerView.Adapter<ScheduleListVie
             @Override
             protected void onPostExecute(AttributedPhoto attributedPhoto) {
                 progressBar.setVisibility(View.GONE);
-                U.getInstance().log("여길 몇번들어오는가");
                 if (attributedPhoto != null) imageView.setImageBitmap(attributedPhoto.bitmap);
             }
         }.execute(placeId);

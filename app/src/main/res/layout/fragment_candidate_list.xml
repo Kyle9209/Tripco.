@@ -35,7 +35,7 @@
             android:layout_weight="0"
             android:background="?android:attr/selectableItemBackground"
             android:scaleType="fitCenter"
-            android:src="@drawable/search_icon" />
+            android:src="@mipmap/ic_search_white_24dp" />
 
         <ImageButton
             android:padding="5dp"
@@ -45,7 +45,7 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:background="?android:attr/selectableItemBackground"
-            android:src="@drawable/map_icon" />
+            android:src="@mipmap/ic_map_white_24dp" />
 
     </LinearLayout>
 

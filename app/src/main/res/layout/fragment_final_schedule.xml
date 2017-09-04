@@ -35,7 +35,7 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:background="?android:attr/selectableItemBackground"
-            android:src="@drawable/map_icon" />
+            android:src="@mipmap/ic_map_white_24dp" />
 
     </LinearLayout>
 
@@ -59,12 +59,26 @@
         </android.support.v4.widget.SwipeRefreshLayout>
 
         <!-- googleMap -->
-        <com.google.android.gms.maps.MapView
-            android:id="@+id/map"
-            android:name="com.google.android.gms.maps.SupportMapFragment"
+        <RelativeLayout
+            android:visibility="gone"
+            android:id="@+id/map_rela"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone" />
+            android:layout_height="match_parent">
+
+            <com.google.android.gms.maps.MapView
+                android:id="@+id/map"
+                android:name="com.google.android.gms.maps.SupportMapFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <android.support.v7.widget.RecyclerView
+                android:layout_alignParentBottom="true"
+                tools:listitem="@layout/cell_marker_layout"
+                android:id="@+id/map_rcv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </RelativeLayout>
 
     </RelativeLayout>
 

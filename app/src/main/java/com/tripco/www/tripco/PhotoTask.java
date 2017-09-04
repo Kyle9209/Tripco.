@@ -2,23 +2,20 @@ package com.tripco.www.tripco;
 
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
-import android.support.annotation.NonNull;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.places.PlacePhotoMetadata;
 import com.google.android.gms.location.places.PlacePhotoMetadataBuffer;
 import com.google.android.gms.location.places.PlacePhotoMetadataResult;
 import com.google.android.gms.location.places.Places;
 import com.tripco.www.tripco.util.U;
 
-abstract public class PhotoTask extends AsyncTask<String, Void, PhotoTask.AttributedPhoto> implements GoogleApiClient.OnConnectionFailedListener {
+abstract public class PhotoTask extends AsyncTask<String, Void, PhotoTask.AttributedPhoto> {
     private int mHeight;
     private int mWidth;
 
     protected PhotoTask(int width, int height) {
-        mHeight = height;
-        mWidth = width;
+        mHeight = 300;
+        mWidth = 300;
     }
 
     @Override
@@ -40,6 +37,7 @@ abstract public class PhotoTask extends AsyncTask<String, Void, PhotoTask.Attrib
                     PlacePhotoMetadata photo = photoMetadataBuffer.get(0);
                     CharSequence attribution = photo.getAttributions();
                     // Load a scaled bitmap for this photo.
+                    if(mWidth < 0) mWidth = 400;
                     Bitmap image = photo
                             .getScaledPhoto(U.getInstance().getmGoogleApiClient(), mWidth, mHeight)
                             .await()
@@ -51,18 +49,7 @@ abstract public class PhotoTask extends AsyncTask<String, Void, PhotoTask.Attrib
                 photoMetadataBuffer.release();
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            /*if(U.getInstance().getmGoogleApiClient() != null) {
-                U.getInstance().getmGoogleApiClient().disconnect();
-                U.getInstance().setmGoogleApiClient(null);
-                U.getInstance().setmGoogleApiClient(new GoogleApiClient
-                        .Builder(U.getInstance().getContext())
-                        .addApi(Places.GEO_DATA_API)
-                        .addApi(Places.PLACE_DETECTION_API)
-                        .enableAutoManage((FragmentActivity) U.getInstance().getContext(), this)
-                        .build()
-                );
-            }*/
+            U.getInstance().log(e.toString());
             return null;
         }
         return attributedPhoto;
@@ -77,7 +64,4 @@ abstract public class PhotoTask extends AsyncTask<String, Void, PhotoTask.Attrib
             this.bitmap = bitmap;
         }
     }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {}
 }

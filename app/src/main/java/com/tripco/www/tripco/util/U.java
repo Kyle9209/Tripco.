@@ -10,6 +10,7 @@ import android.util.Log;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.squareup.otto.Bus;
+import com.tripco.www.tripco.model.AlarmModel;
 import com.tripco.www.tripco.model.MemberModel;
 import com.tripco.www.tripco.model.ScheduleModel;
 import com.tripco.www.tripco.model.TripDataModel;
@@ -164,5 +165,15 @@ public class U {
 
     // 하나의 여행을 선택했을 때 계속 가지고 있어야하는 여행번호, 기간을 U에서 가지고 있음
     public TripDataModel tripDataModel = new TripDataModel();
+
+    // 알림 리스트
+    ArrayList<AlarmModel> alarmListModel;
+    public ArrayList<AlarmModel> getAlarmListModel(){
+        return alarmListModel;
+    }
+    public void setAlarmListModel(ArrayList<AlarmModel> alarmListModel) {
+        this.alarmListModel = alarmListModel;
+    }
+
 }
 

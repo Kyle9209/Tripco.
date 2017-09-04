@@ -210,7 +210,8 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_alarm) {
-            startActivity(new Intent(this, AlarmActivity.class));
+            if(U.getInstance().getBoolean("login"))
+                startActivity(new Intent(this, AlarmActivity.class));
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);

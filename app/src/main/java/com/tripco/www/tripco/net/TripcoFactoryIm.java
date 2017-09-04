@@ -1,5 +1,6 @@
 package com.tripco.www.tripco.net;
 
+import com.tripco.www.tripco.model.AlarmModel;
 import com.tripco.www.tripco.model.MemberModel;
 import com.tripco.www.tripco.model.ResponseArrayModel;
 import com.tripco.www.tripco.model.ResponseModel;
@@ -91,5 +92,9 @@ public interface TripcoFactoryIm {
     // 최종일정 시간변경
     @POST("/time_final")
     Call<ResponseModel> time_final(@Body ScheduleModel req);
+
+    // 알림 리스트
+    @POST("/list_notice")
+    Call<ResponseArrayModel<AlarmModel>> list_notice(@Body MemberModel req);
 }
 

@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.GridLayout;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -48,7 +49,7 @@ public class SetTripActivity extends RootActivity {
     @BindView(R.id.toolbar_title_tv) TextView toolbarTitleTv;
     @BindView(R.id.toolbar_right_btn) Button toolbarRightBtn;
     @BindView(R.id.title_et) EditText titleEt;
-    @BindView(R.id.clear_title_btn) Button clearTitleBtn;
+    @BindView(R.id.clear_title_btn) ImageButton clearTitleBtn;
     @BindView(R.id.title_cnt_tv) TextView titleCntTv;
     @BindView(R.id.calendar_tv) TextView calendarTv;
     @BindView(R.id.who_tv) TextView whoTv;
@@ -119,6 +120,8 @@ public class SetTripActivity extends RootActivity {
 
     private void toolbarInit() {
         toolbarTitleTv.setText("여행 만들기");
+        toolbarTitleTv.setCompoundDrawablesWithIntrinsicBounds(R.mipmap.ic_card_travel_white_24dp, 0, 0, 0);
+        toolbarTitleTv.setCompoundDrawablePadding(20);
         toolbarRightBtn.setText("완료");
     }
 
@@ -188,7 +191,6 @@ public class SetTripActivity extends RootActivity {
                     } else {
                         whoTv.setText(partner);
                     }
-                    //disconPartnerBtn.setVisibility(View.VISIBLE);
                 }
             }
             for (int i = 0; i < U.getInstance().tags.length; i++) {
@@ -368,6 +370,8 @@ public class SetTripActivity extends RootActivity {
         Button toolbarRightBtn = bottomSheetDialog.findViewById(R.id.toolbar_right_btn);
         TextView text = bottomSheetDialog.findViewById(R.id.set_text_tv);
         toolbarTitleTv.setText("언제?");
+        toolbarTitleTv.setCompoundDrawablesWithIntrinsicBounds(R.mipmap.ic_people_outline_white_24dp, 0, 0, 0);
+        toolbarTitleTv.setCompoundDrawablePadding(20);
         toolbarRightBtn.setText("완료");
 
         calendar.setSelectedDate(new Date(System.currentTimeMillis())); // 현재날짜로 선택 초기화
@@ -410,11 +414,24 @@ public class SetTripActivity extends RootActivity {
 
         // 완료버튼
         toolbarRightBtn.setOnClickListener(view -> {
-            if (TextUtils.isEmpty(startDateString) || TextUtils.isEmpty(endDateString)) {
-                Toast.makeText(SetTripActivity.this, "날짜를 선택해주세요.", Toast.LENGTH_SHORT).show();
+            if(updateFlag){
+                 U.getInstance().showAlertDialog(this, "주의!", "일정기간을 줄이면 마지막 날짜부터 줄어든 일수만큼 저장된 내용이 삭제됩니다.\n계속 하시겠습니까?",
+                         "계속", (dialogInterface, i) -> {
+                             if (TextUtils.isEmpty(startDateString) || TextUtils.isEmpty(endDateString)) {
+                                 Toast.makeText(SetTripActivity.this, "날짜를 선택해주세요.", Toast.LENGTH_SHORT).show();
+                             } else {
+                                 bottomSheetDialog.dismiss();
+                                 calendarTv.setText(startDateString + " ~ " + endDateString);
+                             }
+                         },
+                         "취소", (dialogInterface, i) -> dialogInterface.dismiss());
             } else {
-                bottomSheetDialog.dismiss();
-                calendarTv.setText(startDateString + " ~ " + endDateString);
+                if (TextUtils.isEmpty(startDateString) || TextUtils.isEmpty(endDateString)) {
+                    Toast.makeText(SetTripActivity.this, "날짜를 선택해주세요.", Toast.LENGTH_SHORT).show();
+                } else {
+                    bottomSheetDialog.dismiss();
+                    calendarTv.setText(startDateString + " ~ " + endDateString);
+                }
             }
         });
     }
@@ -426,6 +443,8 @@ public class SetTripActivity extends RootActivity {
         TextView toolbarTitleTv = bottomSheetDialog.findViewById(R.id.toolbar_title_tv);
         findWhoFinishBtn = bottomSheetDialog.findViewById(R.id.toolbar_right_btn);
         toolbarTitleTv.setText("누구와?");
+        toolbarTitleTv.setCompoundDrawablesWithIntrinsicBounds(R.mipmap.ic_event_note_white_24dp, 0, 0, 0);
+        toolbarTitleTv.setCompoundDrawablePadding(20);
         findWhoFinishBtn.setText("완료");
         findWhoFinishBtn.setEnabled(false);
         findWhoFinishBtn.setTextColor(Color.LTGRAY);

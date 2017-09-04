@@ -76,7 +76,7 @@ public class CandidateLIstFragment extends RootFragment
     private GoogleMap mMap = null;
     private Unbinder unbinder;
     private View view;
-    private int TripNo;
+    private int tripNo;
     ArrayList<LatLng> latLng = new ArrayList<>();
 
     public CandidateLIstFragment() {}
@@ -86,7 +86,7 @@ public class CandidateLIstFragment extends RootFragment
         view = inflater.inflate(R.layout.fragment_candidate_list, container, false);
         unbinder = ButterKnife.bind(this, view);
         U.getInstance().getBus().register(this);
-        TripNo = U.getInstance().tripDataModel.getTripNo();
+        tripNo = U.getInstance().tripDataModel.getTripNo();
         uiInit();
         spinnerInit();
         if(getArguments() != null && getArguments().getInt("i", 0) == 1) onGooglePlaces(); // 탐색->후보지->검색
@@ -98,13 +98,13 @@ public class CandidateLIstFragment extends RootFragment
         stopPD();
         if(str.equals("CreateItemSuccess")){
             Toast.makeText(getContext(), addCandidateText, Toast.LENGTH_SHORT).show();
-            NetProcess.getInstance().netListItem(new ScheduleModel(TripNo, 0));
+            NetProcess.getInstance().netListItem(new ScheduleModel(tripNo, 0));
             mViewPager.setCurrentItem(0);
             spinner.setSelection(0);
         }
         if(str.equals("UpdateItemSuccess") || str.equals("DeleteItemSuccess")){
             NetProcess.getInstance().netListItem(
-                    new ScheduleModel(TripNo, spinner.getSelectedItemPosition()));
+                    new ScheduleModel(tripNo, spinner.getSelectedItemPosition()));
         }
         if(str.contains("moveToMarker")) {
             int position = Integer.parseInt(str.split("_")[1]);
@@ -134,14 +134,14 @@ public class CandidateLIstFragment extends RootFragment
         spinner.setAdapter(adapter);
         // 로그인 되어있으면 초기화 - 1일차 데이터 가져옴
         if(U.getInstance().getBoolean("login")) {
-            NetProcess.getInstance().netListItem(new ScheduleModel(TripNo, 0));
+            NetProcess.getInstance().netListItem(new ScheduleModel(tripNo, 0));
         }
         // 스피너에서 날짜를 선택하면
         spinner.setOnItemSelectedListener((parent, view1, position, id) -> {
             // 뷰페이저에 날짜를 바꿧다고 알려줌
             if (U.getInstance().getBoolean("login")) {
                 U.getInstance().getBus().post("refreshTrue");
-                NetProcess.getInstance().netListItem(new ScheduleModel(TripNo, position));
+                NetProcess.getInstance().netListItem(new ScheduleModel(tripNo, position));
                 showPD();
                 new Handler().postDelayed(() -> {
                     onMapMarker();
@@ -194,7 +194,7 @@ public class CandidateLIstFragment extends RootFragment
                 }
             }
         } else {
-            String sql = "select * from ScheduleList_Table where trip_no=" + TripNo +
+            String sql = "select * from ScheduleList_Table where trip_no=" + tripNo +
                     " and schedule_date='" + spinner.getSelectedItemPosition() + "';";
             Cursor csr = DBOpenHelper.dbOpenHelper.getWritableDatabase().rawQuery(sql, null);
             while (csr.moveToNext()) {
@@ -282,13 +282,15 @@ public class CandidateLIstFragment extends RootFragment
         switch (view.getId()) {
             case R.id.change_view_btn: // 리스트 <-> 지도 전환 버튼
                 if (mapRela.getVisibility() == View.GONE) {
-                    changeViewBtn.setImageResource(R.drawable.list_icon);
+                    changeViewBtn.setImageResource(R.mipmap.ic_format_list_bulleted_white_24dp);
                     onMapMarker();
                     mapRela.setVisibility(View.VISIBLE);
                 } else {
-                    NetProcess.getInstance().netListItem(
-                            new ScheduleModel(TripNo, spinner.getSelectedItemPosition()));
-                    changeViewBtn.setImageResource(R.drawable.map_icon);
+                    if(U.getInstance().getBoolean("login")) {
+                        NetProcess.getInstance().netListItem(
+                                new ScheduleModel(tripNo, spinner.getSelectedItemPosition()));
+                    }
+                    changeViewBtn.setImageResource(R.mipmap.ic_map_white_24dp);
                     mapRela.setVisibility(View.GONE);
                 }
                 break;
@@ -335,7 +337,7 @@ public class CandidateLIstFragment extends RootFragment
             showPD();
             NetProcess.getInstance().netCrUpDeItem(new ScheduleModel(
                     U.getInstance().getUserModel().getUser_id(),
-                    TripNo,
+                    tripNo,
                     0,
                     "null",
                     0,
@@ -358,7 +360,7 @@ public class CandidateLIstFragment extends RootFragment
                         " item_title, " +
                         " item_memo) " +
                         " values(" +
-                        "'" + TripNo + "', " +
+                        "'" + tripNo + "', " +
                         "0, " + // position == 1 (1일차)
                         "'null', " + // item_url = null
                         "0, " +  // cate_no == 0 (관광)

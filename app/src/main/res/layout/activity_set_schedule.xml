@@ -26,10 +26,11 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#fff"
-            android:padding="5dp">
+            android:padding="10dp">
 
             <!-- 유형 -->
             <RadioGroup
+                android:weightSum="3"
                 android:id="@+id/rbs_rg"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -38,54 +39,50 @@
 
                 <!-- 관광 -->
                 <RadioButton
+                    android:paddingBottom="15dp"
+                    android:paddingTop="15dp"
+                    android:layout_weight="1"
                     android:id="@+id/category0"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
                     android:background="@drawable/category"
                     android:button="@null"
                     android:drawableTop="@mipmap/category0"
                     android:gravity="center"
-                    android:paddingBottom="10dp"
-                    android:paddingLeft="20dp"
-                    android:paddingRight="20dp"
-                    android:paddingTop="10dp"
                     android:text="@string/category0"
                     android:textColor="#fff"
                     android:textStyle="bold" />
 
                 <!-- 맛집 -->
                 <RadioButton
+                    android:paddingBottom="15dp"
+                    android:paddingTop="15dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_weight="1"
                     android:id="@+id/category1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
                     android:background="@drawable/category"
                     android:button="@null"
                     android:drawableTop="@mipmap/category1"
                     android:gravity="center"
-                    android:paddingBottom="10dp"
-                    android:paddingLeft="20dp"
-                    android:paddingRight="20dp"
-                    android:paddingTop="10dp"
                     android:text="@string/category1"
                     android:textColor="#fff"
                     android:textStyle="bold" />
 
                 <!-- 숙소 -->
                 <RadioButton
+                    android:paddingBottom="15dp"
+                    android:paddingTop="15dp"
+                    android:layout_weight="1"
                     android:id="@+id/category2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
                     android:background="@drawable/category"
                     android:button="@null"
                     android:drawableTop="@mipmap/category2"
                     android:gravity="center"
-                    android:paddingBottom="10dp"
-                    android:paddingLeft="20dp"
-                    android:paddingRight="20dp"
-                    android:paddingTop="10dp"
                     android:text="@string/category2"
                     android:textColor="#fff"
                     android:textStyle="bold" />

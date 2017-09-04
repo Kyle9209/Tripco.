@@ -2,6 +2,7 @@ package com.tripco.www.tripco.net;
 
 import android.widget.Toast;
 
+import com.tripco.www.tripco.model.AlarmModel;
 import com.tripco.www.tripco.model.MemberModel;
 import com.tripco.www.tripco.model.ResponseArrayModel;
 import com.tripco.www.tripco.model.ResponseModel;
@@ -418,6 +419,46 @@ public class NetProcess {
             public void onFailure(Call<ResponseModel> call, Throwable t) {
                 Toast.makeText(U.getInstance().getContext(), "서버통신 실패-2", Toast.LENGTH_SHORT).show();
                 U.getInstance().getBus().post("netTimeFailed");
+            }
+        });
+    }
+
+    public void netListNotice(MemberModel req){
+        Call<ResponseArrayModel<AlarmModel>> res = Net.getInstance().getApiIm().list_notice(req);
+
+        res.enqueue(new Callback<ResponseArrayModel<AlarmModel>>() {
+            @Override
+            public void onResponse(Call<ResponseArrayModel<AlarmModel>> call, Response<ResponseArrayModel<AlarmModel>> response) {
+                if(response.isSuccessful()){
+                    if(response.body().getCode() == 1) {
+                        ArrayList<AlarmModel> list = new ArrayList<>();
+                        for(int i = 0; i < response.body().getResult().size(); i++){
+                            list.add(new AlarmModel(
+                                    response.body().getResult().get(i).getNotice_no(),
+                                    response.body().getResult().get(i).getTrip_no(),
+                                    response.body().getResult().get(i).getNotice_trip(),
+                                    response.body().getResult().get(i).getNotice_partner(),
+                                    response.body().getResult().get(i).getNotice_image(),
+                                    response.body().getResult().get(i).getNotice_item(),
+                                    response.body().getResult().get(i).getNotice_type(),
+                                    response.body().getResult().get(i).getNotice_time()
+                            ));
+                        }
+                        U.getInstance().setAlarmListModel(list);
+                        U.getInstance().getBus().post("AlarmList");
+                    } else {
+                        Toast.makeText(U.getInstance().getContext(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                        U.getInstance().getBus().post("ListItemFailed");
+                    }
+                } else {
+                    Toast.makeText(U.getInstance().getContext(), "서버통신 실패-1", Toast.LENGTH_SHORT).show();
+                    U.getInstance().getBus().post("ListItemFailed");
+                }
+            }
+            @Override
+            public void onFailure(Call<ResponseArrayModel<AlarmModel>> call, Throwable t) {
+                Toast.makeText(U.getInstance().getContext(), "서버통신 실패-2", Toast.LENGTH_SHORT).show();
+                U.getInstance().getBus().post("ListItemFailed");
             }
         });
     }
