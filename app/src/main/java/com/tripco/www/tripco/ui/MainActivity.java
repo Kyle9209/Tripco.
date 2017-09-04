@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity
         DBOpenHelper.getInstance();
 
         if(!checkPlayService(this)) return;
-        makeShortCut(this);
+        //makeShortCut(this);
         getServerAddress();
         uiInit();
         swipeRefreshInit();
@@ -91,11 +91,11 @@ public class MainActivity extends AppCompatActivity
 
     @Subscribe
     public void ottoBus(String BUS_NAME) {
-        if(BUS_NAME.equals("loginSuccess")) loginCheck();
         if(BUS_NAME.equals("getUserInfo")) {
-            if(U.getInstance().getUserModel().getUser_image() != null) {
+            String imgUrl = U.getInstance().getUserModel().getUser_image();
+            if(imgUrl != null && !imgUrl.equals("default.jpg")) {
                 Picasso.with(userProfileCiv.getContext())
-                        .load(U.getInstance().getUserModel().getUser_image())
+                        .load(imgUrl)
                         .error(R.drawable.default_my_page_profile)
                         .into(userProfileCiv);
             }
@@ -103,13 +103,10 @@ public class MainActivity extends AppCompatActivity
             userNickTv.setText(U.getInstance().getUserModel().getUser_nick());
             NetProcess.getInstance().netListTrip(new MemberModel(U.getInstance().getUserModel().getUser_id()));
         }
-        if(BUS_NAME.equals("nickChange")){
-            userNickTv.setText(U.getInstance().getUserModel().getUser_nick());
-        }
+        if(BUS_NAME.equals("loginSuccess")) loginCheck();
+        if(BUS_NAME.equals("nickChange")) userNickTv.setText(U.getInstance().getUserModel().getUser_nick());
         if(BUS_NAME.equals("tripListInit")) recViewInit();
-        if(BUS_NAME.equals("logout")){
-            logout();
-        }
+        if(BUS_NAME.equals("logout")) logout();
     }
 
     @Override // 디비 클로즈

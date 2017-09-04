@@ -21,7 +21,7 @@
         <item name="android:textSize">18sp</item>
     </style>
 
-    <style name="CustomEditText" parent="Widget.AppCompat.EditText">
+    <style name="CustomEditText">
         <item name="android:textColor">#fff</item>
         <item name="android:textColorHint">#fff</item>
         <item name="android:textStyle">bold</item>

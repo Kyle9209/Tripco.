@@ -1,6 +1,5 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -25,37 +24,30 @@
             android:background="?attr/colorPrimary"
             android:gravity="center">
 
-            <RelativeLayout
+            <!-- 검색창 -->
+            <AutoCompleteTextView
+                style="@style/CustomEditText"
+                android:theme="@style/CustomEditText"
+                android:completionThreshold="1"
+                android:id="@+id/url_et"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1">
+                android:layout_weight="1"
+                android:hint="@string/url_search"
+                android:inputType="textUri"
+                android:maxLines="1"
+                android:selectAllOnFocus="true" />
 
-                <!-- 검색창 -->
-                <EditText
-                    style="@style/CustomEditText"
-                    android:theme="@style/CustomEditText"
-                    android:id="@+id/url_et"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/url_search"
-                    android:inputType="textUri"
-                    android:maxLines="1"
-                    android:selectAllOnFocus="true" />
-
-                <!-- 검색버튼 -->
-                <ImageButton
-                    android:layout_centerInParent="true"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
-                    android:padding="5dp"
-                    android:id="@+id/search_url_btn"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:scaleType="fitCenter"
-                    android:src="@mipmap/ic_search_white_24dp" />
-
-            </RelativeLayout>
+            <!-- 검색버튼 -->
+            <ImageButton
+                android:padding="5dp"
+                android:id="@+id/search_url_btn"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_weight="0"
+                android:background="?android:attr/selectableItemBackground"
+                android:scaleType="fitCenter"
+                android:src="@mipmap/ic_search_white_24dp" />
 
             <!-- 즉시저장 -->
             <ImageButton

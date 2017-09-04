@@ -20,7 +20,8 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.EditText;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -42,7 +43,8 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 
 public class SearchingFragment extends RootFragment implements TripActivity.onKeyBackPressedListener {
-    @BindView(R.id.url_et) EditText urlEt;
+    @BindView(R.id.url_et)
+    AutoCompleteTextView urlEt;
     @BindView(R.id.webview) WebView webView;
     @BindView(R.id.webview_pb) ProgressBar webViewPb;
     @BindString(R.string.add_candidate) String addCandidateText;
@@ -53,6 +55,7 @@ public class SearchingFragment extends RootFragment implements TripActivity.onKe
     private Unbinder unbinder;
     private InputMethodManager imm;
     private int tripNo;
+    private String[] webSiteList = {"www.naver.com", "www.daum.net", "www.google.com"};
 
     public SearchingFragment() {} // 생성자
 
@@ -139,6 +142,10 @@ public class SearchingFragment extends RootFragment implements TripActivity.onKe
     }
 
     private void editTextInit() {
+        ArrayAdapter adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line, webSiteList);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        urlEt.setAdapter(adapter);
+        urlEt.setOnItemClickListener((adapterView, view, i, l) -> onClickSearchUrlBtn());
         urlEt.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
         urlEt.setOnEditorActionListener((textView, i, keyEvent) -> {
             onClickSearchUrlBtn();

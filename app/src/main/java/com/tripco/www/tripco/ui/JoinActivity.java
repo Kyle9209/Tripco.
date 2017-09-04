@@ -75,34 +75,16 @@ public class JoinActivity extends RootActivity {
         boolean cancel = false;
         View focusView = null;
 
-        // 이메일 확인
-        if (TextUtils.isEmpty(email)) {
-            joinEmail.setError(getString(R.string.please_email));
-            focusView = joinEmail;
-            cancel = true;
-        } else if (!isEmailValid(email)) {
-            joinEmail.setError(getString(R.string.error_invalid_email));
-            focusView = joinEmail;
-            cancel = true;
-        }
-
-        //비밀번호 칸이 비었으면 알림
-        if (TextUtils.isEmpty(password)) {
-            joinPassword.setError(getString(R.string.error_invalid_password));
-            focusView = joinPassword;
+        // 비밀번호 확인이 일치하는지 체크
+        if (!TextUtils.isEmpty(confirmPwd) && !isConfirmPassword(confirmPwd, password)) {
+            confirmPassword.setError(getString(R.string.error_incorrect_password));
+            focusView = confirmPassword;
             cancel = true;
         }
 
         //비밀번호 확인칸이 비었으면 알림
         if (TextUtils.isEmpty(confirmPwd)) {
             confirmPassword.setError(getString(R.string.error_invalid_password));
-            focusView = confirmPassword;
-            cancel = true;
-        }
-
-        // 비밀번호 확인이 일치하는지 체크
-        if (!TextUtils.isEmpty(confirmPwd) && !isConfirmPassword(confirmPwd, password)) {
-            confirmPassword.setError(getString(R.string.error_incorrect_password));
             focusView = confirmPassword;
             cancel = true;
         }
@@ -118,6 +100,24 @@ public class JoinActivity extends RootActivity {
         if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
             joinPassword.setError(getString(R.string.error_invalid_password));
             focusView = joinPassword;
+            cancel = true;
+        }
+
+        //비밀번호 칸이 비었으면 알림
+        if (TextUtils.isEmpty(password)) {
+            joinPassword.setError(getString(R.string.error_invalid_password));
+            focusView = joinPassword;
+            cancel = true;
+        }
+
+        // 이메일 확인
+        if (TextUtils.isEmpty(email)) {
+            joinEmail.setError(getString(R.string.please_email));
+            focusView = joinEmail;
+            cancel = true;
+        } else if (!isEmailValid(email)) {
+            joinEmail.setError(getString(R.string.error_invalid_email));
+            focusView = joinEmail;
             cancel = true;
         }
 
@@ -152,8 +152,9 @@ public class JoinActivity extends RootActivity {
         return email.contains("@");
     }
 
+    private static final String Passwrod_PATTERN = "^(?=.*[a-zA-Z]+)(?=.*[!@#$%^*+=-]|.*[0-9]+).{8,16}$";
     private boolean isPasswordValid(String password) {
-        return password.length() >= 8;
+        return password.matches(Passwrod_PATTERN);
     }
 
     private boolean isConfirmPassword(String confirmPwd, String password) {

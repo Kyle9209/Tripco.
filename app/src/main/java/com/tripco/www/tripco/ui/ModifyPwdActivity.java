@@ -52,6 +52,7 @@ public class ModifyPwdActivity extends RootActivity {
             originalPwdCheck = true;
             checkPwdLine.setVisibility(View.GONE);
             newPwdLine.setVisibility(View.VISIBLE);
+            newPW.requestFocus();
             toolbarRightBtn.setText("완료");
         }
         if(str.equals("pwdFailed")){

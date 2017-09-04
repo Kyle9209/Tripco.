@@ -116,8 +116,9 @@ public class LoginActivity extends RootActivity {
         return email.contains("@");
     }
 
+    private static final String Passwrod_PATTERN = "^(?=.*[a-zA-Z]+)(?=.*[!@#$%^*+=-]|.*[0-9]+).{8,16}$";
     private boolean isPasswordValid(String password) {
-        return password.length() >= 8;
+        return password.matches(Passwrod_PATTERN);
     }
 }
 

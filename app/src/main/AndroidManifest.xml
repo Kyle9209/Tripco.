@@ -39,6 +39,7 @@
         android:theme="@style/AppTheme.NoActionBar"
         tools:replace="android:icon">
         <activity
+            android:screenOrientation="portrait"
             android:name=".ui.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
@@ -46,17 +47,20 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.SetTripActivity" />
-        <activity android:name=".ui.LoginActivity" />
-        <activity android:name=".ui.JoinActivity" />
-        <activity android:name=".ui.TripActivity" />
-        <activity android:name=".ui.MyPageActivity" />
-        <activity android:name=".ui.ModifyNickActivity" />
-        <activity android:name=".ui.ModifyPwdActivity" />
-        <activity android:name=".ui.AlarmActivity" />
-        <activity android:name=".ui.ScheduleInfoActivity" />
-        <activity android:name=".ui.ModifyScheduleActivity" />
-        <activity android:name=".ui.SetScheduleActivity"  android:theme="@style/Theme.AppCompat.Translucent" />
+        <activity android:name=".ui.SetTripActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".ui.LoginActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".ui.JoinActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".ui.TripActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".ui.MyPageActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".ui.ModifyNickActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".ui.ModifyPwdActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".ui.AlarmActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".ui.ScheduleInfoActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".ui.ModifyScheduleActivity" android:screenOrientation="portrait"/>
+        <activity
+            android:name=".ui.SetScheduleActivity"
+            android:theme="@style/Theme.AppCompat.Translucent"
+            android:screenOrientation="portrait" />
 
         <!-- 저장 경로에 대한 설정 -->
         <provider

@@ -18,10 +18,6 @@ public class Net {
             .addConverterFactory(GsonConverterFactory.create())
             .build();
 
-    public Retrofit getRetrofit() {
-        return retrofit;
-    }
-
     // 팩토리 설정
     private TripcoFactoryIm apiIm;
 

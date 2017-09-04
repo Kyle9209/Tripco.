@@ -48,9 +48,10 @@ public class MyPageActivity extends RootActivity {
         U.getInstance().getBus().register(this);
         toolbarInit();
 
-        if(U.getInstance().getUserModel().getUser_image() != null) {
+        String imgUrl = U.getInstance().getUserModel().getUser_image();
+        if(imgUrl != null && !imgUrl.equals("default.jpg")) {
             Picasso.with(profile.getContext())
-                    .load(U.getInstance().getUserModel().getUser_image())
+                    .load(imgUrl)
                     .error(R.drawable.default_my_page_profile)
                     .into(profile);
         }
@@ -127,8 +128,14 @@ public class MyPageActivity extends RootActivity {
                 startActivityForResult(intent, 2); //값을 가져오기로 위해서
                 break;
             case R.id.stop_member_line:
-                showPD();
-                NetProcess.getInstance().netStop(new MemberModel(U.getInstance().getUserModel().getUser_id()));
+                U.getInstance().showAlertDialog(this, "주의!",
+                        "탈퇴하시면 이후 모든 정보를 복구할 수 없습니다. 계속하시곘습니까?",
+                        "예", (dialogInterface, i) -> {
+                            showPD();
+                            NetProcess.getInstance().netStop(
+                                    new MemberModel(U.getInstance().getUserModel().getUser_id()));
+                        },
+                        "아니오", (dialogInterface, i) -> dialogInterface.dismiss());
                 break;
         }
     }

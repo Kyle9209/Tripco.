@@ -2,7 +2,7 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:state_checked="true"
-        android:drawable="@mipmap/ic_check_circle_white_18dp" />
+        android:drawable="@mipmap/join_check2"/>
     <item
-        android:drawable="@mipmap/ic_check_circle_black_18dp"/>
+        android:drawable="@mipmap/join_check1"/>
 </selector>
