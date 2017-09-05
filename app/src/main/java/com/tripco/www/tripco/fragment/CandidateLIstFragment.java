@@ -295,7 +295,7 @@ public class CandidateLIstFragment extends RootFragment
                 }
                 break;
             case R.id.search_btn: // googleplace 호출
-                onGooglePlaces();
+                //onGooglePlaces();
                 break;
         }
     }
