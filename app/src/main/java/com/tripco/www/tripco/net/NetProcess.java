@@ -462,4 +462,30 @@ public class NetProcess {
             }
         });
     }
+
+    public void netSendPw(MemberModel req){
+        Call<ResponseModel> res = Net.getInstance().getApiIm().send_pw(req);
+        res.enqueue(new Callback<ResponseModel>() {
+            @Override
+            public void onResponse(Call<ResponseModel> call, Response<ResponseModel> response) {
+                if(response.isSuccessful()){
+                    if(response.body().getCode() == 1) {
+                        Toast.makeText(U.getInstance().getContext(), "가입하신 이메일로 비밀번호를 보냈습니다.", Toast.LENGTH_SHORT).show();
+                        //U.getInstance().getBus().post("sendMessageSucc");
+                    } else {
+                        Toast.makeText(U.getInstance().getContext(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                        //U.getInstance().getBus().post("nickChangeFailed");
+                    }
+                } else {
+                    Toast.makeText(U.getInstance().getContext(), "서버통신 실패-1", Toast.LENGTH_SHORT).show();
+                    //U.getInstance().getBus().post("nickChangeFailed");
+                }
+            }
+            @Override
+            public void onFailure(Call<ResponseModel> call, Throwable t) {
+                Toast.makeText(U.getInstance().getContext(), "서버통신 실패-2", Toast.LENGTH_SHORT).show();
+                //U.getInstance().getBus().post("nickChangeFailed");
+            }
+        });
+    }
 }

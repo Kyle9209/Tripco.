@@ -51,6 +51,7 @@ public class SetTripActivity extends RootActivity {
     @BindView(R.id.title_et) EditText titleEt;
     @BindView(R.id.clear_title_btn) ImageButton clearTitleBtn;
     @BindView(R.id.title_cnt_tv) TextView titleCntTv;
+    @BindView(R.id.calendar_btn_line) LinearLayout calLine;
     @BindView(R.id.calendar_tv) TextView calendarTv;
     @BindView(R.id.who_tv) TextView whoTv;
     @BindView(R.id.who_btn_line) LinearLayout whoBtnLine;
@@ -354,7 +355,10 @@ public class SetTripActivity extends RootActivity {
 
         if (calendarTv.getText().equals("언제?*")) {
             Toast.makeText(this, "날짜를 선택해주세요.", Toast.LENGTH_SHORT).show();
+            calLine.setBackgroundColor(Color.parseColor("#FFC6C6"));
             check = false;
+        } else {
+            calLine.setBackgroundColor(Color.TRANSPARENT);
         }
 
         return check;

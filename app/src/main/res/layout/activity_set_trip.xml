@@ -36,21 +36,14 @@
                 android:focusable="true"
                 android:focusableInTouchMode="true">
 
-                <ImageView
-                    android:layout_marginLeft="2dp"
-                    android:layout_marginRight="5dp"
-                    android:layout_gravity="bottom"
-                    android:src="@mipmap/ic_border_color_black_24dp"
-                    android:layout_weight="0"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp" />
-
                 <android.support.design.widget.TextInputLayout
                     android:layout_weight="1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
                     <EditText
+                        android:drawablePadding="5dp"
+                        android:drawableLeft="@mipmap/ic_border_color_black_24dp"
                         android:background="@null"
                         android:textStyle="bold"
                         android:id="@+id/title_et"
@@ -141,16 +134,16 @@
                     android:layout_height="25dp" />
 
                 <TextView
-                    android:padding="5dp"
                     android:id="@+id/who_tv"
-                    android:textStyle="bold"
-                    android:textColor="#000"
-                    android:layout_weight="1"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_weight="1"
                     android:gravity="center_vertical"
+                    android:padding="5dp"
                     android:text="누구와?(선택)"
-                    android:textSize="18sp" />
+                    android:textColor="#000"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
 
                 <ImageView
                     android:src="@drawable/right_next_btn"

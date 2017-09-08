@@ -96,5 +96,9 @@ public interface TripcoFactoryIm {
     // 알림 리스트
     @POST("/list_notice")
     Call<ResponseArrayModel<AlarmModel>> list_notice(@Body MemberModel req);
+
+    // 비밀번호 찾기
+    @POST("/send_pw")
+    Call<ResponseModel> send_pw(@Body MemberModel req);
 }
 
